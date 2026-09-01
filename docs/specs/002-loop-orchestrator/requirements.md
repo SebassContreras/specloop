@@ -21,6 +21,14 @@
   - A safe stop on the master propagates the same logic to all active child panes.
 - Reads the target repo's `docs/roadmap.md` as the index of which spec is next and its
   dependencies.
+- **specloop ships a reference implementation**, not just a spec: a working
+  orchestrator framework lives in this repo (e.g. under `framework/`) that the
+  scaffold step generates/copies into the target repo — a real starting point, not
+  something the user has to write from scratch per repo.
+- **Single console command**: once generated into the target repo, the orchestrator
+  must be startable with one command (exact name/shape decided in `design.md`) that
+  reads that repo's `docs/roadmap.md`, picks the next eligible spec (status `todo`
+  with satisfied `Depends on`), and starts working through its `tasks.md`.
 
 ## Notes
 

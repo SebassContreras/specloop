@@ -7,18 +7,20 @@ Subagents) into a single installable/versionable repo.
 
 ## Plugin components
 
-- **Bootstrap Skill** (`001`): scaffold the folder structure + spec Q&A + stack Q&A,
-  invocable from inside any target repo, with a single entry point ("I need to set up
-  X").
-- **Design-closing Skill** (`004`): guided Q&A, run separately per spec once its
-  `requirements.md` is ready, closes `design.md`.
-- **Task-breakdown Skill** (`003`): run separately per spec once its `design.md` is
-  closed, populates `tasks.md`.
+- **Bootstrap Skill** (`001`, `skills/start/`): scaffold the folder structure + spec
+  Q&A + stack Q&A, invocable from inside any target repo, with a single entry point
+  ("I need to set up X").
+- **Design-closing Skill** (`004`, `skills/design-closing/`): guided Q&A, run
+  separately per spec once its `requirements.md` is ready, closes `design.md`.
+- **Task-breakdown Skill** (`003`, `skills/task-breakdown/`): run separately per spec
+  once its `design.md` is closed, drafts + confirms + writes `tasks.md`.
+- **Loop-setup Skill** (`002`, `skills/loop-setup/`): one-time, deliberately-invoked
+  step that copies `framework/orchestrator/` into the target repo, asks for the
+  worker CLI + split-pane mechanism, and wires up the `loop` console command there.
 - **No hooks of its own yet** — defined per target repo, not shipped by the plugin.
-- **No orchestrator of its own** in this repo — the orchestrator is **generated/
-  configured inside the target repo** (see spec `002-loop-orchestrator`), it does not
-  run from here, and setup is a separate one-time step, not chained after the
-  scaffold Skill.
+- **No orchestrator *runtime* lives or executes in this repo** — `framework/
+  orchestrator/` here is the reference implementation source; it only actually runs
+  once `loop-setup` copies it into a target repo (see spec `002-loop-orchestrator`).
 
 ## Fixed rules
 
@@ -38,10 +40,18 @@ Subagents) into a single installable/versionable repo.
   progress as `interrupted` in its `tasks.md`, leave a log of where it stopped. A safe
   stop on the master propagates to all active child panes.
 
+## Resolved
+
+- Plugin name: `specloop` (`.claude-plugin/plugin.json`).
+- Orchestrator runtime: Node.js + TypeScript, run via `tsx` (no build step to
+  maintain). Console command: `loop` (`loop run` / `loop stop` / `loop status`),
+  linked into PATH by `loop-setup` via `pnpm link --global`.
+- Per-target-repo config file: `.specloop/loop.config.json` (`workerCli`,
+  `workerArgs`, `splitMode`, `logDir`) — written by `loop-setup`'s guided Q&A, never
+  hand-authored or hardcoded. See `002-loop-orchestrator/design.md`.
+
 ## Still to define
 
-- Final plugin name / `plugin.json`.
-- Orchestrator language/runtime.
-- Exact format of the per-target-repo config file (which CLI to use, split mechanism,
-  etc.).
 - Optional subagents (stack research, etc.).
+- Multi-spec parallelism, and split-pane backends beyond `windowsTerminal`/`tmux`
+  (see `002-loop-orchestrator/design.md`'s open questions).

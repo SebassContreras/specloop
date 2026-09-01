@@ -7,4 +7,6 @@ Entry point. Everything else lives under `docs/`:
 - [`docs/roadmap.md`](docs/roadmap.md) — index of specs: order, status, dependencies.
 - `docs/specs/NNN-name/` — one spec per feature: `requirements.md`, `design.md`, `tasks.md`.
 
-Current state: **design phase**, no code yet. Check `docs/roadmap.md` before touching anything.
+Current state: specs `001`, `003`, `004` have working skills under `skills/`; `002`'s
+reference orchestrator lives under `framework/orchestrator/`. Check
+`docs/roadmap.md` before touching anything.
