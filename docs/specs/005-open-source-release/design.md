@@ -15,12 +15,15 @@
   - License line/badge referencing `LICENSE`.
 - `.claude-plugin/plugin.json` — add `"license": "MIT"` and
   `"repository": "https://github.com/SebassContreras/specloop"`.
+- `CONTRIBUTING.md` (root) — spec-driven workflow pointer, local dev commands
+  (`claude plugin validate .`, `claude --plugin-dir .`, orchestrator `pnpm`
+  commands), and a status line matching README's tone (personal project, shared
+  as-is, no SLA).
 
 ## Explicitly not building
 
-- No `CONTRIBUTING.md`, issue templates, or `CODE_OF_CONDUCT.md` — would be
-  governance theater for a personal project with no active external contributors;
-  add only if that changes.
+- No issue templates or `CODE_OF_CONDUCT.md` — would be governance theater for a
+  personal project with no active external contributors; add only if that changes.
 - No visibility flip (private → public) — a separate, deliberate action the author
   takes themselves once these files are in place.
 

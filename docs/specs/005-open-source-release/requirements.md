@@ -19,12 +19,16 @@
 - Visibility change (private → public on GitHub) is **explicitly out of scope for
   this pass** — author wants files prepped first, will flip visibility separately
   when ready.
+- Root-level `CONTRIBUTING.md`: spec-driven workflow pointer (roadmap/specs
+  convention) + local dev commands + a status line (personal project, shared as-is,
+  no SLA) — reversed from this spec's original "out of scope" call now that the
+  author asked for it directly.
 
 ## Out of scope
 
-- `CONTRIBUTING.md` / formal governance docs — this stays a personal project shared
-  as-is; no PR/issue SLA implied. Revisit only if external contributions actually
-  start showing up.
+- Formal governance docs beyond `CONTRIBUTING.md` (code of conduct, issue/PR
+  templates) — still not needed for a personal project with no active external
+  contributors; revisit only if that changes.
 - Marketplace listing / `.claude-plugin/marketplace.json` — not needed for a plugin
   installed via `--plugin-dir` or a direct repo checkout; revisit if/when distributing
   through a plugin marketplace becomes a goal.

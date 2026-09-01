@@ -18,9 +18,10 @@ claude --plugin-dir /path/to/specloop
 Run these skills from inside your **target** repo, one at a time, whenever each is
 actually ready — none of them chain automatically:
 
-1. **`/specloop:start`** — "I need to set up X". Scaffolds `CLAUDE.md` +
-   `docs/{product,architecture,roadmap}.md` and walks guided Q&A to create a new
-   spec's `requirements.md`.
+1. **`/specloop:start`** — "I need to set up X". Scaffolds `CLAUDE.md`, `README.md`,
+   `CONTRIBUTING.md`, `docs/{product,architecture,roadmap}.md`, and — on first run —
+   walks guided Q&A for the project's goal/MVP, an optional `LICENSE`, and worker-
+   skill suggestions, before creating a new spec's `requirements.md`.
 2. **`/specloop:design-closing`** — once a spec's requirements are filled, closes its
    `design.md` via guided Q&A.
 3. **`/specloop:task-breakdown`** — once a spec's design is closed, drafts and
@@ -46,7 +47,8 @@ actually ready — none of them chain automatically:
 
 ## Status
 
-Personal project, shared as-is — no support SLA, but issues/PRs are welcome.
+Personal project, shared as-is — no support SLA, but issues/PRs are welcome. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow and local dev commands.
 
 ## License
 
