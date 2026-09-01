@@ -1,0 +1,10 @@
+{
+  "name": "specloop",
+  "displayName": "Specloop",
+  "version": "0.1.0",
+  "description": "Unifies project bootstrapping: scaffolds the doc structure (CLAUDE.md, docs/product.md, docs/architecture.md, docs/roadmap.md, docs/specs/NNN-name), walks guided Q&A for requirements and stack, and (later) drives a CLI-agnostic task loop generated into the target repo.",
+  "author": {
+    "name": "scontreras"
+  },
+  "skills": "./skills/"
+}
