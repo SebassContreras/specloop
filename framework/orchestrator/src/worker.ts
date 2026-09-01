@@ -1,6 +1,7 @@
-import { spawnSync } from "node:child_process";
-import type { LoopConfig } from "./config.js";
-import type { TaskRow } from "./tasks.js";
+import { spawnSync } from 'node:child_process';
+import { assertSafePath } from './security.js';
+import type { LoopConfig } from './config.js';
+import type { TaskRow } from './tasks.js';
 
 export interface WorkerResult {
   ok: boolean;
@@ -13,8 +14,16 @@ function promptFor(task: TaskRow): string {
 
 /** Runs the configured worker CLI for one task and blocks until it exits. */
 export function runWorkerSync(config: LoopConfig, task: TaskRow): WorkerResult {
-  const result = spawnSync(config.workerCli, [...config.workerArgs, promptFor(task)], {
-    encoding: "utf8",
-  });
-  return { ok: result.status === 0, log: `${result.stdout ?? ""}${result.stderr ?? ""}` };
+  assertSafePath();
+  const result = spawnSync(
+    config.workerCli,
+    [...config.workerArgs, promptFor(task)],
+    {
+      encoding: 'utf8',
+    },
+  );
+  return {
+    ok: result.status === 0,
+    log: `${result.stdout ?? ''}${result.stderr ?? ''}`,
+  };
 }

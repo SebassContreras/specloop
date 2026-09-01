@@ -15,7 +15,8 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
 - `claude plugin validate .` — checks the plugin manifest/skills.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
-- `framework/orchestrator/`: `pnpm install`, `pnpm exec tsc --noEmit` to type-check.
+- `framework/orchestrator/`: `pnpm install`, then `pnpm run typecheck` / `pnpm run
+  lint` / `pnpm run format` (ESLint + Prettier, single quotes).
 
 ## Status
 

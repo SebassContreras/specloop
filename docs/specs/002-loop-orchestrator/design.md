@@ -13,12 +13,12 @@
 **Node.js + TypeScript.** Cross-platform (the author works on Windows; target repos
 can be any OS/stack — the orchestrator is a dev tool, orthogonal to the target
 repo's own language). Run via `tsx` (no separate compile step to maintain in a
-generated, personal-use tool) — `bin/loop.js` is a two-line shim that requires
+generated, personal-use tool) — `bin/loop.cjs` is a two-line shim that requires
 `tsx/cjs` and executes `src/cli.ts`.
 
 ## The console command: `loop`
 
-Package declares `"bin": { "loop": "./bin/loop.js" }`. `specloop:loop-setup` runs
+Package declares `"bin": { "loop": "./bin/loop.cjs" }`. `specloop:loop-setup` runs
 `pnpm install && pnpm link --global` inside the generated package so `loop` resolves
 directly on PATH in that shell — no `pnpm exec`/`npx` prefix needed, matching the
 target shape (`loop run`). Document the direct-invocation fallback
@@ -111,10 +111,12 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
 
 ```
 framework/orchestrator/
-├── package.json           # bin: { "loop": "./bin/loop.js" }
+├── package.json           # bin: { "loop": "./bin/loop.cjs" }
 ├── tsconfig.json
+├── eslint.config.cjs       # typescript-eslint recommended + eslint-config-prettier
+├── .prettierrc.json       # singleQuote: true
 ├── bin/
-│   └── loop.js             # shim: requires tsx/cjs, runs src/cli.ts
+│   └── loop.cjs             # shim: requires tsx/cjs, runs src/cli.ts
 └── src/
     ├── cli.ts              # argv dispatch: run / stop / status
     ├── config.ts           # loads .specloop/loop.config.json
@@ -122,6 +124,8 @@ framework/orchestrator/
     ├── tasks.ts            # parse/write a spec's tasks.md (fixed contract)
     ├── worker.ts           # spawn the configured workerCli for one task
     ├── safeStop.ts         # stop-flag read/write, interrupted-row writer
+    ├── security.ts         # assertSafePath(): refuse to spawn if PATH has a
+                             # world-writable dir (POSIX only — see note below)
     └── splitPane/
         ├── index.ts        # dispatch on config.splitMode
         ├── none.ts         # sequential, inline, log-file fallback (always works)
@@ -136,3 +140,9 @@ framework/orchestrator/
   even if several are eligible.
 - `iTerm2`/other terminal-specific split backends beyond Windows Terminal and tmux —
   add later if actually needed; `"none"` covers every OS in the meantime.
+- `security.ts`'s PATH-hijacking check (Sonar S4036) is POSIX-only: `fs.stat`'s
+  `mode` bits aren't real permission data on Windows (Node fakes them from the
+  read-only attribute), so every directory reads as "world-writable" there —
+  enforcing it on Windows would just make the tool unusable, not safer. A real
+  Windows check would mean parsing `icacls` output; not worth the fragility
+  unless this actually becomes a problem in practice.

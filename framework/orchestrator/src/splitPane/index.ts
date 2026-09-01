@@ -1,8 +1,8 @@
-import type { LoopConfig } from "../config.js";
-import type { TaskRow } from "../tasks.js";
-import { runNone, type RunResult } from "./none.js";
-import { runInWindowsTerminal } from "./windowsTerminal.js";
-import { runInTmux } from "./tmux.js";
+import type { LoopConfig } from '../config.js';
+import type { TaskRow } from '../tasks.js';
+import { runNone, type RunResult } from './none.js';
+import { runInWindowsTerminal } from './windowsTerminal.js';
+import { runInTmux } from './tmux.js';
 
 export interface SpecRef {
   id: string;
@@ -19,15 +19,15 @@ export function dispatchTask(
   config: LoopConfig,
   spec: SpecRef,
   task: TaskRow,
-  cwd: string
+  cwd: string,
 ): RunResult | undefined {
   switch (config.splitMode) {
-    case "none":
+    case 'none':
       return runNone(config, task, cwd);
-    case "windowsTerminal":
+    case 'windowsTerminal':
       runInWindowsTerminal(spec, task, cwd);
       return undefined;
-    case "tmux":
+    case 'tmux':
       runInTmux(spec, task, cwd);
       return undefined;
     default:
