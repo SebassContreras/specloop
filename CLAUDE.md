@@ -2,6 +2,10 @@
 
 Entry point. Everything else lives under `docs/`:
 
+- [`docs/handoff.md`](docs/handoff.md) — **start here if you're new to this repo.**
+  Point-in-time notes from the last session: what's next and why, the traps, what is
+  *not* verified, and the open judgement calls. Not a source of truth — the roadmap and
+  each spec's `tasks.md` are.
 - [`docs/product.md`](docs/product.md) — what this is, who uses it (stable).
 - [`docs/architecture.md`](docs/architecture.md) — stack, conventions, fixed rules,
   and the "Declined" table (read it before re-proposing something).

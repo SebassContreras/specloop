@@ -53,6 +53,8 @@ actually ready — none of them chain automatically:
 
 ## Docs
 
+- [`docs/handoff.md`](docs/handoff.md) — where the work stands, what's next, and what
+  is deliberately not yet verified. Read this first if you're picking the project up.
 - [`docs/product.md`](docs/product.md) — what this is, who it's for.
 - [`docs/architecture.md`](docs/architecture.md) — stack, conventions, resolved,
   open, and declined design decisions.
