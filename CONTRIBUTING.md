@@ -18,6 +18,24 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
 - `framework/orchestrator/`: `pnpm install`, then `pnpm run typecheck` / `pnpm run
   lint` / `pnpm run format` (ESLint + Prettier, single quotes).
 
+## Choose the right path
+
+- Found a bug in a skill or the orchestrator? Use
+  [the bug report template](.github/ISSUE_TEMPLATE/bug-report.yml).
+- Want to change a skill's contract, the orchestrator's config shape, or any other
+  product behavior? Open an issue first so the direction can be agreed on before
+  you put work into it.
+- Found a security vulnerability? Follow [`SECURITY.md`](SECURITY.md) — do not
+  open a public issue with exploit details.
+
+New to the shape of a filled spec? See [`examples/`](examples/) for a worked
+`requirements.md` → `design.md` → `tasks.md` example before running a skill for
+the first time.
+
+When a spec's `tasks.md` reaches all-`done`, add an entry to
+[`CHANGELOG.md`](CHANGELOG.md) (see the PR checklist in
+`.github/PULL_REQUEST_TEMPLATE.md`).
+
 ## Status
 
 Personal project, shared as-is — no support SLA. Issues and PRs are welcome; for

@@ -55,3 +55,17 @@ Subagents) into a single installable/versionable repo.
 - Optional subagents (stack research, etc.).
 - Multi-spec parallelism, and split-pane backends beyond `windowsTerminal`/`tmux`
   (see `002-loop-orchestrator/design.md`'s open questions).
+
+## Declined
+
+Considered and explicitly rejected, so it doesn't get re-litigated later. Listed
+here (not per-spec) because the decision applies repo-wide.
+
+| Idea | Why not |
+|---|---|
+| Claude Code's native `Workflow` tool as the orchestrator runtime | Doesn't cover non-Claude worker CLIs (`codex`, `opencode`, ...) — the orchestrator is required to be CLI-agnostic (`docs/product.md`). |
+| Auto-chaining skills (`start` → `design-closing` → `task-breakdown` → `loop-setup`) | Each is a separate, deliberate step run only when that spec is actually ready — a repo can sit with several specs at requirements-only for a while; see each `SKILL.md`'s "never chain automatically" rule. |
+| Building the orchestrator on top of `opencode-orchestrator` (a separate, earlier repo solving a similar problem) | Reviewed and discarded as a base — author doesn't like how it's built. Recycling specific pieces may be evaluated later; see `002-loop-orchestrator/requirements.md`'s Notes. |
+| `.claude-plugin/marketplace.json` listing | Not needed for a plugin installed via `--plugin-dir` or a direct repo checkout; revisit only if distributing through a plugin marketplace becomes a goal (`005-open-source-release/requirements.md`). |
+| Formal governance docs beyond `CONTRIBUTING.md`/`SECURITY.md` (code of conduct, CODEOWNERS) | Still a personal project with no active external contributors; revisit only if that changes. |
+| A cross-agent HTTP-based update-notifier embedded in the plugin (checking a remote manifest, prompting on stale installs) | Proportional to a widely-distributed, unknown-install-base product. specloop is installed by one person via `git pull`/`--plugin-dir` — that already *is* the update mechanism. `CHANGELOG.md` covers "what shipped"; nothing more is needed at this scale. |

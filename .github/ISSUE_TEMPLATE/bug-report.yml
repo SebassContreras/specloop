@@ -1,0 +1,62 @@
+name: Report a bug
+description: Report a problem with a specloop skill or the loop orchestrator.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. A minimal reproduction (exact skill invoked, exact
+        target-repo state) is the fastest path to a fix.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where's the problem?
+      options:
+        - specloop:start
+        - specloop:design-closing
+        - specloop:task-breakdown
+        - specloop:loop-setup
+        - loop orchestrator (framework/orchestrator/ or generated .specloop/)
+        - docs / plugin manifest
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: specloop version or commit
+      placeholder: "0.1.0, or a commit hash"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: >
+        Exact skill/command invoked, and the relevant state of the target repo
+        (docs/roadmap.md row, tasks.md status, .specloop/loop.config.json if
+        orchestrator-related).
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: >
+        OS, Node.js version (if orchestrator-related), worker CLI
+        (claude/codex/opencode/...), split mode (windowsTerminal/tmux/none).
+    validations:
+      required: false

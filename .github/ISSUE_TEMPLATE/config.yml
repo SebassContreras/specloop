@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or proposal
+    url: https://github.com/SebassContreras/specloop/discussions
+    about: >
+      For anything nontrivial (schema/contract/skill-behavior changes), open an
+      issue or discussion first so the direction can be agreed on before you put
+      work into it — see CONTRIBUTING.md.

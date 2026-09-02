@@ -37,18 +37,24 @@ actually ready — none of them chain automatically:
 ## Docs
 
 - [`docs/product.md`](docs/product.md) — what this is, who it's for.
-- [`docs/architecture.md`](docs/architecture.md) — stack, conventions, resolved and
-  open design decisions.
+- [`docs/architecture.md`](docs/architecture.md) — stack, conventions, resolved,
+  open, and declined design decisions.
 - [`docs/roadmap.md`](docs/roadmap.md) — index of every spec, status, dependencies.
 - [`docs/specs/`](docs/specs/) — one folder per spec: `requirements.md`,
   `design.md`, `tasks.md`.
 - [`framework/orchestrator/`](framework/orchestrator/) — the loop orchestrator's
   reference implementation, copied into target repos by `specloop:loop-setup`.
+- [`examples/`](examples/) — a worked `requirements.md` → `design.md` →
+  `tasks.md` example and a sample `.specloop/loop.config.json`, so you can see
+  what a skill's output actually looks like before running one.
+- [`CHANGELOG.md`](CHANGELOG.md) — what has shipped, by spec, in delivery order.
+  (`docs/roadmap.md` is direction/status; this is delivered history.)
 
 ## Status
 
 Personal project, shared as-is — no support SLA, but issues/PRs are welcome. See
-[`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow and local dev commands.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow and local dev commands, and
+[`SECURITY.md`](SECURITY.md) to report a vulnerability privately.
 
 ## License
 
