@@ -107,7 +107,14 @@ function runTask(specId: string, specName: string, taskId: string): void {
   if (!task) throw new Error(`Task ${taskId} not found in ${path}`);
 
   console.log(`[loop] running task ${task.id}: ${task.task}`);
-  const { ok, log } = runWorkerSync(config, task);
+  // specId/specName arrive as arguments from the split-pane launcher and were
+  // previously dropped here, leaving the in-pane worker with no spec context.
+  const { ok, log } = runWorkerSync(
+    config,
+    { id: specId, name: specName },
+    task,
+    cwd,
+  );
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   writeFileSync(join(cwd, config.logDir, `${specId}-${task.id}.log`), log);
   const lastLine = log.trim().split('\n').pop() ?? '';

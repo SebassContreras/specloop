@@ -21,8 +21,20 @@ export interface TaskRow {
   cells: string[];
 }
 
+const TASK_STATUSES: readonly string[] = [
+  'todo',
+  'in_progress',
+  'blocked',
+  'interrupted',
+  'done',
+];
+
 function isOwner(value: string): value is TaskOwner {
   return value === 'agent' || value === 'human';
+}
+
+function isStatus(value: string): value is TaskStatus {
+  return TASK_STATUSES.includes(value);
 }
 
 /**
@@ -38,7 +50,12 @@ function toRow(cells: string[]): TaskRow | undefined {
   const hasOwner = cells.length >= 5 && isOwner(cells[2]);
   const statusIndex = hasOwner ? 3 : 2;
   const status = cells[statusIndex];
-  if (!status) return undefined;
+  // A row whose status cell isn't a real status is malformed — most often a
+  // stray unescaped pipe in the task text, which shifts every later cell.
+  // Returning it anyway is the dangerous option: the bogus status is neither
+  // `done` nor runnable, so the loop would skip the task while the spec could
+  // never roll up to `done`. Surfaced by parseTasks instead.
+  if (!status || !isStatus(status)) return undefined;
   return {
     id,
     task: cells[1] ?? '',
@@ -69,7 +86,15 @@ export function parseTasks(path: string): TaskRow[] {
     const cells = splitRow(line);
     if (!cells) continue;
     const row = toRow(cells);
-    if (row) rows.push(row);
+    if (row) {
+      rows.push(row);
+    } else if (/^T\d+$/.test(cells[0] ?? '')) {
+      // Looks like a task row but didn't parse — warn rather than skip
+      // silently, or the task simply vanishes from the loop's view.
+      console.warn(
+        `[loop] ${path}: ignoring malformed row "${cells[0]}" (check for an unescaped "|" in the text — escape it as "\\|")`,
+      );
+    }
   }
   return rows;
 }

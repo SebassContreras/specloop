@@ -8,13 +8,22 @@
  * error. Splitting also removes the backtracking hazard that shaped the old
  * regex, so the table contract can be extended without a parser rewrite.
  */
+/** Splits on pipes that aren't backslash-escaped — markdown's own mechanism. */
+const UNESCAPED_PIPE = /(?<!\\)\|/;
+
 export function splitRow(line: string): string[] | undefined {
   const trimmed = line.trim();
   if (!trimmed.startsWith('|') || !trimmed.endsWith('|')) return undefined;
   if (trimmed.length < 2) return undefined;
   // slice(1, -1) drops the leading and trailing pipes, so the split doesn't
-  // produce a phantom empty cell at each end.
-  return trimmed.slice(1, -1).split('|').map((cell) => cell.trim());
+  // produce a phantom empty cell at each end. Splitting on unescaped pipes
+  // only is required by real content: task rows in this repo describe the
+  // `ID | Task | Status | Notes` contract itself, and a naive split shreds
+  // them into the wrong number of cells.
+  return trimmed
+    .slice(1, -1)
+    .split(UNESCAPED_PIPE)
+    .map((cell) => cell.trim().replace(/\\\|/g, '|'));
 }
 
 /** True for a header row (`| ID | ... |`) or a separator (`|-----|-----|`). */
@@ -26,9 +35,16 @@ export function isHeaderOrSeparator(firstCell: string): boolean {
  * Makes arbitrary text safe to put in a table cell. Notes come from worker log
  * output, which can contain pipes and newlines — either would corrupt the row
  * and make every later parse of the file wrong.
+ *
+ * Pipes are escaped rather than substituted, so the note survives intact and
+ * round-trips through `splitRow`. An already-escaped pipe is left alone rather
+ * than double-escaped.
  */
 export function sanitizeCell(value: string): string {
-  return value.replace(/[\r\n]+/g, ' ').replace(/\|/g, '/').trim();
+  return value
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/(?<!\\)\|/g, '\\|')
+    .trim();
 }
 
 /**

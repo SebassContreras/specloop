@@ -1,13 +1,12 @@
 import type { LoopConfig } from '../config.js';
 import type { TaskRow } from '../tasks.js';
+import type { SpecRef } from '../roadmap.js';
 import { runNone, type RunResult } from './none.js';
 import { runInWindowsTerminal } from './windowsTerminal.js';
 import { runInTmux } from './tmux.js';
 
-export interface SpecRef {
-  id: string;
-  name: string;
-}
+// Re-exported so the split-pane backends can keep importing it from here.
+export type { SpecRef };
 
 /**
  * `"none"` runs synchronously and returns the result so the master can flip
@@ -23,7 +22,7 @@ export function dispatchTask(
 ): RunResult | undefined {
   switch (config.splitMode) {
     case 'none':
-      return runNone(config, task, cwd);
+      return runNone(config, spec, task, cwd);
     case 'windowsTerminal':
       runInWindowsTerminal(spec, task, cwd);
       return undefined;

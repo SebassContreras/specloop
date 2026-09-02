@@ -35,7 +35,20 @@ export function loadConfig(cwd: string = process.cwd()): LoopConfig {
       `No ${CONFIG_PATH} found. Run the specloop:loop-setup skill in this repo first.`,
     );
   }
-  const parsed = JSON.parse(raw);
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    // Raw JSON.parse output here is a bare SyntaxError with a byte offset and a
+    // stack trace into the orchestrator — useless for someone who has just
+    // hand-edited this file (on Windows, most often an unescaped backslash in a
+    // path).
+    throw new Error(
+      `${CONFIG_PATH} is not valid JSON: ${err instanceof Error ? err.message : String(err)}\n` +
+        'On Windows, check for unescaped backslashes in paths — use "/" or "\\\\".',
+      { cause: err },
+    );
+  }
   if (!parsed.workerCli) {
     throw new Error(`${CONFIG_PATH} is missing "workerCli".`);
   }
