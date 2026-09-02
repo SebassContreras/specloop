@@ -22,8 +22,8 @@ the user — it is **not** a one-question-per-field Q&A like `specloop:start` or
 
 ## Phase 0 — Pick the spec + refuse if not ready
 
-1. If the user named a spec, resolve it against `docs/roadmap.md`. Otherwise read
-   `docs/roadmap.md`, find rows with status `todo`/`in_progress` whose `design.md`
+1. If the user named a spec, resolve it against `planning/roadmap.md`. Otherwise read
+   `planning/roadmap.md`, find rows with status `todo`/`in_progress` whose `design.md`
    has real content but whose `tasks.md` is still the header-only stub, and ask which
    one.
 2. **Refuse and stop** if that spec's `design.md` is still the `TBD` stub. Tell the
@@ -32,8 +32,8 @@ the user — it is **not** a one-question-per-field Q&A like `specloop:start` or
 
 ## Phase 1 — Draft the task list
 
-Read that spec's `requirements.md`, `design.md`, `docs/product.md` (for the project
-type), and (if they have real content) `AGENTS.md` and `docs/architecture.md`. Draft a
+Read that spec's `requirements.md`, `design.md`, `planning/product.md` (for the project
+type), and (if they have real content) `AGENTS.md` and `planning/architecture.md`. Draft a
 numbered list (`T1`, `T2`, …) applying this rule:
 
 > A task is **single-action** (one coherent deliverable or change — one file, one
@@ -87,7 +87,7 @@ is entirely the orchestrator's job, not this skill's.
 
 ## Style rules
 
-- Terse and structural, matching specloop's own `docs/*.md` — no filler prose.
+- Terse and structural, matching specloop's own `planning/*.md` — no filler prose.
 - Never invent a task that isn't traceable back to `requirements.md`/`design.md`.
 - Confirm the full list with the user before writing it to disk.
 - Don't mark a task `agent` that an agent can't actually do unattended.

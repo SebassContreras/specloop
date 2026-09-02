@@ -19,8 +19,8 @@ export interface LoopConfig {
 
 const DEFAULT_CONTEXT_FILES = [
   'AGENTS.md',
-  'docs/architecture.md',
-  'docs/styles.md',
+  'planning/architecture.md',
+  'planning/styles.md',
 ];
 
 const CONFIG_PATH = join('.specloop', 'loop.config.json');

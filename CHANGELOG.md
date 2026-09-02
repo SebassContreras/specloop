@@ -1,6 +1,6 @@
 # Changelog
 
-`docs/roadmap.md` owns direction, status, and dependencies between specs. This file
+`planning/roadmap.md` owns direction, status, and dependencies between specs. This file
 owns what has actually shipped, in delivery order — one entry per spec once its
 `tasks.md` is fully `done`, not one entry per commit.
 
@@ -13,13 +13,13 @@ version is actually tagged.
 ### 2026-09-02 — scope restoration
 
 An earlier change the same day narrowed `specloop:start` and recorded the removals in
-`docs/architecture.md`'s "Declined" table, citing a `docs/product.md` clause that the
+`planning/architecture.md`'s "Declined" table, citing a `planning/product.md` clause that the
 *same* change had written. Four of the project's six stated objectives were rejected on
 that circular authority, and the "it becomes a spec instead" escape hatch was never
 exercised — no such rows existed. Undone, and the mechanism closed:
 
 - **Restored** the technologies/architecture/tools Q&A (now its own phase, branched by
-  project type, writing a decision register into `docs/architecture.md` and the
+  project type, writing a decision register into `planning/architecture.md` and the
   operative form into `AGENTS.md` — which nothing wrote before, leaving it a permanent
   `TBD` stub and two downstream read-gates permanently inert).
 - **Restored** skill recommendation, repositioned after the stack Q&A so it keys off
@@ -31,7 +31,7 @@ exercised — no such rows existed. Undone, and the mechanism closed:
 - **Added** the project-type classifier as the first interview question, plus
   `skills/start/references/question-bank.md` and the interview contract (coverage
   ledger, follow-up triggers, skip protocol, closing sweep, no fixed question count).
-- **Added** the styles/preferences phase and `docs/styles.md`.
+- **Added** the styles/preferences phase and `planning/styles.md`.
 - **Added** `.specloop/` static scaffolding to `start`, and moved `loop-setup`'s
   refusal from scaffolding to execution — it previously refused in exactly the
   freshly-scaffolded state the objective describes.
@@ -50,7 +50,7 @@ never reached the agent doing the work.
 
 - The worker prompt is now a briefing. It names the task and its spec, the spec's
   `requirements.md`/`design.md`, and the `contextFiles` that actually exist on disk —
-  filtered at prompt-build time, since a project can gain `docs/styles.md` between runs.
+  filtered at prompt-build time, since a project can gain `planning/styles.md` between runs.
   Previously it was `Work on this task: <table cell>`, with the spec itself dropped at
   every call site, so a worker could not read what it was implementing and learned the
   project's stack only by accident (`claude` auto-loading `CLAUDE.md` from the inherited
@@ -128,12 +128,12 @@ bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `00
   Prettier tooling; Sonar S8786 (ReDoS) and S4036 (unsafe `PATH`, POSIX-only)
   fixes.
 - **001 — scaffold-and-spec-skill**: `specloop:start` — scaffolds `AGENTS.md` +
-  `CLAUDE.md` + `docs/{product,architecture,roadmap}.md` + `.specloop/`; the full
+  `CLAUDE.md` + `planning/{product,architecture,roadmap}.md` + `.specloop/`; the full
   interview (project type → vision → technologies/architecture/tools → skill
   recommendation → styles) under the coverage contract; roadmap seeding from the
   recorded answers; per-spec `requirements.md` Q&A with idempotent re-entry. Does not
   scaffold `README.md`/`CONTRIBUTING.md`/`LICENSE`/CI config — those are project
-  deliverables the roadmap decides (see `docs/architecture.md`'s "Declined" table).
+  deliverables the roadmap decides (see `planning/architecture.md`'s "Declined" table).
   Still `in_progress`: the end-to-end local test needs re-running against the new
   interview shape (`T29`).
 
@@ -144,4 +144,4 @@ bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `00
   `design.md`/`tasks.md` notes.
 - A spec only gets an entry once every task in its `tasks.md` is `done` (an
   `interrupted` local-test task still blocks the entry — see each spec's open
-  tasks in `docs/roadmap.md`).
+  tasks in `planning/roadmap.md`).

@@ -23,7 +23,7 @@ Run these skills from inside your **target** repo, one at a time, whenever each 
 actually ready — none of them chain automatically:
 
 1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` +
-   `docs/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
+   `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
    project type → goal/audience/MVP → technologies, architecture and tools →
    recommended Claude Code skills → styles and preferences. Each answer is written to
    disk as it lands, the roadmap is seeded from all of it, and each spec's
@@ -39,7 +39,7 @@ actually ready — none of them chain automatically:
    specs the roadmap decides, not files this skill assumes.
 2. **`/specloop:design-closing`** — once a spec's requirements are filled, closes its
    `design.md` via guided Q&A, and appends any stack/convention decisions it settles
-   to `docs/architecture.md` and `AGENTS.md`.
+   to `planning/architecture.md` and `AGENTS.md`.
 3. **`/specloop:task-breakdown`** — once a spec's design is closed, drafts and
    confirms a `tasks.md` (single-action, verifiable tasks), marking each `agent` or
    `human` so the loop only attempts what an agent can actually finish.
@@ -53,13 +53,13 @@ actually ready — none of them chain automatically:
 
 ## Docs
 
-- [`docs/handoff.md`](docs/handoff.md) — where the work stands, what's next, and what
+- [`planning/handoff.md`](planning/handoff.md) — where the work stands, what's next, and what
   is deliberately not yet verified. Read this first if you're picking the project up.
-- [`docs/product.md`](docs/product.md) — what this is, who it's for.
-- [`docs/architecture.md`](docs/architecture.md) — stack, conventions, resolved,
+- [`planning/product.md`](planning/product.md) — what this is, who it's for.
+- [`planning/architecture.md`](planning/architecture.md) — stack, conventions, resolved,
   open, and declined design decisions.
-- [`docs/roadmap.md`](docs/roadmap.md) — index of every spec, status, dependencies.
-- [`docs/specs/`](docs/specs/) — one folder per spec: `requirements.md`,
+- [`planning/roadmap.md`](planning/roadmap.md) — index of every spec, status, dependencies.
+- [`planning/specs/`](planning/specs/) — one folder per spec: `requirements.md`,
   `design.md`, `tasks.md`.
 - [`framework/orchestrator/`](framework/orchestrator/) — the loop orchestrator's
   reference implementation, copied into target repos by `specloop:loop-setup`.
@@ -67,7 +67,7 @@ actually ready — none of them chain automatically:
   `tasks.md` example and a sample `.specloop/loop.config.json`, so you can see
   what a skill's output actually looks like before running one.
 - [`CHANGELOG.md`](CHANGELOG.md) — what has shipped, by spec, in delivery order.
-  (`docs/roadmap.md` is direction/status; this is delivered history.)
+  (`planning/roadmap.md` is direction/status; this is delivered history.)
 
 ## Status
 

@@ -26,7 +26,7 @@ Never infer an answer to close a dimension.
 
 ## Phase B — Technologies, architecture & tools
 
-Ask the block matching `project-type`. Answers go to `docs/architecture.md` as a
+Ask the block matching `project-type`. Answers go to `planning/architecture.md` as a
 decision register (one row per decision: what, why, when decided).
 
 ### B-software

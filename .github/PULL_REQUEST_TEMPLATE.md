@@ -18,8 +18,8 @@ Exact commands run and their results. Do not write only "tests pass".
 
 ## Checklist
 
-- [ ] The relevant spec's `docs/specs/NNN-name/tasks.md` row is updated (status +
+- [ ] The relevant spec's `planning/specs/NNN-name/tasks.md` row is updated (status +
       notes)
-- [ ] `docs/roadmap.md` is updated if this closes or changes a spec's status
+- [ ] `planning/roadmap.md` is updated if this closes or changes a spec's status
 - [ ] `CHANGELOG.md` gets a new entry if this closes a spec's last task
 - [ ] No secrets, tokens, or another party's data in the diff

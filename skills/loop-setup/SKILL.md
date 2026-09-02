@@ -51,7 +51,7 @@ Ask, one at a time, waiting for each reply:
      is unsure or on an OS/setup without `wt`/`tmux`.
 3. Default `logDir` to `.specloop/logs` unless the user wants something else.
 4. **Context files** — confirm `contextFiles` lists the files a worker must read
-   before working (default `["AGENTS.md", "docs/architecture.md", "docs/styles.md"]`;
+   before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;
    non-existent entries are skipped at run time). If the configured `workerCli` is not
    `claude`, say plainly that `AGENTS.md` is the only context that CLI auto-loads, so
    this list is how it learns the project's stack and conventions.
@@ -68,7 +68,7 @@ Ask, one at a time, waiting for each reply:
      "workerArgs": ["<headless flag>"],
      "splitMode": "<answer>",
      "logDir": ".specloop/logs",
-     "contextFiles": ["AGENTS.md", "docs/architecture.md", "docs/styles.md"]
+     "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
    }
    ```
 3. Verify `.specloop/.gitignore` exists and ignores `orchestrator/` and `logs/`

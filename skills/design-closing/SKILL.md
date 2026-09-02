@@ -4,7 +4,7 @@ description: >
   Guided Q&A that closes a spec's design.md once its requirements.md is ready —
   covers approach, deliverables, sequencing and open risks, writing the answer to
   disk after each question, then appends any stack/convention decisions it settles
-  to docs/architecture.md and AGENTS.md.
+  to planning/architecture.md and AGENTS.md.
 when_to_use: >
   Use when the user wants to move a spec from requirements to a closed design.
   Trigger on phrasing like "close the design for X", "let's design spec NNN",
@@ -23,8 +23,8 @@ before asking the next — never batch questions into a single message.
 ## Phase 0 — Pick the spec + refuse if not ready
 
 1. If the user named a spec (`NNN` or a kebab-case name), resolve it against
-   `docs/roadmap.md`. Otherwise read `docs/roadmap.md`'s table, find rows with status
-   `todo` or `in_progress` whose `docs/specs/NNN-name/design.md` is still the `TBD`
+   `planning/roadmap.md`. Otherwise read `planning/roadmap.md`'s table, find rows with status
+   `todo` or `in_progress` whose `planning/specs/NNN-name/design.md` is still the `TBD`
    stub, and ask the user which one to close.
 2. Read that spec's `requirements.md`. **Refuse and stop** if the file doesn't exist,
    or if it has no real answers under its headers — just headers, or an obvious
@@ -36,8 +36,8 @@ before asking the next — never batch questions into a single message.
    refuse on every spec written before the template changed.
    Tell the user requirements need filling first (via `specloop:start`) — never guess
    at requirements content here.
-3. Read `docs/product.md` for the **project type**, and `AGENTS.md` +
-   `docs/architecture.md` (if they have real content) for stack/convention context.
+3. Read `planning/product.md` for the **project type**, and `AGENTS.md` +
+   `planning/architecture.md` (if they have real content) for stack/convention context.
    Design answers must stay consistent with them. If `.specloop/interview.md` exists,
    read it — a dimension marked `open` there is fair game to ask about now.
 
@@ -93,7 +93,7 @@ Replace the file's `TBD` stub with:
    cover its own acceptance criteria is not closed.
 2. Ask the closing sweep: **"What haven't we covered in this design?"** Repeat until it
    returns nothing new twice.
-3. Append anything from question 4 to `docs/architecture.md`'s decision register and
+3. Append anything from question 4 to `planning/architecture.md`'s decision register and
    the operative form to `AGENTS.md`'s "Stack & conventions". This is the mechanism
    that keeps those files current as specs close — without it they stay whatever the
    bootstrap left behind. Append only; never rewrite an existing decision without
@@ -107,7 +107,7 @@ automatically** — these are separate, deliberate steps per spec.
 
 ## Style rules
 
-- Keep every file terse and structural, matching specloop's own `docs/*.md` — no
+- Keep every file terse and structural, matching specloop's own `planning/*.md` — no
   filler prose, no marketing language.
 - Never fabricate a design decision the user hasn't actually made — leave it as an
   open question instead of guessing.

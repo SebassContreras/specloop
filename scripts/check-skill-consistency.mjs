@@ -6,7 +6,7 @@
  * tests — the failure mode is a skill that promises something no other file delivers.
  * That has happened twice in this repo and both were expensive:
  *
- *  - `skills/start` claimed `docs/architecture.md` "fills in progressively as designs
+ *  - `skills/start` claimed `planning/architecture.md` "fills in progressively as designs
  *    get closed" while no file anywhere wrote it, leaving target repos with a permanent
  *    TBD stub and two downstream read-gates permanently inert.
  *  - `skills/design-closing` began gating on a `requirements.md` header that 0 of this
@@ -72,7 +72,7 @@ ok(
 );
 
 group('[3] Legacy requirements files are still readable by design-closing');
-const specsDir = 'docs/specs';
+const specsDir = 'planning/specs';
 const specs = readdirSync(specsDir).filter((d) => /^\d{3}-/.test(d));
 const legacy = specs.filter((s) => {
   const p = join(specsDir, s, 'requirements.md');
@@ -85,7 +85,7 @@ ok(
 
 group('[4] Every stated objective has a phase in start');
 const objectives = {
-  '1  roadmap structure': /docs\/roadmap\.md/,
+  '1  roadmap structure': /planning\/roadmap\.md/,
   '1b loop folder': /\.specloop\/logs\/\.gitkeep/,
   '2  project type': /Type & vision/,
   '3  technologies/architecture/tools': /Technologies, architecture & tools/,
@@ -116,11 +116,11 @@ group("[7] start's owned-file list matches its scope rule");
 for (const f of [
   'CLAUDE.md',
   'AGENTS.md',
-  'docs/product.md',
-  'docs/architecture.md',
-  'docs/roadmap.md',
-  'docs/styles.md',
-  'docs/specs/**',
+  'planning/product.md',
+  'planning/architecture.md',
+  'planning/roadmap.md',
+  'planning/styles.md',
+  'planning/specs/**',
   '.specloop/',
 ]) {
   ok(start.includes(f), `owned-file list names ${f}`);
@@ -131,7 +131,7 @@ ok(!/`README\.md`\s*—\s*section headers/.test(start), 'start does not scaffold
 group('[8] No skill promises a writer that does not exist');
 ok(
   /architecture\.md/.test(designClosing) && /[Aa]ppend/.test(designClosing),
-  'design-closing appends to docs/architecture.md, as start promises it will',
+  'design-closing appends to planning/architecture.md, as start promises it will',
 );
 ok(/AGENTS\.md/.test(designClosing), 'design-closing also maintains AGENTS.md');
 

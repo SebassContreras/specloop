@@ -17,7 +17,7 @@ isn't concrete enough on its own.
 
 ## What this is not
 
-- Not a test fixture — `docs/specs/006-e2e-smoke-testing/` owns the scriptable/
+- Not a test fixture — `planning/specs/006-e2e-smoke-testing/` owns the scriptable/
   interactive fixture used to actually exercise the skills end-to-end
   (`test/sample-new-repo/`, once that spec builds it). This directory is
   documentation, read by humans, not consumed by any test.

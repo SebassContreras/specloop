@@ -9,7 +9,7 @@
 - Usage: `hello [name]`. With no argument, greets `"World"`. With one argument,
   greets that name (e.g. `hello Ada` → `Hello, Ada!`).
 - No dependencies — must run with only the target repo's existing runtime (Node.js,
-  per `docs/architecture.md`), no npm install step for this spec.
+  per `planning/architecture.md`), no npm install step for this spec.
 - Exit code `0` on success. Exit code `1` and a one-line usage message on stderr if
   called with more than one argument.
 

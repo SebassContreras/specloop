@@ -30,7 +30,7 @@ user-configured worker CLI and split-pane processes as child processes
 (`src/worker.ts`, `src/splitPane/*.ts`). A `PATH`/command-injection issue there is
 the most likely class of real vulnerability. See `src/security.ts`'s
 `assertSafePath()` for the existing hardening — currently POSIX-only, see
-[`docs/specs/011-windows-path-safety/`](docs/specs/011-windows-path-safety/).
+[`planning/specs/011-windows-path-safety/`](planning/specs/011-windows-path-safety/).
 
 The skills themselves (`skills/*/SKILL.md`) are Q&A instructions run by an
 interactive agent inside the target repo — they write files, never execute

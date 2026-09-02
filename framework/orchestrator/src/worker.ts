@@ -16,7 +16,7 @@ const WORKER_TIMEOUT_MS = 30 * 60 * 1000;
 
 /**
  * Filtered at prompt-build time rather than at config load: a project can gain
- * `docs/styles.md` between two runs, and telling a worker to read a file that
+ * `planning/styles.md` between two runs, and telling a worker to read a file that
  * was never created wastes a turn and invites it to invent the contents.
  */
 export function existingContextFiles(
@@ -42,7 +42,7 @@ export function promptFor(
   config: LoopConfig,
   cwd: string,
 ): string {
-  const specDir = `docs/specs/${spec.id}-${spec.name}`;
+  const specDir = `planning/specs/${spec.id}-${spec.name}`;
   const context = existingContextFiles(config, cwd);
   const lines = [
     `You are working in the repo at ${cwd}.`,

@@ -48,7 +48,7 @@ function run(): void {
   const spec = pickNextSpec(roadmap);
   if (!spec) {
     console.log(
-      '[loop] nothing eligible to run — check docs/roadmap.md status/deps.',
+      '[loop] nothing eligible to run — check planning/roadmap.md status/deps.',
     );
     return;
   }

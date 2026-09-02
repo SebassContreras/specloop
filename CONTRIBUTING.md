@@ -2,9 +2,9 @@
 
 This repo follows the spec-driven workflow it also ships as a plugin (dogfooding):
 
-- Check [`docs/roadmap.md`](docs/roadmap.md) for the index of specs, their status,
+- Check [`planning/roadmap.md`](planning/roadmap.md) for the index of specs, their status,
   and dependencies before proposing anything new.
-- Each feature lives in `docs/specs/NNN-name/`: `requirements.md` first, then a
+- Each feature lives in `planning/specs/NNN-name/`: `requirements.md` first, then a
   closed `design.md`, then a populated `tasks.md`. Open a spec's requirements before
   writing code for it.
 - Skills live in `skills/<name>/SKILL.md`. The loop-orchestrator's reference

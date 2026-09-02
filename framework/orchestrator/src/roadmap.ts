@@ -27,7 +27,7 @@ const STATUS_INDEX = 2;
 const DEPENDS_INDEX = 3;
 
 function roadmapPath(cwd: string): string {
-  return join(cwd, 'docs', 'roadmap.md');
+  return join(cwd, 'planning', 'roadmap.md');
 }
 
 /**

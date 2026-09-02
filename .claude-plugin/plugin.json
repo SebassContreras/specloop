@@ -2,7 +2,7 @@
   "name": "specloop",
   "displayName": "Specloop",
   "version": "0.1.0",
-  "description": "Turns an interview into a roadmap you can build step by step, then runs it. Scaffolds the doc structure (AGENTS.md, CLAUDE.md, docs/product.md, docs/architecture.md, docs/roadmap.md, docs/specs/NNN-name), asks about project type, goal, technologies and tools, recommends skills, captures styles, seeds the roadmap from the answers, and drives a CLI-agnostic task loop generated into the target repo. Works for apps, sites, marketing/content, operations and research projects alike.",
+  "description": "Turns an interview into a roadmap you can build step by step, then runs it. Scaffolds the doc structure (AGENTS.md, CLAUDE.md, planning/product.md, planning/architecture.md, planning/roadmap.md, planning/specs/NNN-name), asks about project type, goal, technologies and tools, recommends skills, captures styles, seeds the roadmap from the answers, and drives a CLI-agnostic task loop generated into the target repo. Works for apps, sites, marketing/content, operations and research projects alike.",
   "author": {
     "name": "SebassContreras"
   },

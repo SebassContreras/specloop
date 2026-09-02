@@ -68,7 +68,7 @@ function toRow(cells: string[]): TaskRow | undefined {
 }
 
 function specDir(cwd: string, specId: string, specName: string): string {
-  return join(cwd, 'docs', 'specs', `${specId}-${specName}`);
+  return join(cwd, 'planning', 'specs', `${specId}-${specName}`);
 }
 
 export function tasksPath(

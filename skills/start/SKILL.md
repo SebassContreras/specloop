@@ -1,8 +1,8 @@
 ---
 name: start
 description: >
-  Scaffold the specloop structure (CLAUDE.md, AGENTS.md, docs/product.md,
-  docs/architecture.md, docs/roadmap.md, docs/specs/NNN-name/{requirements,
+  Scaffold the specloop structure (CLAUDE.md, AGENTS.md, planning/product.md,
+  planning/architecture.md, planning/roadmap.md, planning/specs/NNN-name/{requirements,
   design,tasks}.md, .specloop/) in the current repo, then run the full guided
   interview: project type, goal, technologies/architecture/tools, recommended
   Claude Code skills, styles/preferences — seeding the roadmap from the answers
@@ -30,8 +30,8 @@ the project's decisions recorded where the loop's worker agents will actually re
 them. `skills/start/references/question-bank.md` is the coverage contract for every
 Q&A phase below — read it before you start asking.
 
-**This skill owns exactly these files:** `CLAUDE.md`, `AGENTS.md`, `docs/product.md`,
-`docs/architecture.md`, `docs/roadmap.md`, `docs/styles.md`, `docs/specs/**`, and
+**This skill owns exactly these files:** `CLAUDE.md`, `AGENTS.md`, `planning/product.md`,
+`planning/architecture.md`, `planning/roadmap.md`, `planning/styles.md`, `planning/specs/**`, and
 `.specloop/{loop.config.json,logs/.gitkeep,.gitignore,interview.md}`. Never scaffold
 anything else — `README.md`, `CONTRIBUTING.md`, `LICENSE` and CI config are project
 deliverables the roadmap decides, as specs like any other.
@@ -63,8 +63,8 @@ are just where answers land.
    what's already covered and continue from the first `open` dimension rather than
    restarting.
 3. Otherwise decide by content:
-   - **No `docs/` structure** → Phase 1 → 2 → 3 → 4 → 5 → 6 → 7.
-   - **Structure exists, `docs/product.md`'s "What this is" has real content** →
+   - **No `planning/` structure** → Phase 1 → 2 → 3 → 4 → 5 → 6 → 7.
+   - **Structure exists, `planning/product.md`'s "What this is" has real content** →
      skip to Phase 7 (next spec's requirements). Offer to revisit Phases 3–5 if the
      user says a decision has changed.
    - **Structure exists, "What this is" is still a stub** → a partially-completed
@@ -90,11 +90,11 @@ Create, only if missing:
   Claude Code resolves `@path` imports; `codex`/`opencode` read `AGENTS.md` directly.
   Both CLIs therefore see one set of facts. Never write project content into
   `CLAUDE.md` itself.
-- **`docs/product.md`** — headers only: "What this is", "Who uses it", "Out of scope".
-- **`docs/architecture.md`** — headers only. Phase 4 fills it and keys its headers to
+- **`planning/product.md`** — headers only: "What this is", "Who uses it", "Out of scope".
+- **`planning/architecture.md`** — headers only. Phase 4 fills it and keys its headers to
   the project type (software → container/stack/conventions; marketing → channels/tools/
   data sources; operations → systems/cadence/handoffs; research → sources/method/output).
-- **`docs/roadmap.md`**:
+- **`planning/roadmap.md`**:
   ```markdown
   # Roadmap
 
@@ -108,7 +108,7 @@ Create, only if missing:
   The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment — the
   orchestrator concatenates the two into a filesystem path. Verify this after every
   row you write.
-- **`docs/specs/.gitkeep`** — so the directory survives a commit before the first spec.
+- **`planning/specs/.gitkeep`** — so the directory survives a commit before the first spec.
 - **`.specloop/logs/.gitkeep`** and **`.specloop/.gitignore`**:
   ```gitignore
   orchestrator/
@@ -119,7 +119,7 @@ Create, only if missing:
 ## Phase 2 — Type & vision Q&A (first run only)
 
 Question-bank Phase A. Start with `project-type` — it branches everything downstream,
-so it must be answered first. Write the answer into `docs/product.md` *and*
+so it must be answered first. Write the answer into `planning/product.md` *and*
 `AGENTS.md`'s "Project" section; every later phase reads it from there.
 
 Then work through `goal`, `audience`, `mvp`, `done-when`, `constraints-hard`,
@@ -131,7 +131,7 @@ Phase F's sweep.
 Question-bank Phase B, using the block matching the project type. Do **not** ask
 software questions of a marketing project.
 
-Write answers into `docs/architecture.md` as a decision register — one entry per
+Write answers into `planning/architecture.md` as a decision register — one entry per
 decision, with what was decided and why:
 
 ```markdown
@@ -141,7 +141,7 @@ decision, with what was decided and why:
 ```
 
 Then mirror the short version into `AGENTS.md`'s "Stack & conventions" section, which
-is what a worker agent reads. `docs/architecture.md` holds the reasoning; `AGENTS.md`
+is what a worker agent reads. `planning/architecture.md` holds the reasoning; `AGENTS.md`
 holds the operative rules. Close with Phase F's sweep.
 
 If the user genuinely has no decisions yet, record the dimension as `open` and seed a
@@ -171,9 +171,9 @@ Question-bank Phase D. Ask `visual-surface` first and skip the visual dimensions
 the answer is no — but always ask `code-conventions`, `tone` and `anti-preferences`,
 which apply to every project type.
 
-- Write the detail into **`docs/styles.md`** (palette hex values, type stacks, tokens).
+- Write the detail into **`planning/styles.md`** (palette hex values, type stacks, tokens).
 - Write the operative summary into **`AGENTS.md`'s "Style"** section, and reference
-  `docs/styles.md` from it. `AGENTS.md` is what reaches a worker; `docs/styles.md` on
+  `planning/styles.md` from it. `AGENTS.md` is what reaches a worker; `planning/styles.md` on
   its own is inert.
 - Record each preference's strength — hard rule vs. overridable default.
 - **Never invent a style value.** No palette the user didn't choose, no hex code you
@@ -187,7 +187,7 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
   "workerArgs": ["<headless flag>"],
   "splitMode": "none",
   "logDir": ".specloop/logs",
-  "contextFiles": ["AGENTS.md", "docs/architecture.md", "docs/styles.md"]
+  "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
 }
 ```
 
@@ -211,8 +211,8 @@ or skills to be implemented" turn into ordered spec entries.
 3. Show the proposal and get it confirmed — add / remove / reorder — before writing
    anything. Ask an explicit dependency question per item rather than defaulting
    silently to the previous row.
-4. Once confirmed, create one spec per item, in order: `docs/specs/NNN-name/` with stub
-   `design.md`/`tasks.md`, and a `docs/roadmap.md` row. Leave `requirements.md` for
+4. Once confirmed, create one spec per item, in order: `planning/specs/NNN-name/` with stub
+   `design.md`/`tasks.md`, and a `planning/roadmap.md` row. Leave `requirements.md` for
    Phase 7.
 5. Write a `## How this gets built, step by step` section below the roadmap table: the
    specs in order, what each unlocks, and which skill to run next on each.
@@ -224,7 +224,7 @@ or skills to be implemented" turn into ordered spec entries.
 Question-bank Phase E, for the next unfilled spec.
 
 1. On a repeat invocation, ask what the spec should be called → kebab-case → folder
-   `docs/specs/NNN-name/` (`NNN` = highest existing `ID` + 1, zero-padded to 3), ask
+   `planning/specs/NNN-name/` (`NNN` = highest existing `ID` + 1, zero-padded to 3), ask
    its dependencies, and append the roadmap row.
 2. Ask the Phase E dimensions one at a time, **writing to disk after each answer**:
 
@@ -273,7 +273,7 @@ left `open` or `skipped` so nothing disappears quietly.
 
 ## Style rules
 
-- Keep every file terse and structural, matching specloop's own `docs/*.md` — no
+- Keep every file terse and structural, matching specloop's own `planning/*.md` — no
   filler prose, no marketing language.
 - Never fabricate product/architecture/requirements/style content the user hasn't
   actually said — leave `TBD` rather than guess.

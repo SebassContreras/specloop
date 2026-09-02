@@ -39,7 +39,7 @@ body:
       label: Steps to reproduce
       description: >
         Exact skill/command invoked, and the relevant state of the target repo
-        (docs/roadmap.md row, tasks.md status, .specloop/loop.config.json if
+        (planning/roadmap.md row, tasks.md status, .specloop/loop.config.json if
         orchestrator-related).
     validations:
       required: true
