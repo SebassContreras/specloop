@@ -17,7 +17,7 @@ Index of all specs: order, status, dependencies.
 | 011 | windows-path-safety       | todo        | 002                |
 | 012 | spec-amend-skill          | todo        | 001, 003, 004      |
 | 013 | task-retry-backoff        | todo        | 002                |
-| 014 | worker-context-injection  | todo        | 002                |
+| 014 | worker-context-injection  | in_progress | 002                |
 | 015 | roadmap-status-writer     | in_progress | 002                |
 | 016 | interview-engine          | todo        | 001                |
 | 017 | project-type-genericity   | todo        | 001, 016           |

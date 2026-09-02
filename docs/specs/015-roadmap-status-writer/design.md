@@ -46,9 +46,17 @@ reported separately instead.
 - Whether the `Stage` column belongs here or in `009-status-dashboard-skill` — both
   want to answer "which skill runs next". Decide before adding it; two writers of the
   same fact is what caused the priority split between row order and `## Priority: N`.
-- `sanitizeCell` replaces `|` with `/` rather than escaping it. Escaping would need the
-  splitter to understand `\|`, which reintroduces the parsing subtlety the split was
-  meant to remove. Revisit only if a real note is mangled unacceptably.
-- Whether an unparseable pipe row should warn rather than be skipped silently. Argued
-  for in the audit; not implemented, because the header/separator rows are themselves
-  legitimately unparseable and distinguishing them needs more than the first cell.
+- ~~`sanitizeCell` replaces `|` with `/` rather than escaping it.~~ **Reversed.**
+  Migrating this repo's own tables (`001` T28) hit two task rows that describe the
+  `ID | Task | Status | Notes` contract itself — one already escaped as `\|`, one not.
+  Both mis-parsed. So the splitter now splits on unescaped pipes only and unescapes
+  each cell, and `sanitizeCell` escapes rather than substitutes (idempotently). The
+  "parsing subtlety" this note wanted to avoid turned out to be mandatory: real content
+  contains pipes, and markdown already defines how to escape them.
+- ~~Whether an unparseable pipe row should warn rather than be skipped silently.~~
+  **Implemented.** `toRow` now rejects any row whose status cell isn't a real
+  `TaskStatus`, and `parseTasks` warns when a rejected row still looks like a task
+  (`^T\d+$`). Returning such a row was the dangerous option: its bogus status is
+  neither `done` nor runnable, so the loop skipped the task while the spec could never
+  roll up to `done`. Header and separator rows are excluded by the same first-cell test
+  as before, so they stay silent.

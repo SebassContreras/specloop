@@ -43,7 +43,60 @@ exercised — no such rows existed. Undone, and the mechanism closed:
 - **New specs** `014`–`018`: worker context injection, roadmap status writer,
   interview engine, project-type genericity, project style preferences.
 
+### 014 — worker-context-injection
+
+Closes the gap the scope restoration left open: objectives 5 and 6 were captured but
+never reached the agent doing the work.
+
+- The worker prompt is now a briefing. It names the task and its spec, the spec's
+  `requirements.md`/`design.md`, and the `contextFiles` that actually exist on disk —
+  filtered at prompt-build time, since a project can gain `docs/styles.md` between runs.
+  Previously it was `Work on this task: <table cell>`, with the spec itself dropped at
+  every call site, so a worker could not read what it was implementing and learned the
+  project's stack only by accident (`claude` auto-loading `CLAUDE.md` from the inherited
+  cwd; `codex`/`opencode` got nothing).
+- `SpecRef` moved to `roadmap.ts` — `worker.ts` needed it and was importing it from
+  `splitPane/`, inverting the layering.
+
+Two bugs found by the live run, not by inspection:
+
+- **Logs collided across specs.** `none` split-mode wrote `T1.log`; every spec has a
+  `T1`, so each spec silently overwrote the previous one's logs. The split-pane path
+  already prefixed with the spec id. Fixable only once the spec was threaded through.
+- **A malformed `loop.config.json` was undiagnosable** — a bare `SyntaxError` with a
+  byte offset and a stack trace into the orchestrator. Now names the file and the
+  likely Windows cause, preserving `cause`.
+
 ### 015 — roadmap-status-writer (partial)
+
+Later additions, both found while migrating this repo's own tables:
+
+- **Rows now split on unescaped pipes only**, and cells are unescaped;
+  `sanitizeCell` escapes idempotently instead of substituting `/`. Two task rows here
+  describe the `ID | Task | Status | Notes` contract in their own text — one escaped,
+  one not — and the naive splitter shredded both. This reverses a decision recorded in
+  015's design; real content contains pipes, and markdown already defines the escape.
+- **A row whose status cell isn't a real status is now rejected with a warning.**
+  Returning it was the dangerous option: the bogus status is neither `done` nor
+  runnable, so the loop skipped the task while the spec could never roll up to `done`.
+
+### Testing
+
+- `scripts/check-skill-consistency.mjs` — 38 static cross-reference checks over the
+  four skills and the question bank: template agreement, objective coverage,
+  owned-file scope, no-phantom-writer, question-bank completeness. Verified it actually
+  fails by re-introducing the `design-closing` header bug and by deleting the styles
+  phase. This is the mechanically-checkable half of the four `interrupted` local tests.
+- Orchestrator end-to-end run against a fixture repo with a stub worker CLI: 17
+  behaviours verified, including that the loop now **advances from one spec to the next**
+  on its own — previously impossible. See `014`'s `tasks.md`.
+- All 18 specs / 114 task rows migrated to the 5-column `Owner` layout and re-parsed
+  with zero warnings.
+
+**Still unverified, and human-only:** the live interactive interview. An agent running
+it would be inventing the user's project goals and preferences and then validating its
+own fabrications. What it must establish is behavioural — whether the 8-phase flow is
+bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `006` T10.
 
 - `src/mdTable.ts`: split-based row parsing shared by `roadmap.ts`/`tasks.ts`. The old
   exact-arity regex matched 4-cell rows only, so adding a column made every row fail to

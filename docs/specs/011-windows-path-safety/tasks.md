@@ -1,6 +1,7 @@
 # 011 — windows-path-safety — Tasks
 
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
+Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-| ID | Task | Status | Notes |
-|----|------|--------|-------|
+| ID | Task | Owner | Status | Notes |
+|----|------|-------|--------|-------|
