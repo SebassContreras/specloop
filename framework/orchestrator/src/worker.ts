@@ -65,17 +65,24 @@ export function promptFor(
   return lines.join('\n');
 }
 
-/** Runs the configured worker CLI for one task and blocks until it exits. */
+/** Round-robins across `config.workers` by task order. */
+export function pickWorker(config: LoopConfig, workerIndex: number) {
+  return config.workers[workerIndex % config.workers.length];
+}
+
+/** Runs the picked worker CLI for one task and blocks until it exits. */
 export function runWorkerSync(
   config: LoopConfig,
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
+  workerIndex = 0,
 ): WorkerResult {
   assertSafePath();
+  const worker = pickWorker(config, workerIndex);
   const result = spawnSync(
-    config.workerCli,
-    [...config.workerArgs, promptFor(spec, task, config, cwd)],
+    worker.cli,
+    [...worker.args, promptFor(spec, task, config, cwd)],
     {
       encoding: 'utf8',
       // Never let the worker sit on an interactive prompt: with stdin left
@@ -98,7 +105,7 @@ export function runWorkerSync(
   if (result.signal) {
     return {
       ok: false,
-      log: `${result.stdout ?? ''}${result.stderr ?? ''}[loop] worker killed by signal ${result.signal} (likely the ${WORKER_TIMEOUT_MS / 60000}min timeout — check workerArgs for a headless/non-interactive flag).`,
+      log: `${result.stdout ?? ''}${result.stderr ?? ''}[loop] worker killed by signal ${result.signal} (likely the ${WORKER_TIMEOUT_MS / 60000}min timeout — check "${worker.cli}"'s args in loop.config.json for a headless/non-interactive flag).`,
     };
   }
   return {

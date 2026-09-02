@@ -55,6 +55,10 @@ function run(): void {
   const path = tasksPath(cwd, spec.id, spec.name);
   console.log(`[loop] working spec ${spec.id}-${spec.name}`);
 
+  // Round-robins across config.workers by task order, across all specs the
+  // loop works in one `run()` call.
+  let workerIndex = 0;
+
   for (;;) {
     if (isStopRequested(config, cwd)) {
       console.log('[loop] stop requested — not starting a new task.');
@@ -79,7 +83,8 @@ function run(): void {
       break;
     }
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
-    const result = dispatchTask(config, spec, task, cwd);
+    const result = dispatchTask(config, spec, task, cwd, workerIndex);
+    workerIndex++;
 
     if (config.splitMode !== 'none') {
       // Detached pane owns this task's final status flip; move on.
@@ -99,7 +104,12 @@ function run(): void {
 }
 
 /** Invoked inside a split-pane by windowsTerminal.ts / tmux.ts — one task, one process. */
-function runTask(specId: string, specName: string, taskId: string): void {
+function runTask(
+  specId: string,
+  specName: string,
+  taskId: string,
+  workerIndexArg: string,
+): void {
   const config = loadConfig(cwd);
   const path = tasksPath(cwd, specId, specName);
   const tasks = parseTasks(path);
@@ -107,13 +117,16 @@ function runTask(specId: string, specName: string, taskId: string): void {
   if (!task) throw new Error(`Task ${taskId} not found in ${path}`);
 
   console.log(`[loop] running task ${task.id}: ${task.task}`);
-  // specId/specName arrive as arguments from the split-pane launcher and were
-  // previously dropped here, leaving the in-pane worker with no spec context.
+  // specId/specName/workerIndex arrive as arguments from the split-pane
+  // launcher, which runs in its own detached process with no access to the
+  // master's in-memory round-robin counter.
+  const workerIndex = Number(workerIndexArg ?? 0) || 0;
   const { ok, log } = runWorkerSync(
     config,
     { id: specId, name: specName },
     task,
     cwd,
+    workerIndex,
   );
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   writeFileSync(join(cwd, config.logDir, `${specId}-${task.id}.log`), log);
@@ -163,7 +176,7 @@ switch (command) {
     status();
     break;
   case '_run-task':
-    runTask(args[0], args[1], args[2]);
+    runTask(args[0], args[1], args[2], args[3]);
     break;
   default:
     console.log('Usage: loop <run|stop|status>');

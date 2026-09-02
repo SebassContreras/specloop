@@ -37,12 +37,14 @@ the backlog state in Phase 3 instead.
 Ask, one at a time, waiting for each reply:
 
 1. **Worker CLI** — "Which CLI should sub-agents run as? (`claude`, `codex`,
-   `opencode`, or another command on PATH)" → `workerCli`. The worker always runs
+   `opencode`, or another command on PATH — one, or several to split work across)"
+   → `workers`, an array of `{ "cli": "...", "args": [...] }`. With more than one,
+   the loop round-robins across them by task order. The worker always runs
    headlessly (no TTY, stdin closed) — a CLI invoked without its non-interactive
    flag will hang until the orchestrator's timeout kills it, wasting the whole
-   task. Ask explicitly for that flag rather than defaulting to `[]`: for `claude`
-   suggest `-p` (print mode); for another CLI, ask the user what its headless/
-   non-interactive flag is. → `workerArgs`.
+   task. Ask explicitly for each CLI's flag rather than defaulting to `[]`: for
+   `claude` suggest `-p` (print mode); for another CLI, ask the user what its
+   headless/non-interactive flag is.
 2. **Split mode** — explain the tradeoffs plainly, then ask which to use:
    - `"windowsTerminal"` — live split panes via the `wt` CLI (Windows only).
    - `"tmux"` — live split panes via `tmux` (Mac/Linux, needs tmux installed).
@@ -64,13 +66,17 @@ Ask, one at a time, waiting for each reply:
    anything `specloop:start` already wrote:
    ```json
    {
-     "workerCli": "<answer>",
-     "workerArgs": ["<headless flag>"],
+     "workers": [
+       { "cli": "<answer>", "args": ["<headless flag>"] }
+     ],
      "splitMode": "<answer>",
      "logDir": ".specloop/logs",
      "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
    }
    ```
+   A single-worker config still works with the legacy `"workerCli"`/`"workerArgs"`
+   shape — the orchestrator normalizes it to a one-element `workers` array at load
+   time — but write the `workers` array form here going forward.
 3. Verify `.specloop/.gitignore` exists and ignores `orchestrator/` and `logs/`
    (`specloop:start` writes it) — create it if the repo was scaffolded before that
    existed, so a `pnpm install` doesn't get committed.
@@ -93,5 +99,5 @@ name them — the loop will skip those.
 ## Style rules
 
 - Terse and structural, no filler prose.
-- Never guess `workerCli`/`splitMode` — always ask; these are explicitly
+- Never guess `workers`/`splitMode` — always ask; these are explicitly
   user-configurable per the orchestrator's requirements.

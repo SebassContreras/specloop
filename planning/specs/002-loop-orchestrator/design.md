@@ -41,15 +41,21 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
 
 ```json
 {
-  "workerCli": "claude",
-  "workerArgs": [],
+  "workers": [
+    { "cli": "claude", "args": [] }
+  ],
   "splitMode": "windowsTerminal",
   "logDir": ".specloop/logs"
 }
 ```
 
-- `workerCli` — which installed CLI to spawn per task (`claude`, `codex`, `opencode`,
-  or any other command on PATH). Configurable per repo/run, never hardcoded.
+- `workers` — one or more `{cli, args}` entries; which installed CLI(s) to spawn per
+  task (`claude`, `codex`, `opencode`, or any other command on PATH). Configurable
+  per repo/run, never hardcoded. With more than one entry, the loop round-robins
+  across them by task order (`worker.ts`'s `pickWorker`) — across all specs worked in
+  one `loop run` call, not reset per spec. A config on disk with the legacy single
+  `workerCli`/`workerArgs` shape still loads: `config.ts` normalizes it to a
+  one-element `workers` array, so `workers` is the only field code reads after load.
 - `splitMode` — one of `"windowsTerminal"`, `"tmux"`, `"none"`. **Chosen by the user
   during `loop-setup`'s Q&A** (ask, don't assume — not every OS supports every
   mechanism). `"none"` runs sequentially in the master terminal with log-file output
@@ -122,7 +128,7 @@ framework/orchestrator/
     ├── config.ts           # loads .specloop/loop.config.json
     ├── roadmap.ts          # parse planning/roadmap.md, pick next eligible spec
     ├── tasks.ts            # parse/write a spec's tasks.md (fixed contract)
-    ├── worker.ts           # spawn the configured workerCli for one task
+    ├── worker.ts           # pick a worker (round-robin) and spawn it for one task
     ├── safeStop.ts         # stop-flag read/write, interrupted-row writer
     ├── security.ts         # assertSafePath(): refuse to spawn if PATH has a
                              # world-writable dir (POSIX only — see note below)

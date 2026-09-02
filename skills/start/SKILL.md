@@ -183,13 +183,16 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
 
 ```json
 {
-  "workerCli": "<answer>",
-  "workerArgs": ["<headless flag>"],
+  "workers": [
+    { "cli": "<answer>", "args": ["<headless flag>"] }
+  ],
   "splitMode": "none",
   "logDir": ".specloop/logs",
   "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
 }
 ```
+One entry per worker CLI the user named — more than one round-robins across them by
+task order.
 
 Use `"TBD"` for anything the user defers. `specloop:loop-setup` installs the
 orchestrator payload later and will re-ask anything left `TBD`.

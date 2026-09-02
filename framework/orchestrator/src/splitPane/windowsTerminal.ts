@@ -10,9 +10,10 @@ export function runInWindowsTerminal(
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
+  workerIndex: number,
 ): void {
   assertSafePath();
-  const runTaskCmd = `loop _run-task ${spec.id} ${spec.name} ${task.id}`;
+  const runTaskCmd = `loop _run-task ${spec.id} ${spec.name} ${task.id} ${workerIndex}`;
   spawn('wt', ['-w', '0', 'split-pane', '-d', cwd, 'cmd', '/k', runTaskCmd], {
     stdio: 'ignore',
     detached: true,

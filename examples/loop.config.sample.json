@@ -1,7 +1,8 @@
 {
   "_comment": "Illustrative only — see examples/README.md. specloop:loop-setup writes the real file to .specloop/loop.config.json in your target repo, from its guided Q&A answers, never hand-authored.",
-  "workerCli": "claude",
-  "workerArgs": ["--print"],
+  "workers": [
+    { "cli": "claude", "args": ["--print"] }
+  ],
   "splitMode": "windowsTerminal",
   "logDir": ".specloop/logs"
 }

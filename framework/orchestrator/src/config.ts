@@ -3,9 +3,20 @@ import { join } from 'node:path';
 
 export type SplitMode = 'windowsTerminal' | 'tmux' | 'none';
 
+export interface WorkerSpec {
+  cli: string;
+  args: string[];
+}
+
 export interface LoopConfig {
-  workerCli: string;
-  workerArgs: string[];
+  /**
+   * One or more worker CLIs. With more than one, the loop round-robins across
+   * them by task order (`worker.ts`'s `pickWorker`). A config on disk with the
+   * legacy single `workerCli`/`workerArgs` shape is normalized into a
+   * one-element array at load time — `workers` is the only field code reads
+   * after that, so there is exactly one source of truth once loaded.
+   */
+  workers: WorkerSpec[];
   splitMode: SplitMode;
   logDir: string;
   /**
@@ -49,14 +60,45 @@ export function loadConfig(cwd: string = process.cwd()): LoopConfig {
       { cause: err },
     );
   }
-  if (!parsed.workerCli) {
-    throw new Error(`${CONFIG_PATH} is missing "workerCli".`);
-  }
+  const workers = normalizeWorkers(parsed);
   return {
-    workerCli: parsed.workerCli,
-    workerArgs: parsed.workerArgs ?? [],
+    workers,
     splitMode: parsed.splitMode ?? 'none',
     logDir: parsed.logDir ?? '.specloop/logs',
     contextFiles: parsed.contextFiles ?? DEFAULT_CONTEXT_FILES,
   };
+}
+
+function normalizeWorkers(parsed: {
+  workers?: unknown;
+  workerCli?: unknown;
+  workerArgs?: unknown;
+}): WorkerSpec[] {
+  if (Array.isArray(parsed.workers) && parsed.workers.length > 0) {
+    return parsed.workers.map((w, i) => {
+      const worker = w as { cli?: unknown; args?: unknown };
+      if (!worker.cli || typeof worker.cli !== 'string') {
+        throw new Error(
+          `${CONFIG_PATH}'s "workers[${i}]" is missing a string "cli".`,
+        );
+      }
+      return {
+        cli: worker.cli,
+        args: Array.isArray(worker.args) ? (worker.args as string[]) : [],
+      };
+    });
+  }
+  if (typeof parsed.workerCli === 'string' && parsed.workerCli) {
+    return [
+      {
+        cli: parsed.workerCli,
+        args: Array.isArray(parsed.workerArgs)
+          ? (parsed.workerArgs as string[])
+          : [],
+      },
+    ];
+  }
+  throw new Error(
+    `${CONFIG_PATH} is missing "workers" (or the legacy "workerCli").`,
+  );
 }

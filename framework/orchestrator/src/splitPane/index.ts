@@ -19,15 +19,16 @@ export function dispatchTask(
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
+  workerIndex: number,
 ): RunResult | undefined {
   switch (config.splitMode) {
     case 'none':
-      return runNone(config, spec, task, cwd);
+      return runNone(config, spec, task, cwd, workerIndex);
     case 'windowsTerminal':
-      runInWindowsTerminal(spec, task, cwd);
+      runInWindowsTerminal(spec, task, cwd, workerIndex);
       return undefined;
     case 'tmux':
-      runInTmux(spec, task, cwd);
+      runInTmux(spec, task, cwd, workerIndex);
       return undefined;
     default:
       throw new Error(`Unknown splitMode: ${config.splitMode}`);

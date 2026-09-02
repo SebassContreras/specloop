@@ -85,9 +85,12 @@ Subagents) into a single installable/versionable repo.
 - Orchestrator runtime: Node.js + TypeScript, run via `tsx` (no build step to
   maintain). Console command: `loop` (`loop run` / `loop stop` / `loop status`),
   linked into PATH by `loop-setup` via `pnpm link --global`.
-- Per-target-repo config file: `.specloop/loop.config.json` (`workerCli`,
-  `workerArgs`, `splitMode`, `logDir`, `contextFiles`) — written by `skills/start`'s
-  guided Q&A, never hand-authored or hardcoded. See `002-loop-orchestrator/design.md`.
+- Per-target-repo config file: `.specloop/loop.config.json` (`workers` — an array of
+  `{cli, args}`, round-robined by task order when there's more than one — plus
+  `splitMode`, `logDir`, `contextFiles`) — written by `skills/start`'s guided Q&A,
+  never hand-authored or hardcoded. The legacy single `workerCli`/`workerArgs` shape
+  still loads (normalized to a one-element `workers` array). See
+  `002-loop-orchestrator/design.md`.
 
 ## Still to define
 

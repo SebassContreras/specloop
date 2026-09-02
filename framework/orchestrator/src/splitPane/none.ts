@@ -16,9 +16,10 @@ export function runNone(
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
+  workerIndex: number,
 ): RunResult {
   console.log(`[loop] running task ${task.id}: ${task.task}`);
-  const { ok, log } = runWorkerSync(config, spec, task, cwd);
+  const { ok, log } = runWorkerSync(config, spec, task, cwd, workerIndex);
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   // Spec-prefixed to match the split-pane path (cli.ts's runTask). Without the
   // prefix, task ids collide across specs — every spec has a T1 — and each new

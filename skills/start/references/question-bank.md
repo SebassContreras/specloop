@@ -93,7 +93,7 @@ an unanticipated project type is interviewed properly rather than forced into B-
 | Dimension | Questions |
 |---|---|
 | `helper-skills` | Given the Phase B answers, name the Claude Code skills/plugins (other than specloop) that would help the loop's worker agents here. Ask which, if any, to install. **Never install without explicit confirmation.** If no install mechanism resolves, print manual instructions instead of guessing a command. |
-| `worker-cli` | "Which CLI should the loop's workers run as — `claude`, `codex`, `opencode`, or something else? And what's its headless/non-interactive flag?" |
+| `worker-cli` | "Which CLI should the loop's workers run as — `claude`, `codex`, `opencode`, or something else? One, or several to split work across? And what's each one's headless/non-interactive flag?" |
 | `agent-rules` | "Any rule you want every agent working in this repo to follow, or anything you want them never to do?" |
 
 ## Phase D — Styles & preferences
