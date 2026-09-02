@@ -8,7 +8,20 @@ export interface LoopConfig {
   workerArgs: string[];
   splitMode: SplitMode;
   logDir: string;
+  /**
+   * Files a worker must read before working — the project's context channel.
+   * Only `claude` auto-loads a memory file (`CLAUDE.md`); `codex`/`opencode`
+   * read `AGENTS.md`, and neither learns the project's stack, conventions or
+   * styles from the task text alone. Consumed by spec `014`.
+   */
+  contextFiles: string[];
 }
+
+const DEFAULT_CONTEXT_FILES = [
+  'AGENTS.md',
+  'docs/architecture.md',
+  'docs/styles.md',
+];
 
 const CONFIG_PATH = join('.specloop', 'loop.config.json');
 
@@ -31,5 +44,6 @@ export function loadConfig(cwd: string = process.cwd()): LoopConfig {
     workerArgs: parsed.workerArgs ?? [],
     splitMode: parsed.splitMode ?? 'none',
     logDir: parsed.logDir ?? '.specloop/logs',
+    contextFiles: parsed.contextFiles ?? DEFAULT_CONTEXT_FILES,
   };
 }

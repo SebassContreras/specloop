@@ -1,12 +1,19 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadConfig } from './config.js';
-import { parseRoadmap, pickNextSpec } from './roadmap.js';
+import {
+  parseRoadmap,
+  pickNextSpec,
+  writeSpecStatus,
+  type SpecStatus,
+} from './roadmap.js';
 import {
   parseTasks,
   tasksPath,
   nextRunnableTask,
   writeTaskStatus,
+  pendingHumanTasks,
+  type TaskRow,
 } from './tasks.js';
 import { runWorkerSync } from './worker.js';
 import { dispatchTask } from './splitPane/index.js';
@@ -18,6 +25,21 @@ import {
 } from './safeStop.js';
 
 const cwd = process.cwd();
+
+/**
+ * Rolls a spec's task states up into the single status the roadmap records.
+ * `human` tasks don't hold a spec open — the loop can't act on them, so a spec
+ * whose only remaining work is the user's counts as done from the loop's side
+ * and is reported separately.
+ */
+function rollUpStatus(tasks: TaskRow[]): SpecStatus {
+  if (tasks.length === 0) return 'todo';
+  const agentTasks = tasks.filter((t) => t.owner === 'agent');
+  if (agentTasks.some((t) => t.status === 'blocked')) return 'blocked';
+  if (agentTasks.some((t) => t.status === 'interrupted')) return 'interrupted';
+  if (agentTasks.every((t) => t.status === 'done')) return 'done';
+  return 'in_progress';
+}
 
 function run(): void {
   const config = loadConfig(cwd);
@@ -41,7 +63,19 @@ function run(): void {
     const tasks = parseTasks(path);
     const task = nextRunnableTask(tasks);
     if (!task) {
+      // The roadmap's Status column has no other writer: without this the row
+      // stays in_progress forever, pickNextSpec keeps resuming this same spec,
+      // and no todo row can ever become eligible.
+      writeSpecStatus(cwd, spec.id, rollUpStatus(tasks));
       console.log(`[loop] spec ${spec.id} has no remaining runnable tasks.`);
+      const human = pendingHumanTasks(tasks);
+      if (human.length > 0) {
+        console.log(
+          `[loop] ${human.length} task(s) need you: ${human
+            .map((t) => t.id)
+            .join(', ')}`,
+        );
+      }
       break;
     }
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
@@ -94,7 +128,19 @@ function stop(): void {
 function status(): void {
   const roadmap = parseRoadmap(cwd);
   for (const spec of roadmap) {
-    console.log(`${spec.id} ${spec.name} — ${spec.status}`);
+    // Derive from tasks.md rather than echoing the roadmap cell, so a stale or
+    // hand-edited Status is visible instead of being reported as truth.
+    let derived = '';
+    try {
+      const tasks = parseTasks(tasksPath(cwd, spec.id, spec.name));
+      const rolled = rollUpStatus(tasks);
+      const human = pendingHumanTasks(tasks);
+      if (rolled !== spec.status) derived = `  (tasks say: ${rolled})`;
+      if (human.length > 0) derived += `  [${human.length} for you]`;
+    } catch {
+      derived = '  (no tasks.md)';
+    }
+    console.log(`${spec.id} ${spec.name} — ${spec.status}${derived}`);
   }
 }
 

@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { splitRow, withCells } from './mdTable.js';
 
 export type SpecStatus =
   'todo' | 'in_progress' | 'blocked' | 'interrupted' | 'done';
@@ -11,33 +12,66 @@ export interface RoadmapRow {
   dependsOn: string[];
 }
 
-// Matches roadmap.md's fixed `| ID | Plan | Status | Depends on |` row shape.
-// Each cell is captured as everything between pipes and trimmed afterward,
-// rather than a lazy quantifier butted up against `\s*` — that overlap is what
-// causes catastrophic backtracking on non-matching input. Header/separator
-// rows are filtered below by the id's shape, not by the regex itself.
-const ROW_RE = /^\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|$/;
+/** `| ID | Plan | Status | Depends on |`, plus any trailing columns. */
+const ID_INDEX = 0;
+const NAME_INDEX = 1;
+const STATUS_INDEX = 2;
+const DEPENDS_INDEX = 3;
 
+function roadmapPath(cwd: string): string {
+  return join(cwd, 'docs', 'roadmap.md');
+}
+
+/**
+ * Reads the first four cells positionally and ignores any beyond them, so the
+ * table can gain a Priority/Stage column without every row silently failing to
+ * parse (which previously surfaced as "nothing eligible to run", not an error).
+ */
 export function parseRoadmap(cwd: string = process.cwd()): RoadmapRow[] {
-  const text = readFileSync(join(cwd, 'docs', 'roadmap.md'), 'utf8');
+  const text = readFileSync(roadmapPath(cwd), 'utf8');
   const rows: RoadmapRow[] = [];
   for (const line of text.split('\n')) {
-    const m = ROW_RE.exec(line.trim());
-    if (!m) continue;
-    const id = m[1].trim();
+    const cells = splitRow(line);
+    if (!cells || cells.length < 4) continue;
+    const id = cells[ID_INDEX];
     if (!/^\d{3}$/.test(id)) continue;
-    const dependsOn = m[4].trim();
+    const dependsOn = cells[DEPENDS_INDEX];
     rows.push({
       id,
-      name: m[2].trim(),
-      status: m[3].trim() as SpecStatus,
+      name: cells[NAME_INDEX],
+      status: cells[STATUS_INDEX] as SpecStatus,
       dependsOn:
         dependsOn === '' || dependsOn === '—' || dependsOn === '-'
           ? []
-          : dependsOn.split(',').map((s) => s.trim()),
+          : dependsOn.split(',').map((s) => s.trim()).filter(Boolean),
     });
   }
   return rows;
+}
+
+/**
+ * The roadmap's only `Status` writer. Without it the column goes stale: a spec
+ * whose tasks are all finished stays `in_progress`, `pickNextSpec` keeps
+ * resuming it, and every `todo` row stays ineligible because no dependency ever
+ * reaches `done`.
+ */
+export function writeSpecStatus(
+  cwd: string,
+  specId: string,
+  status: SpecStatus,
+): void {
+  const path = roadmapPath(cwd);
+  const text = readFileSync(path, 'utf8');
+  let changed = false;
+  const lines = text.split('\n').map((line) => {
+    const cells = splitRow(line);
+    if (!cells || cells.length < 4) return line;
+    if (cells[ID_INDEX] !== specId) return line;
+    if (cells[STATUS_INDEX] === status) return line;
+    changed = true;
+    return withCells(cells, [[STATUS_INDEX, status]]);
+  });
+  if (changed) writeFileSync(path, lines.join('\n'));
 }
 
 export function pickNextSpec(rows: RoadmapRow[]): RoadmapRow | undefined {
