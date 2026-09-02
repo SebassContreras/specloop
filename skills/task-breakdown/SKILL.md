@@ -32,25 +32,35 @@ the user — it is **not** a one-question-per-field Q&A like `specloop:start` or
 
 ## Phase 1 — Draft the task list
 
-Read that spec's `requirements.md`, `design.md`, and (if it exists and has real
-content) `docs/architecture.md`. Draft a numbered list (`T1`, `T2`, …) applying this
-rule:
+Read that spec's `requirements.md`, `design.md`, `docs/product.md` (for the project
+type), and (if they have real content) `AGENTS.md` and `docs/architecture.md`. Draft a
+numbered list (`T1`, `T2`, …) applying this rule:
 
-> A task is **single-action** (one coherent change — one file, one function, one
-> config addition — not "implement the feature") and **verifiable** (there's an
-> unambiguous way to tell it's done).
+> A task is **single-action** (one coherent deliverable or change — one file, one
+> asset, one decision, one config addition — not "implement the feature") and
+> **verifiable** (there's an unambiguous way to tell it's done).
+
+"Single-action" is delivery-neutral: for software it's typically one file or function;
+for a marketing project one asset, page or approval; for operations one runbook step or
+access grant; for research one source acquired or analysis run. Don't force software
+phrasing onto a project that isn't software.
 
 - Order tasks to follow `design.md`'s sequencing/dependencies, where it states any.
-- If `design.md` describes a local-test/verification step, include it as a final
-  task.
+- **Assign each task an `Owner`: `agent` or `human`.** `human` is for anything needing
+  a credential, an approval, a purchase, a physical act, or a live interactive session
+  — the loop skips these rather than attempting them. Use `requirements.md`'s
+  `owner-split`/`automatability` answers where they exist; ask the user when unsure.
+- Turn each `## Acceptance criteria` statement into a final verification task, so a
+  spec's own definition of done is executable rather than prose.
 - Every task must trace back to something actually stated in `requirements.md` or
   `design.md` — never invent scope that isn't there.
 
 ## Phase 2 — Confirm with the user
 
-Show the drafted list (ID + description, no status/notes yet) in one message and ask
-the user to approve it or tell you what to add/remove/reorder. Iterate on their
-feedback until they confirm. Don't write anything to disk before confirmation.
+Show the drafted list (ID + description + owner, no status/notes yet) in one message
+and ask the user to approve it or tell you what to add/remove/reorder — including any
+`Owner` you got wrong. Then ask once: **"anything in this design that no task covers?"**
+Iterate until they confirm. Don't write anything to disk before confirmation.
 
 ## Phase 3 — Write `tasks.md`
 
@@ -61,20 +71,23 @@ Replace the stub with the fixed contract, every row starting `todo` with an empt
 # NNN — name — Tasks
 
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
+Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-| ID | Task | Status | Notes |
-|----|------|--------|-------|
-| T1 | <task> | todo | |
+| ID | Task | Owner | Status | Notes |
+|----|------|-------|--------|-------|
+| T1 | <task> | agent | todo | |
 ```
 
 ## Phase 4 — Stop. Do not start executing tasks.
 
 Tell the user `tasks.md` is populated and ready for spec 002's loop-orchestrator
-whenever they choose to run it. **Do not begin executing any task** — running the
-list is entirely the orchestrator's job, not this skill's.
+whenever they choose to run it, and name any `human` tasks that the loop will skip and
+they'll need to do themselves. **Do not begin executing any task** — running the list
+is entirely the orchestrator's job, not this skill's.
 
 ## Style rules
 
 - Terse and structural, matching specloop's own `docs/*.md` — no filler prose.
 - Never invent a task that isn't traceable back to `requirements.md`/`design.md`.
 - Confirm the full list with the user before writing it to disk.
+- Don't mark a task `agent` that an agent can't actually do unattended.

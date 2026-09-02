@@ -2,8 +2,9 @@
 name: design-closing
 description: >
   Guided Q&A that closes a spec's design.md once its requirements.md is ready —
-  covers approach, components/files touched, sequencing, and open risks, writing
-  the answer to disk after each question.
+  covers approach, deliverables, sequencing and open risks, writing the answer to
+  disk after each question, then appends any stack/convention decisions it settles
+  to docs/architecture.md and AGENTS.md.
 when_to_use: >
   Use when the user wants to move a spec from requirements to a closed design.
   Trigger on phrasing like "close the design for X", "let's design spec NNN",
@@ -25,29 +26,39 @@ before asking the next — never batch questions into a single message.
    `docs/roadmap.md`. Otherwise read `docs/roadmap.md`'s table, find rows with status
    `todo` or `in_progress` whose `docs/specs/NNN-name/design.md` is still the `TBD`
    stub, and ask the user which one to close.
-2. Read that spec's `requirements.md`. **Refuse and stop** if:
-   - The file doesn't exist, or
-   - Its `## Requirements` section has no real bullets (just the header, or an
-     obvious placeholder).
-   Tell the user requirements need to be filled first (via `specloop:start`'s
-   requirements Q&A) — never guess at requirements content here.
-3. If `docs/architecture.md` exists and has real (non-stub) content, read it for
-   stack/convention context — design answers should stay consistent with it.
+2. Read that spec's `requirements.md`. **Refuse and stop** if the file doesn't exist,
+   or if it has no real answers under its headers — just headers, or an obvious
+   placeholder.
+   Accept **either** layout: the current template (`## What's being built`,
+   `## Who/what it serves`, `## Hard constraints`, `## Acceptance criteria`,
+   `## Out of scope`) **or** the older single `## Requirements` heading with real
+   bullets under it. Both are valid on disk; gating on only one makes this skill
+   refuse on every spec written before the template changed.
+   Tell the user requirements need filling first (via `specloop:start`) — never guess
+   at requirements content here.
+3. Read `docs/product.md` for the **project type**, and `AGENTS.md` +
+   `docs/architecture.md` (if they have real content) for stack/convention context.
+   Design answers must stay consistent with them. If `.specloop/interview.md` exists,
+   read it — a dimension marked `open` there is fair game to ask about now.
 
 ## Phase 1 — Guided design Q&A
 
-Ask, one at a time, waiting for each reply before continuing:
+Ask, one at a time, waiting for each reply. Phrase question 2 according to the project
+type — do not ask a marketing project which modules it touches.
 
 1. **Approach** — "How should this get built, in plain terms?" (the mechanism, not a
    line-by-line implementation transcript).
-2. **Components / files touched** — "What new or existing files/modules does this
-   create or change?"
+2. **Deliverables** — "What does this create or change?" For software, that's files/
+   modules; for a marketing project, assets/pages/campaigns; for operations, runbook
+   steps/system changes; for research, datasets/analyses/outputs.
 3. **Sequencing / dependencies** — "Does anything inside this spec have to happen in
    a specific order? Anything it needs from another spec beyond what `roadmap.md`
    already records?"
-4. **Risks / open questions** — "Anything genuinely undecided that should be flagged
-   as deferred rather than guessed at?" Skip this question's section entirely in the
-   output if the answer is "nothing" — never write a placeholder "none" bullet.
+4. **Decisions settled** — "Does this settle any stack, tooling or convention question
+   that isn't recorded yet?" Anything here gets appended in Phase 2.
+5. **Risks / open questions** — "Anything genuinely undecided that should be flagged
+   as deferred rather than guessed at?" Skip this section entirely in the output if
+   the answer is "nothing" — never write a placeholder "none" bullet.
 
 **Write `design.md` to disk after each answer** — don't wait until the whole Q&A is
 done, so an interrupted session doesn't lose progress.
@@ -61,16 +72,34 @@ Replace the file's `TBD` stub with:
 
 <answer 1>
 
-## Components / files touched
+## Deliverables
 
 - <answer 2, as bullets>
 
+## Sequencing
+
+<answer 3 — omitted if there's nothing beyond what roadmap.md records>
+
 ## Open questions / deferred
 
-- <answer 4, as bullets — section omitted if empty>
+- <answer 5, as bullets — section omitted if empty>
 ```
 
-## Phase 2 — Stop. Do not chain into task-breakdown.
+## Phase 2 — Coverage gate, then write decisions back
+
+1. **Coverage gate.** Re-read `requirements.md` and list anything it requires that the
+   design doesn't address — every bullet, and every statement under
+   `## Acceptance criteria`. Ask about each until none remain. A design that doesn't
+   cover its own acceptance criteria is not closed.
+2. Ask the closing sweep: **"What haven't we covered in this design?"** Repeat until it
+   returns nothing new twice.
+3. Append anything from question 4 to `docs/architecture.md`'s decision register and
+   the operative form to `AGENTS.md`'s "Stack & conventions". This is the mechanism
+   that keeps those files current as specs close — without it they stay whatever the
+   bootstrap left behind. Append only; never rewrite an existing decision without
+   telling the user which one is changing.
+
+## Phase 3 — Stop. Do not chain into task-breakdown.
 
 Once `design.md` is written, tell the user it's closed and that `specloop:task-
 breakdown` can be run on it whenever they're ready. **Do not invoke it
