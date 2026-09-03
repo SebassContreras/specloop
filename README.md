@@ -1,5 +1,8 @@
 # Specloop
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-5A67D8)](https://claude.com/claude-code)
+
 A [Claude Code](https://claude.com/claude-code) plugin that unifies how a project
 gets started and kept moving: it interviews you, turns the answers into a roadmap that
 can be built step by step, and then runs a CLI-agnostic loop orchestrator in your repo
@@ -8,6 +11,33 @@ to work through that roadmap unattended.
 Not software-only — an app, a website, a marketing or content project, an
 operations/research project, or anything else that needs a roadmap. The project type is
 the first thing the interview establishes, and it branches everything after it.
+
+## Demo
+
+```mermaid
+flowchart LR
+    A["/specloop:start"] -->|"AGENTS.md, product.md,<br/>architecture.md, roadmap.md"| B["/specloop:design-closing"]
+    B -->|"design.md"| C["/specloop:task-breakdown"]
+    C -->|"tasks.md"| D["/specloop:loop-setup"]
+    D -->|".specloop/orchestrator/"| E["loop run"]
+```
+
+<!--
+Captured material, dropped into .github/assets/ once generated (planning/specs/019):
+- demo-interview.gif / demo-interview.png — a real /specloop:start session.
+- demo-loop.gif / demo-loop-status.png / demo-loop-run.png — regenerated from
+  .github/assets/demo-loop.tape via `vhs demo-loop.tape`, never re-recorded by hand.
+-->
+
+<p align="center">
+  <img src=".github/assets/demo-interview.gif" alt="specloop:start interview" width="700"><br>
+  <sub>A live <code>/specloop:start</code> interview — one question at a time, written to disk as it lands.</sub>
+</p>
+
+<p align="center">
+  <img src=".github/assets/demo-loop.gif" alt="loop run working through a spec" width="700"><br>
+  <sub><code>loop status</code> then <code>loop run</code> working through a spec's tasks unattended.</sub>
+</p>
 
 ## Install
 
