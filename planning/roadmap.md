@@ -8,7 +8,7 @@ Index of all specs: order, status, dependencies.
 | 002 | loop-orchestrator         | interrupted | 001, 003           |
 | 003 | task-breakdown-skill      | interrupted | 001, 004           |
 | 004 | design-closing-skill      | interrupted | 001                |
-| 005 | open-source-release       | in_progress | 001                |
+| 005 | open-source-release       | done        | 001                |
 | 006 | e2e-smoke-testing         | blocked     | 001, 002, 003, 004 |
 | 007 | orchestrator-unit-tests   | todo        | 002                |
 | 008 | ci-pipeline               | todo        | 007                |
@@ -22,6 +22,7 @@ Index of all specs: order, status, dependencies.
 | 016 | interview-engine          | todo        | 001                |
 | 017 | project-type-genericity   | todo        | 001, 016           |
 | 018 | project-style-preferences | todo        | 014, 016           |
+| 019 | public-showcase           | todo        | 001, 005           |
 
 Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.
 
@@ -54,3 +55,7 @@ fixes both, and adds the column). Until then, the real sequence is:
    let a marketing/content/ops project use the pipeline past the requirements stage.
 6. **`018`** — styles and preferences.
 7. `006`–`013` as previously prioritised (`006` highest), once their prerequisites clear.
+8. **`019`** — public showcase (screenshots, diagram, demo, docs). Pure presentation,
+   no functional dependency on anything above — doesn't block or get blocked by the
+   rest of the build order. Went public (`005` T7) before this exists; this fills the
+   repo in afterward rather than gating the release on it.
