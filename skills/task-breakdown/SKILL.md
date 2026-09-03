@@ -9,8 +9,6 @@ when_to_use: >
   Trigger on phrasing like "break spec NNN into tasks", "task-breakdown for X",
   "spec NNN's design is closed, make the tasks". Refuses to run on a spec whose
   design.md is still a TBD stub.
-context: fork
-background: false
 ---
 
 # specloop: task-breakdown

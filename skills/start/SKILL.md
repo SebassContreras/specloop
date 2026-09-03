@@ -14,8 +14,6 @@ when_to_use: >
   else that needs a roadmap. Trigger on phrasing like "I need to set up X",
   "let's build Y", "scaffold a new project for Z", "start a new spec for W",
   "bootstrap the docs for this repo".
-context: fork
-background: false
 ---
 
 # specloop: start
@@ -31,10 +29,12 @@ them. `skills/start/references/question-bank.md` is the coverage contract for ev
 Q&A phase below — read it before you start asking.
 
 **This skill owns exactly these files:** `CLAUDE.md`, `AGENTS.md`, `planning/product.md`,
-`planning/architecture.md`, `planning/roadmap.md`, `planning/styles.md`, `planning/specs/**`, and
-`.specloop/{loop.config.json,logs/.gitkeep,.gitignore,interview.md}`. Never scaffold
-anything else — `README.md`, `CONTRIBUTING.md`, `LICENSE` and CI config are project
-deliverables the roadmap decides, as specs like any other.
+`planning/architecture.md`, `planning/roadmap.md`, `planning/styles.md`, `planning/specs/**`,
+`planning/handoff.md`, and `.specloop/{loop.config.json,logs/.gitkeep,.gitignore,interview.md}`.
+Never scaffold anything else — `README.md`, `CONTRIBUTING.md`, `LICENSE` and CI config are
+project deliverables the roadmap decides, as specs like any other. `planning/handoff.md` is
+only ever written when the user confirms it at a stopping point (see the interview
+contract) — never proactively.
 
 ## The interview contract
 
@@ -55,6 +55,14 @@ are just where answers land.
 - **Never infer an answer to close a dimension.** Leave it `open` and ask again in the
   sweep. `TBD` on disk is always better than a guess.
 - **Write to disk after every answer.** An interrupted session must lose nothing.
+- **The user can stop at any point** — "that's enough for now", "let's pause", "stop
+  here", or similar. Before actually stopping, ask whether to write `planning/handoff.md`.
+  If yes, write a point-in-time note in the shape of this repo's own `planning/handoff.md`
+  template: what's covered per the ledger, what's still `open`/`skipped` and why, and the
+  exact command to resume (`claude --plugin-dir <path-to-specloop>` then `/specloop:start`
+  — the ledger picks up at the first `open` dimension). Never stop silently: a bare `open`
+  row in the ledger says *that* something is unanswered, not *why*, which is what a
+  resuming session or person actually needs.
 
 ## Phase 0 — Detect state
 
@@ -272,7 +280,8 @@ Question-bank Phase E, for the next unfilled spec.
 Tell the user what exists now, and what the next deliberate step is per spec
 (`specloop:design-closing`), plus that `specloop:loop-setup` installs the orchestrator
 when a spec has agent-runnable tasks. **Do not run any of them.** List any dimension
-left `open` or `skipped` so nothing disappears quietly.
+left `open` or `skipped` so nothing disappears quietly. Then ask whether to write
+`planning/handoff.md`, same as any other stopping point.
 
 ## Style rules
 

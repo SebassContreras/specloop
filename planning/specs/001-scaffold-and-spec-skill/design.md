@@ -23,13 +23,20 @@ One skill, invoked as `/specloop:start` or triggered by natural phrasing ("I nee
 set up X", "let's scaffold a new project for X") via its `description`/`when_to_use`
 frontmatter.
 
-**Frontmatter:** `context: fork`, `background: false`. A plain skill's body loads once
-as static context — it can't itself re-prompt turn by turn. A forked, foreground skill
-runs as its own subagent with a full ask → wait-for-reply → ask-next loop, then returns
-control to the caller. That's required here: scaffold → type/vision → tech → skills →
-styles → seeding → requirements is inherently a multi-turn conversation, not a single
-dispatch. It's also why the interview contract can exist at all — a coverage loop needs
-to be able to ask an unplanned follow-up.
+**Frontmatter:** no `context`/`background` fields — the skill body loads inline into the
+current conversation as standing instructions, so the same agent the user is already
+talking to just keeps asking and waiting for replies, turn by turn, for as long as the
+interview runs.
+
+This was originally `context: fork`, `background: false`, on the theory that a forked,
+foreground skill runs as its own subagent holding the whole ask → wait-for-reply →
+ask-next loop internally, returning control only once. `001` T30's live run showed that
+isn't how it behaves: each user reply caused a **fresh** fork — a brand-new `Skill`
+invocation reloading the skill's instructions from scratch, once per answer — not one
+fork sustaining the conversation. That's pure token waste for a flow that's nothing but
+turns, and it's also unnecessary: an *inline* skill (no `context: fork`) loads once and
+then the interview proceeds as ordinary conversation, which was always turn-by-turn
+capable — no fork was needed for that property in the first place. See `tasks.md` T32.
 
 **Reference file:** `skills/start/references/question-bank.md` holds the per-project-type
 question sets and the closing-sweep procedure. It is the coverage contract, not a script
@@ -193,8 +200,10 @@ need migrating to stay readable (`T28` decides whether to migrate them anyway).
   hardcoded, since the useful set changes over time.
 - How long an interview a user will actually sit through. The contract removes the
   ceiling on questions, which is what the objective demands, but the sweep's
-  stopping rule ("nothing new twice") is the only brake. Whether that needs a
-  per-phase escape hatch is unknown until `T29`'s live run.
+  stopping rule ("nothing new twice") is the only brake. `T31` resolved this during
+  `T30`'s live run: rather than a per-phase escape hatch, the user can stop at any
+  point in plain language, and is asked whether to write `planning/handoff.md`
+  before actually stopping — see the interview contract in `SKILL.md`.
 - Whether `planning/architecture.md` should be renamed for non-software projects. Its
   headers are type-keyed (`017`), which addresses the mismatch, but the filename still
   reads oddly for a marketing project. Renaming means touching every spec and skill

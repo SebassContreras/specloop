@@ -6,8 +6,10 @@ One skill, invoked as `/specloop:design-closing` or triggered by natural phrasin
 ("close the design for X", "let's design spec NNN", "spec NNN is ready for design")
 via its `description`/`when_to_use` frontmatter.
 
-**Frontmatter:** `context: fork`, `background: false` — same reasoning as 001: this is
-a multi-turn guided Q&A, not a single dispatch.
+**Frontmatter:** no `context`/`background` fields — same correction as 001: this is a
+multi-turn guided Q&A, and forking was found to reload the skill fresh on every reply
+instead of holding the loop itself, so it runs inline in the current conversation. See
+`tasks.md` T12.
 
 ## Flow
 

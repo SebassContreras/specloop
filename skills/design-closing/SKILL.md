@@ -10,8 +10,6 @@ when_to_use: >
   Trigger on phrasing like "close the design for X", "let's design spec NNN",
   "spec NNN is ready for design", "design-close this spec". Refuses to run on a
   spec whose requirements.md is still empty or a stub.
-context: fork
-background: false
 ---
 
 # specloop: design-closing

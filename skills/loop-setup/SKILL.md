@@ -11,8 +11,6 @@ when_to_use: >
   "let's get the loop running here", "wire up specloop's loop in this repo".
   This is a separate, deliberate step — never chain it automatically after
   specloop:start, specloop:design-closing, or specloop:task-breakdown.
-context: fork
-background: false
 ---
 
 # specloop: loop-setup

@@ -99,8 +99,11 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
 
 ## Skill: `specloop:loop-setup`
 
-**Frontmatter:** `context: fork`, `background: false` (guided Q&A, same reasoning as
-001/004).
+**Frontmatter:** no `context`/`background` fields — same correction as `001`/`003`/`004`:
+a forked skill re-invokes fresh (full reload) on every user reply instead of holding the
+Q&A loop itself, so an inline skill (loads once, then converses turn by turn as usual) is
+strictly better for a guided-Q&A flow like this one. See `001`'s design for the full
+reasoning and `tasks.md` T19.
 
 1. Refuse if no spec in `planning/roadmap.md` has a populated `tasks.md` yet (nothing to
    run) — point the user at `specloop:task-breakdown` instead.

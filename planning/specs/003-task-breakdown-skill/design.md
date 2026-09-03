@@ -6,8 +6,10 @@ One skill, invoked as `/specloop:task-breakdown` or triggered by natural phrasin
 ("break spec NNN into tasks", "task-breakdown for X", "spec NNN's design is closed,
 make the tasks") via its `description`/`when_to_use` frontmatter.
 
-**Frontmatter:** `context: fork`, `background: false` — this is a propose-then-confirm
-conversation (see Phase 2), not a single dispatch.
+**Frontmatter:** no `context`/`background` fields — this is a propose-then-confirm
+conversation (see Phase 2), and a forked skill was found to re-invoke fresh on every
+reply instead of holding that loop itself (see `001`'s design), so it runs inline like
+the other three specloop skills. See `tasks.md` T10.
 
 Unlike 001 and 004, this skill isn't gathering information only the user has — the
 design already contains it. So the flow is **propose a draft, then confirm/edit**,
