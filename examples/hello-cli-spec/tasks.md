@@ -4,10 +4,10 @@
 > design above. See `examples/README.md`.
 
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
+Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-| ID | Task | Status | Notes |
-|----|------|--------|-------|
-| T1 | Create `bin/hello.mjs`: parse `process.argv.slice(2)`, print `Hello, <name>!` (default `World`) | done | |
-| T2 | Handle the &gt;1-argument error case: exit `1`, one-line usage message on stderr | done | |
-| T3 | Add `package.json`'s `bin.hello` entry | done | |
-| T4 | Manual smoke test: `hello`, `hello Ada`, `hello a b` (error case) | done | Matches this repo's own `006-e2e-smoke-testing` convention — a manual run recorded here, not a hidden step. |
+- [x] T001 [agent] [status:done] Create `bin/hello.mjs`: parse `process.argv.slice(2)`, print `Hello, <name>!` (default `World`)
+- [x] T002 [agent] [status:done] Handle the &gt;1-argument error case: exit `1`, one-line usage message on stderr
+- [x] T003 [agent] [status:done] Add `package.json`'s `bin.hello` entry
+- [x] T004 [agent] [status:done] Manual smoke test: `hello`, `hello Ada`, `hello a b` (error case)
+      └─ Matches this repo's own `006-e2e-smoke-testing` convention — a manual run recorded here, not a hidden step.

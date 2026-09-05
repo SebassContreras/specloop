@@ -1,6 +1,11 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { splitRow, isHeaderOrSeparator, withCells } from './mdTable.js';
+import {
+  parseChecklistLine,
+  renderNoteLine,
+  renderTaskLine,
+  sanitizeNote,
+} from './checklist.js';
 
 export type TaskStatus =
   'todo' | 'in_progress' | 'blocked' | 'interrupted' | 'done';
@@ -15,10 +20,11 @@ export interface TaskRow {
   owner: TaskOwner;
   status: TaskStatus;
   notes: string;
-  /** Index of the status cell in the source row, so a write preserves layout. */
-  statusIndex: number;
-  /** The row's cells as parsed, so a write preserves unknown trailing columns. */
-  cells: string[];
+  /** Index of this task's line in the source file, so a write can find it
+   *  again without re-parsing the whole file. */
+  lineIndex: number;
+  /** Index of the note continuation line, if one currently follows. */
+  noteLineIndex?: number;
 }
 
 const TASK_STATUSES: readonly string[] = [
@@ -37,36 +43,6 @@ function isStatus(value: string): value is TaskStatus {
   return TASK_STATUSES.includes(value);
 }
 
-/**
- * Reads both table layouts:
- *   `| ID | Task | Owner | Status | Notes |`  (current)
- *   `| ID | Task | Status | Notes |`          (pre-Owner, still on disk)
- * Detected by whether cell 2 holds a valid owner rather than by cell count, so
- * a table with extra trailing columns still parses correctly.
- */
-function toRow(cells: string[]): TaskRow | undefined {
-  const id = cells[0];
-  if (!id || isHeaderOrSeparator(id)) return undefined;
-  const hasOwner = cells.length >= 5 && isOwner(cells[2]);
-  const statusIndex = hasOwner ? 3 : 2;
-  const status = cells[statusIndex];
-  // A row whose status cell isn't a real status is malformed — most often a
-  // stray unescaped pipe in the task text, which shifts every later cell.
-  // Returning it anyway is the dangerous option: the bogus status is neither
-  // `done` nor runnable, so the loop would skip the task while the spec could
-  // never roll up to `done`. Surfaced by parseTasks instead.
-  if (!status || !isStatus(status)) return undefined;
-  return {
-    id,
-    task: cells[1] ?? '',
-    owner: hasOwner ? (cells[2] as TaskOwner) : 'agent',
-    status: status as TaskStatus,
-    notes: cells[statusIndex + 1] ?? '',
-    statusIndex,
-    cells,
-  };
-}
-
 function specDir(cwd: string, specId: string, specName: string): string {
   return join(cwd, 'planning', 'specs', `${specId}-${specName}`);
 }
@@ -80,19 +56,33 @@ export function tasksPath(
 }
 
 export function parseTasks(path: string): TaskRow[] {
-  const text = readFileSync(path, 'utf8');
+  const lines = readFileSync(path, 'utf8').split('\n');
   const rows: TaskRow[] = [];
-  for (const line of text.split('\n')) {
-    const cells = splitRow(line);
-    if (!cells) continue;
-    const row = toRow(cells);
-    if (row) {
-      rows.push(row);
-    } else if (/^T\d+$/.test(cells[0] ?? '')) {
-      // Looks like a task row but didn't parse — warn rather than skip
-      // silently, or the task simply vanishes from the loop's view.
+  for (let i = 0; i < lines.length; i++) {
+    const looksLikeTask = /^- \[.\] T\d+ /.test(lines[i]);
+    const parsed = parseChecklistLine(lines, i);
+    if (parsed) {
+      // A row whose status isn't a real status is malformed — surfaced below
+      // instead of silently treated as `todo`, or the task could never roll
+      // up to `done` while never being picked up as runnable either.
+      if (!isOwner(parsed.owner) || !isStatus(parsed.status)) {
+        console.warn(
+          `[loop] ${path}: ignoring malformed row "${parsed.id}" (owner/status tag not recognized)`,
+        );
+        continue;
+      }
+      rows.push({
+        id: parsed.id,
+        task: parsed.task,
+        owner: parsed.owner,
+        status: parsed.status,
+        notes: parsed.notes,
+        lineIndex: parsed.lineIndex,
+        noteLineIndex: parsed.noteLineIndex,
+      });
+    } else if (looksLikeTask) {
       console.warn(
-        `[loop] ${path}: ignoring malformed row "${cells[0]}" (check for an unescaped "|" in the text — escape it as "\\|")`,
+        `[loop] ${path}: ignoring malformed row at line ${i + 1} (expected "- [ ] Txxx [agent|human] [status:...] ...")`,
       );
     }
   }
@@ -114,31 +104,43 @@ export function nextRunnableTask(rows: TaskRow[]): TaskRow | undefined {
 
 /** Tasks still open but not loop-runnable — reported so they aren't forgotten. */
 export function pendingHumanTasks(rows: TaskRow[]): TaskRow[] {
-  return rows.filter(
-    (r) => r.owner === 'human' && r.status !== 'done',
-  );
+  return rows.filter((r) => r.owner === 'human' && r.status !== 'done');
 }
 
 export function allTasksSettled(rows: TaskRow[]): boolean {
   return rows.every((r) => r.status === 'done' || r.owner === 'human');
 }
 
+/**
+ * Rewrites only the checkbox, the `[status:...]` tag, and the note line for
+ * one task — every other part of the line (owner tag, description, any
+ * future tag) is left byte-for-byte untouched.
+ */
 export function writeTaskStatus(
   path: string,
   taskId: string,
   status: TaskStatus,
   notes = '',
 ): void {
-  const text = readFileSync(path, 'utf8');
-  const lines = text.split('\n').map((line) => {
-    const cells = splitRow(line);
-    if (!cells) return line;
-    const row = toRow(cells);
-    if (!row || row.id !== taskId) return line;
-    return withCells(cells, [
-      [row.statusIndex, status],
-      [row.statusIndex + 1, notes],
-    ]);
-  });
+  const lines = readFileSync(path, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const parsed = parseChecklistLine(lines, i);
+    if (!parsed || parsed.id !== taskId) continue;
+
+    lines[i] = renderTaskLine(parsed.id, parsed.owner, status, parsed.task);
+    const cleanNotes = sanitizeNote(notes);
+    const hasNoteLine = parsed.noteLineIndex !== undefined;
+    if (cleanNotes) {
+      const noteLine = renderNoteLine(cleanNotes);
+      if (hasNoteLine) {
+        lines[parsed.noteLineIndex!] = noteLine;
+      } else {
+        lines.splice(i + 1, 0, noteLine);
+      }
+    } else if (hasNoteLine) {
+      lines.splice(parsed.noteLineIndex!, 1);
+    }
+    break;
+  }
   writeFileSync(path, lines.join('\n'));
 }

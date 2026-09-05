@@ -65,10 +65,19 @@ ok(
   'design-closing also accepts the legacy "## Requirements" layout still on disk',
 );
 ok(taskBreakdown.includes('## Acceptance criteria'), 'task-breakdown consumes acceptance criteria');
-const tasksHeader = '| ID | Task | Owner | Status | Notes |';
+const legendLine =
+  'Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`';
+const ownerLine = 'Owner: `agent` (loop-runnable) · `human` (skipped by the loop)';
 ok(
-  start.includes(tasksHeader) && taskBreakdown.includes(tasksHeader),
-  'start and task-breakdown write an identical tasks.md header',
+  start.includes(legendLine) &&
+    start.includes(ownerLine) &&
+    taskBreakdown.includes(legendLine) &&
+    taskBreakdown.includes(ownerLine),
+  'start and task-breakdown write an identical tasks.md legend',
+);
+ok(
+  taskBreakdown.includes('- [ ] T001 [agent] [status:todo]'),
+  'task-breakdown writes the checkbox/owner/status checklist grammar',
 );
 
 group('[3] Legacy requirements files are still readable by design-closing');

@@ -3,19 +3,27 @@
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
 Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-| ID | Task | Owner | Status | Notes |
-|----|------|-------|--------|-------|
-| T1 | Move `SpecRef` from `splitPane/index.ts` to `roadmap.ts` (re-exported for the backends) | agent | done | `worker.ts` needs the type; importing it from `splitPane/` inverted the layering. |
-| T2 | Add `existingContextFiles(config, cwd)` — filter `contextFiles` to those on disk | agent | done | Filtered at prompt-build time, not config load: a project can gain `planning/styles.md` between runs. |
-| T3 | Rewrite `promptFor` to take `(spec, task, config, cwd)` and emit the task, its spec directory, the context files to read, and the do-not-touch-status rule | agent | done | Files are named, not inlined. |
-| T4 | Widen `runWorkerSync` to `(config, spec, task, cwd)` | agent | done | |
-| T5 | Thread `spec` through `dispatchTask` → `runNone` | agent | done | `dispatchTask` already had it and passed it only to the split-pane backends. |
-| T6 | Build a `SpecRef` in `cli.ts`'s `runTask` instead of dropping `specId`/`specName` | agent | done | The in-pane worker had no spec context for the same reason. |
-| T7 | Spec-prefix the log filename in `runNone` | agent | done | **Bug found by T9's live run.** Every spec has a `T1`, so unprefixed logs meant each spec silently overwrote the previous one's. The split-pane path already prefixed correctly; `none` did not. Only fixable once T5 gave `runNone` the spec. |
-| T8 | Wrap `JSON.parse` in `loadConfig` with a diagnosable error | agent | done | **Found by T9's run.** A malformed config previously threw a bare `SyntaxError` with a byte offset and a stack trace into the orchestrator. Now names the file and the likely Windows cause, with `cause` preserved. |
-| T9 | Live end-to-end run: real `loop run` against a fixture repo with a stub worker CLI that records the prompt it receives | agent | done | See below. Verified prompt contents, context filtering, human-task skip, status roll-up, chain advance, failing worker, safe stop, resume, log naming, `loop status`. |
-| T10 | Feed the project's working language into the prompt | agent | todo | `question-bank.md`'s `tone` dimension can record it; nothing consumes it. The prompt is English-only — a real gap for a non-English project. |
-| T11 | Move T9's checks into `007-orchestrator-unit-tests` as committed tests | agent | todo | T9 was run from a scratch fixture; it is not a regression suite. |
+- [x] T001 [agent] [status:done] Move `SpecRef` from `splitPane/index.ts` to `roadmap.ts` (re-exported for the backends)
+      └─ `worker.ts` needs the type; importing it from `splitPane/` inverted the layering.
+- [x] T002 [agent] [status:done] Add `existingContextFiles(config, cwd)` — filter `contextFiles` to those on disk
+      └─ Filtered at prompt-build time, not config load: a project can gain `planning/styles.md` between runs.
+- [x] T003 [agent] [status:done] Rewrite `promptFor` to take `(spec, task, config, cwd)` and emit the task, its spec directory, the context files to read, and the do-not-touch-status rule
+      └─ Files are named, not inlined.
+- [x] T004 [agent] [status:done] Widen `runWorkerSync` to `(config, spec, task, cwd)`
+- [x] T005 [agent] [status:done] Thread `spec` through `dispatchTask` → `runNone`
+      └─ `dispatchTask` already had it and passed it only to the split-pane backends.
+- [x] T006 [agent] [status:done] Build a `SpecRef` in `cli.ts`'s `runTask` instead of dropping `specId`/`specName`
+      └─ The in-pane worker had no spec context for the same reason.
+- [x] T007 [agent] [status:done] Spec-prefix the log filename in `runNone`
+      └─ **Bug found by T9's live run.** Every spec has a `T1`, so unprefixed logs meant each spec silently overwrote the previous one's. The split-pane path already prefixed correctly; `none` did not. Only fixable once T5 gave `runNone` the spec.
+- [x] T008 [agent] [status:done] Wrap `JSON.parse` in `loadConfig` with a diagnosable error
+      └─ **Found by T9's run.** A malformed config previously threw a bare `SyntaxError` with a byte offset and a stack trace into the orchestrator. Now names the file and the likely Windows cause, with `cause` preserved.
+- [x] T009 [agent] [status:done] Live end-to-end run: real `loop run` against a fixture repo with a stub worker CLI that records the prompt it receives
+      └─ See below. Verified prompt contents, context filtering, human-task skip, status roll-up, chain advance, failing worker, safe stop, resume, log naming, `loop status`.
+- [ ] T010 [agent] [status:todo] Feed the project's working language into the prompt
+      └─ `question-bank.md`'s `tone` dimension can record it; nothing consumes it. The prompt is English-only — a real gap for a non-English project.
+- [ ] T011 [agent] [status:todo] Move T9's checks into `007-orchestrator-unit-tests` as committed tests
+      └─ T9 was run from a scratch fixture; it is not a regression suite.
 
 ## T9 — what the live run actually verified
 

@@ -23,6 +23,8 @@ Index of all specs: order, status, dependencies.
 | 017 | project-type-genericity   | todo        | 001, 016           |
 | 018 | project-style-preferences | todo        | 014, 016           |
 | 019 | public-showcase           | todo        | 001, 005           |
+| 020 | checklist-task-format     | done        | 002, 003           |
+| 021 | harness-worker-backend    | todo        | 002, 014           |
 
 Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.
 
@@ -59,3 +61,13 @@ fixes both, and adds the column). Until then, the real sequence is:
    no functional dependency on anything above — doesn't block or get blocked by the
    rest of the build order. Went public (`005` T7) before this exists; this fills the
    repo in afterward rather than gating the release on it.
+9. **`020`** — `tasks.md` becomes a checkbox list (industry-familiar, spec-kit-style
+   IDs) instead of a pipe table, keeping the owner/status tags a table gave for free.
+   Slotted here rather than earlier because every existing spec's `tasks.md` had to
+   migrate in the same pass — doing it before `019`'s content settled would have meant
+   migrating twice.
+10. **`021`** — a Claude-Agent-SDK-backed worker kind, additive alongside today's
+    CLI-spawning workers (`codex`/`opencode` keep using a CLI; only Claude gains an
+    in-process option). Not designed yet — depends on `014` for the context-injection
+    contract it must also honor, and on a permission-mode decision `loop-setup`'s Q&A
+    doesn't ask yet.

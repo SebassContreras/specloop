@@ -9,7 +9,7 @@ isn't concrete enough on its own.
   at every stage of the pipeline `specloop:start` → `specloop:design-closing` →
   `specloop:task-breakdown` produces. Read it top to bottom to see the fixed
   contracts (`Approach` / `Components / files touched` / `Open questions` in
-  `design.md`; the `ID | Task | Status | Notes` table in `tasks.md`) filled with
+  `design.md`; the checkbox/owner/status checklist in `tasks.md`) filled with
   real, small content instead of the placeholders `SKILL.md` describes in prose.
 - [`loop.config.sample.json`](loop.config.sample.json) — an annotated example of
   the `.specloop/loop.config.json` file `specloop:loop-setup` writes into a

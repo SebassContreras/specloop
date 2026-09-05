@@ -57,6 +57,18 @@ Subagents) into a single installable/versionable repo.
   this, an agent dropped into the repo has no idea what's next. The row parser reads
   the first four cells positionally and ignores trailing ones, so the contract can be
   extended without breaking every existing row.
+- **`tasks.md` is a GFM checkbox list, not a table** (`020-checklist-task-format`):
+  `- [ ] T001 [agent] [status:todo] <task>`, with an optional indented note line
+  directly below (`      └─ <note>`) replacing the old `Notes` cell. The checkbox
+  reflects `done` vs. not; `[status:...]` carries the other 4 states. A task line is
+  identified only by starting at column 0 — never by counting delimiters across the
+  line, which is what made the old pipe table breakable by an unescaped `|` in a
+  task's own text. `framework/orchestrator/src/checklist.ts` holds the grammar;
+  `tasks.ts`'s `writeTaskStatus` rewrites only the checkbox/status/note substrings,
+  leaving the owner tag and description untouched on every write. IDs are
+  zero-padded (`T001`), matching GitHub spec-kit's own convention — chosen
+  deliberately so the format reads as industry-familiar, not a specloop invention,
+  while keeping the owner/status distinction spec-kit has no equivalent for.
 - **The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment** —
   `framework/orchestrator/src/tasks.ts` concatenates the two into a filesystem path.
 - **The roadmap's `Status` column has exactly one writer**: the orchestrator, which
@@ -117,3 +129,5 @@ Declining something the user asked for requires a dated decision from the user.
 | Formal governance docs beyond `CONTRIBUTING.md`/`SECURITY.md` (code of conduct, CODEOWNERS) | Still a personal project with no active external contributors; revisit only if that changes. |
 | A cross-agent HTTP-based update-notifier embedded in the plugin (checking a remote manifest, prompting on stale installs) | Proportional to a widely-distributed, unknown-install-base product. specloop is installed by one person via `git pull`/`--plugin-dir` — that already *is* the update mechanism. `CHANGELOG.md` covers "what shipped"; nothing more is needed at this scale. |
 | `skills/start` scaffolding `README.md`, `CONTRIBUTING.md`, `LICENSE` or CI config into the target repo | These are project deliverables, not roadmap/loop infrastructure: if a target project needs one, the roadmap decides it as a spec like any other. Note this does **not** extend to `CLAUDE.md`, `AGENTS.md`, `planning/styles.md` or `.specloop/` — those are the context channel the loop's own workers read, so the plugin owns them. |
+| Adopting GitHub spec-kit's `tasks.md` wholesale (checkbox-only, grouped by user-story phase, no owner concept) | 2026-09-05. Spec-kit has no agent/human distinction and no 5-state status — everything is assumed agent-executable. Adopting it as-is would drop `nextRunnableTask`/`pendingHumanTasks`, the exact mechanism that makes the loop safe to leave unattended. `020-checklist-task-format` borrows the checkbox *convention* (industry-familiar, GitHub-rendered) but keeps the owner/status tags spec-kit doesn't have. |
+| Automatic bidirectional spec-kit `spec.md`/`plan.md` <-> `requirements.md`/`design.md` conversion | 2026-09-05. spec-kit's `spec.md` is organized by P1/P2/P3 user story with no equivalent of specloop's flat requirements + acceptance criteria shape, and spec-kit has no central roadmap/index to map `roadmap.md` onto. A one-off manual translation remains possible if ever needed; no permanent dual-format reader is planned. |

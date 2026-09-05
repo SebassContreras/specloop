@@ -14,7 +14,7 @@ To see what's actually open:
 ```bash
 node scripts/check-skill-consistency.mjs        # 38 static checks over the 4 skills
 cd framework/orchestrator && pnpm exec tsc --noEmit && pnpm exec eslint src
-grep -rn "| todo \|| in_progress \|| blocked \|| interrupted " planning/specs/*/tasks.md
+grep -rnE "\[status:(todo|in_progress|blocked|interrupted)\]" planning/specs/*/tasks.md
 ```
 
 ---
@@ -105,9 +105,10 @@ Each of these cost real time this session.
 
 - **The `Plan` cell is a path component.** `tasks.ts` concatenates `NNN` + `Plan` into
   `planning/specs/NNN-name/`. A human-readable label there breaks the loop silently.
-- **Escape pipes in task text as `\|`.** Rows describing the `ID | Task | Status |
-  Notes` contract shredded the parser. It now splits on unescaped pipes only and warns
-  on a malformed row, but write them escaped.
+- **`tasks.md` is a checkbox list, not a table, since `020`.** A task line is
+  recognized only by starting at column 0 with `- [ ]`/`- [x]` — never indent one, or
+  it's read as the previous task's note continuation instead. No delimiter-escaping
+  hazard like the old pipe table (see `CHANGELOG.md`).
 - **`loop status` shows two values when they disagree** — the roadmap cell and what
   `tasks.md` actually says. Believe the second.
 - **`.specloop/loop.config.json` on Windows**: use `/` or `\\` in paths. A raw `\U`

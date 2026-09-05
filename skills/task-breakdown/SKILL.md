@@ -3,7 +3,7 @@ name: task-breakdown
 description: >
   Breaks a spec's closed design.md into a populated tasks.md — drafts a list of
   single-action, verifiable tasks, confirms it with the user, then writes the fixed
-  ID/Task/Status/Notes table.
+  checkbox/owner/status checklist.
 when_to_use: >
   Use when a spec's design.md has real content and its tasks.md is still empty.
   Trigger on phrasing like "break spec NNN into tasks", "task-breakdown for X",
@@ -62,8 +62,8 @@ Iterate until they confirm. Don't write anything to disk before confirmation.
 
 ## Phase 3 — Write `tasks.md`
 
-Replace the stub with the fixed contract, every row starting `todo` with an empty
-`Notes` column:
+Replace the stub with the fixed contract, every task starting `todo` (unchecked box,
+no note line):
 
 ```markdown
 # NNN — name — Tasks
@@ -71,10 +71,13 @@ Replace the stub with the fixed contract, every row starting `todo` with an empt
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
 Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-| ID | Task | Owner | Status | Notes |
-|----|------|-------|--------|-------|
-| T1 | <task> | agent | todo | |
+- [ ] T001 [agent] [status:todo] <task>
 ```
+
+IDs are zero-padded (`T001`, `T002`, …). A task line is identified only by starting
+at column 0 with `- [ ]`/`- [x]` — never indent one, or the loop will read it as a
+note continuation instead of a task. A note, once a task has one, is an indented
+continuation line directly below it: `      └─ <note text>`.
 
 ## Phase 4 — Stop. Do not start executing tasks.
 

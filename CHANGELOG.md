@@ -10,6 +10,28 @@ version is actually tagged.
 
 ## Unreleased
 
+### 020 — checklist-task-format
+
+`tasks.md` is now a GFM checkbox list (`- [ ] T001 [agent] [status:todo] ...`),
+zero-padded IDs matching GitHub spec-kit's own convention, replacing the pipe table.
+Raised by asking whether specloop's specs should interoperate with spec-kit — its file
+format has no owner (agent/human) concept and no 5-state status, so wholesale adoption
+was declined (`planning/architecture.md`), but its checkbox convention is the genuinely
+industry-familiar part and now carries specloop's own owner/status tags instead.
+
+- **Added** `src/checklist.ts` (the new grammar) and rewrote `src/tasks.ts` onto it.
+  `TaskRow`'s external shape is unchanged, so no other file in the orchestrator needed
+  to change. A task line is identified only by starting at column 0 — no more
+  delimiter-escaping hazard like the old table's unescaped-`|` bug.
+- **Migrated** every `tasks.md` in this repo (specs `001`–`019`, 128 rows) and
+  `examples/hello-cli-spec/tasks.md` to the new grammar. No dual-format reader kept —
+  per-row owner detection during migration caught one pre-existing 4-column legacy row
+  (`002` T13) that a naive uniform-column assumption would have misread.
+- **Updated** `skills/task-breakdown/SKILL.md` and `skills/start/SKILL.md`'s authoring
+  templates to match.
+- **New spec `021`** reserved (not designed): an in-process Claude-Agent-SDK worker
+  kind, additive alongside today's CLI-spawning workers.
+
 ### 2026-09-02 — scope restoration
 
 An earlier change the same day narrowed `specloop:start` and recorded the removals in

@@ -267,11 +267,8 @@ Question-bank Phase E, for the next unfilled spec.
 
    Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
    Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
-
-   | ID | Task | Owner | Status | Notes |
-   |----|------|-------|--------|-------|
    ```
-   Header only — never invent tasks here.
+   Legend only, no task lines yet — never invent tasks here.
 4. Close with Phase F's sweep, then stop and ask whether to continue into the next
    queued spec — never chain silently through all of them.
 

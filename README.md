@@ -72,7 +72,11 @@ actually ready — none of them chain automatically:
    to `planning/architecture.md` and `AGENTS.md`.
 3. **`/specloop:task-breakdown`** — once a spec's design is closed, drafts and
    confirms a `tasks.md` (single-action, verifiable tasks), marking each `agent` or
-   `human` so the loop only attempts what an agent can actually finish.
+   `human` so the loop only attempts what an agent can actually finish. Written as a
+   GFM checkbox list with zero-padded IDs (`- [ ] T001 [agent] [status:todo] ...`) —
+   the same convention GitHub spec-kit uses, so it renders and reads like any other
+   task list, while the `[owner]`/`[status:...]` tags carry the agent/human split and
+   5-state status a plain checkbox can't.
 4. **`/specloop:loop-setup`** — one-time step: installs the loop orchestrator into
    your repo (`.specloop/orchestrator/`) and puts `loop` on PATH. The loop folder's
    config already exists from step 1; this adds the payload. It no longer refuses on

@@ -15,9 +15,11 @@ Entry point. Everything else lives under `planning/`:
   `tasks.md`.
 
 Current state: specs `001`, `003`, `004` have working skills under `skills/`; `002`'s
-reference orchestrator lives under `framework/orchestrator/`; `015` is partly
-implemented there too. Specs `014`, `016`–`018` are specced but unstarted. Check
-`planning/roadmap.md` before touching anything.
+reference orchestrator lives under `framework/orchestrator/`; `015` and `014` are
+partly implemented there too. `005` (open-source-release) and `020`
+(checklist-task-format — `tasks.md` is now a checkbox list, not a table) are done.
+Specs `016`–`019` are specced but unstarted; `021` is reserved on the roadmap but not
+yet designed. Check `planning/roadmap.md` before touching anything.
 
 ## Two rules that exist because they were broken once
 
