@@ -2,8 +2,16 @@
 
 ## Container
 
-**Claude Code Plugin** (not a standalone skill) — packages Skills (and eventually
-Subagents) into a single installable/versionable repo.
+**An Agent Skills package, distributed today as a Claude Code Plugin.** The skills
+themselves (`SKILL.md`: `name`/`description`/`when_to_use` frontmatter + instructions)
+target the open, cross-tool Agent Skills format — the same format Cursor, Codex CLI,
+Gemini CLI, GitHub Copilot, OpenCode, Windsurf and Goose all read natively, several via
+the exact same `.claude/skills/<name>/SKILL.md` discovery path. `.claude-plugin/
+plugin.json` is a *distribution* convenience for `claude --plugin-dir` installs, not a
+claim that the skills only work there. What full cross-tool parity still requires
+(frontmatter-field tolerance beyond the base spec, an install path for tools that don't
+read `.claude-plugin/`, actually testing a few) is unaudited — see
+`022-cross-agent-skill-compat`.
 
 ## Plugin components
 
@@ -94,6 +102,18 @@ Subagents) into a single installable/versionable repo.
 ## Resolved
 
 - Plugin name: `specloop` (`.claude-plugin/plugin.json`).
+- Skill frontmatter stays to `name`/`description`/`when_to_use` — no Claude-Code-only
+  execution-mode fields (the earlier `context`/`background` flags were removed, see
+  `001` T32/`002` T19/`003` T10/`004` T12). `when_to_use` is additive beyond the base
+  Agent Skills spec's fields (`name`/`description`/`license`/`compatibility`/
+  `metadata`); whether every target harness tolerates an unrecognized frontmatter key
+  is exactly what `022-cross-agent-skill-compat`'s audit needs to confirm, not assumed
+  here.
+- **`planning/fix/`** (`023-fix-log`) — a flat, hand-authored log for anything a
+  developer finds wrong after the fact, parallel in spirit to `planning/specs/` but
+  not in shape: one `report.md` per numbered entry (`planning/fix/NNN-name/report.md`),
+  naming the `Scope` (which spec caused it) and what changed — no requirements/design/
+  tasks pipeline, and nothing in the loop/roadmap reads it. See `023`'s design for why.
 - Orchestrator runtime: Node.js + TypeScript, run via `tsx` (no build step to
   maintain). Console command: `loop` (`loop run` / `loop stop` / `loop status`),
   linked into PATH by `loop-setup` via `pnpm link --global`.

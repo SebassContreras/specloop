@@ -13,13 +13,17 @@ Entry point. Everything else lives under `planning/`:
   and the real build order.
 - `planning/specs/NNN-name/` — one spec per feature: `requirements.md`, `design.md`,
   `tasks.md`.
+- [`planning/fix/`](planning/fix/) — a flat, hand-authored log of post-hoc corrections.
+  Not a spec, not loop-runnable — see its own `README.md`.
 
 Current state: specs `001`, `003`, `004` have working skills under `skills/`; `002`'s
 reference orchestrator lives under `framework/orchestrator/`; `015` and `014` are
-partly implemented there too. `005` (open-source-release) and `020`
-(checklist-task-format — `tasks.md` is now a checkbox list, not a table) are done.
-Specs `016`–`019` are specced but unstarted; `021` is reserved on the roadmap but not
-yet designed. Check `planning/roadmap.md` before touching anything.
+partly implemented there too. `005`, `020` (checklist-task-format) and `023`
+(fix-log) are done. Specs `016`–`019` are specced but unstarted; `021`
+(harness-worker-backend) and `022` (cross-agent-skill-compat) are reserved on the
+roadmap but not yet designed. Check `planning/roadmap.md` before touching anything.
+`skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
+see `planning/architecture.md`'s Container section.
 
 ## Two rules that exist because they were broken once
 

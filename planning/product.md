@@ -2,9 +2,14 @@
 
 ## What this is
 
-A **Claude Code Plugin** that unifies how any new project gets started: it interviews
-the user, turns the answers into a roadmap that can be built step by step, and then
-works through that roadmap unsupervised.
+Skills, in the open cross-tool **Agent Skills** format, that unify how any new project
+gets started: they interview the user, turn the answers into a roadmap that can be
+built step by step, and then work through that roadmap unsupervised. Distributed today
+as a **Claude Code Plugin** for convenient installation (`claude --plugin-dir`) — not a
+statement that the skills only run there. See `planning/architecture.md`'s Container
+section and `022-cross-agent-skill-compat` for what full parity across other
+Agent-Skills-compatible tools (Cursor, Codex CLI, Gemini CLI, OpenCode, ...) still
+requires.
 
 "Any project" is literal — an app, a website, a marketing or content project, an
 operations/research project, or anything else that can be automated and needs a

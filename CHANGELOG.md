@@ -10,6 +10,14 @@ version is actually tagged.
 
 ## Unreleased
 
+### 023 — fix-log
+
+`planning/fix/` — a flat, hand-authored log for anything a developer finds wrong
+after the fact, naming which spec (`Scope`) generated it and what changed. Not
+loop-runnable, not roadmap-tracked, no guided skill — deliberately lighter-weight than
+a spec, since a one-paragraph correction doesn't need a requirements/design/tasks
+pipeline. See `planning/fix/README.md`.
+
 ### 020 — checklist-task-format
 
 `tasks.md` is now a GFM checkbox list (`- [ ] T001 [agent] [status:todo] ...`),

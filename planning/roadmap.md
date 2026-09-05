@@ -25,6 +25,8 @@ Index of all specs: order, status, dependencies.
 | 019 | public-showcase           | todo        | 001, 005           |
 | 020 | checklist-task-format     | done        | 002, 003           |
 | 021 | harness-worker-backend    | todo        | 002, 014           |
+| 022 | cross-agent-skill-compat  | todo        | 001                |
+| 023 | fix-log                   | done        | —                  |
 
 Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.
 
@@ -71,3 +73,10 @@ fixes both, and adds the column). Until then, the real sequence is:
     in-process option). Not designed yet — depends on `014` for the context-injection
     contract it must also honor, and on a permission-mode decision `loop-setup`'s Q&A
     doesn't ask yet.
+11. **`022`** — cross-agent skill compatibility. The positioning shift (specloop's
+    skills target the open Agent Skills format, not a Claude-Code-only one) is
+    documented now; the actual frontmatter audit and cross-tool testing (Cursor, Codex
+    CLI, Gemini CLI, OpenCode) is reserved for later, same as `021`.
+12. **`023`** — `planning/fix/`, a flat hand-authored log for post-hoc corrections.
+    Independent of everything else on this list (no code reads it); listed last only
+    because it was raised last, not because it's gated on anything.

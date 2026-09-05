@@ -3,10 +3,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-5A67D8)](https://claude.com/claude-code)
 
-A [Claude Code](https://claude.com/claude-code) plugin that unifies how a project
-gets started and kept moving: it interviews you, turns the answers into a roadmap that
-can be built step by step, and then runs a CLI-agnostic loop orchestrator in your repo
-to work through that roadmap unattended.
+Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills) format,
+that unify how a project gets started and kept moving: they interview you, turn the
+answers into a roadmap that can be built step by step, and then run a CLI-agnostic loop
+orchestrator in your repo to work through that roadmap unattended. Distributed today as
+a [Claude Code](https://claude.com/claude-code) plugin for convenient installation —
+the same `SKILL.md` format is also read natively by Cursor, Codex CLI, Gemini CLI,
+OpenCode and others; full parity there is tracked, not yet audited (see
+`planning/roadmap.md`'s `022`).
 
 Not software-only — an app, a website, a marketing or content project, an
 operations/research project, or anything else that needs a roadmap. The project type is
@@ -95,6 +99,8 @@ actually ready — none of them chain automatically:
 - [`planning/roadmap.md`](planning/roadmap.md) — index of every spec, status, dependencies.
 - [`planning/specs/`](planning/specs/) — one folder per spec: `requirements.md`,
   `design.md`, `tasks.md`.
+- [`planning/fix/`](planning/fix/) — a flat, hand-authored log of anything found
+  wrong after the fact and its correction. Not loop-runnable, not roadmap-tracked.
 - [`framework/orchestrator/`](framework/orchestrator/) — the loop orchestrator's
   reference implementation, copied into target repos by `specloop:loop-setup`.
 - [`examples/`](examples/) — a worked `requirements.md` → `design.md` →

@@ -12,4 +12,4 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 - [x] T006 [agent] [status:done] Update `examples/hello-cli-spec/tasks.md`, `examples/README.md`, and `planning/handoff.md`'s stale pipe-table trap/grep command
 - [x] T007 [agent] [status:done] Add the Fixed rule + two Declined rows to `planning/architecture.md`, and this spec's `requirements.md`/`design.md`
 - [x] T008 [agent] [status:done] Add the `020`/`021` rows + build-order note to `planning/roadmap.md`, and create `021-harness-worker-backend`'s `requirements.md` (design/tasks stay `TBD` stubs — not designed yet)
-- [ ] T009 [agent] [status:todo] Update `README.md` (the new `tasks.md` format, and pointers to `020`/`021`) and add a `CHANGELOG.md` entry
+- [x] T009 [agent] [status:done] Update `README.md` (the new `tasks.md` format, and pointers to `020`/`021`) and add a `CHANGELOG.md` entry
