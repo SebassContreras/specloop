@@ -1,3 +1,7 @@
 node_modules/
 dist/
+# Local-only interview/loop test artifacts — never pushed.
+# test/ holds throwaway repos used to exercise the skills end-to-end;
+# .specloop/ holds per-run loop state (config, logs, interview ledger).
 test/
+.specloop/

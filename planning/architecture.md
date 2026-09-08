@@ -98,6 +98,12 @@ read `.claude-plugin/`, actually testing a few) is unaudited — see
 - **Safe stop** (master or child pane): stop, do not start a new task, mark the task in
   progress as `interrupted` in its `tasks.md`, leave a log of where it stopped. A safe
   stop on the master propagates to all active child panes.
+- **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
+  `test/` holds throwaway repos used to exercise the interview and the skills
+  end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
+  the `interview.md` ledger). Nothing committed — skills, docs, examples, or specs —
+  may assume either exists on origin; references to fixture runs must say they are
+  local-only.
 
 ## Resolved
 
