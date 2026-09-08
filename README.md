@@ -9,8 +9,9 @@ answers into a roadmap that can be built step by step, and then run a CLI-agnost
 orchestrator in your repo to work through that roadmap unattended. Distributed today as
 a [Claude Code](https://claude.com/claude-code) plugin for convenient installation —
 the same `SKILL.md` format is also read natively by Cursor, Codex CLI, Gemini CLI,
-OpenCode and others; full parity there is tracked, not yet audited (see
-`planning/roadmap.md`'s `022`).
+OpenCode and others. OpenCode is live-verified (discovery, auto-trigger, and the
+interview's write-as-you-go loop all confirmed); Cursor and Codex CLI parity is
+tracked but not yet audited (see `planning/roadmap.md`'s `022`).
 
 Not software-only — an app, a website, a marketing or content project, an
 operations/research project, or anything else that needs a roadmap. The project type is
@@ -35,7 +36,9 @@ Captured material, dropped into .github/assets/ once generated (planning/specs/0
 
 <p align="center">
   <img src=".github/assets/demo-interview.gif" alt="specloop:start interview" width="700"><br>
-  <sub>A live <code>/specloop:start</code> interview — one question at a time, written to disk as it lands.</sub>
+  <sub>A live <code>/specloop:start</code> interview, running under OpenCode — one
+  question at a time, written to disk as it lands. Also runs under Claude Code via
+  the plugin install above.</sub>
 </p>
 
 <p align="center">
