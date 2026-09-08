@@ -20,7 +20,8 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
       └─ **Found by T9's run.** A malformed config previously threw a bare `SyntaxError` with a byte offset and a stack trace into the orchestrator. Now names the file and the likely Windows cause, with `cause` preserved.
 - [x] T009 [agent] [status:done] Live end-to-end run: real `loop run` against a fixture repo with a stub worker CLI that records the prompt it receives
       └─ See below. Verified prompt contents, context filtering, human-task skip, status roll-up, chain advance, failing worker, safe stop, resume, log naming, `loop status`.
-- [ ] T010 [agent] [status:todo] Feed the project's working language into the prompt
+- [x] T010 [agent] [status:done] Feed the project's working language into the prompt
+      └─ Added optional `LoopConfig.language`; `promptFor` appends a "write in `<language>`" line when set. `specloop:start` Phase 5 and `specloop:loop-setup` write/preserve it in `loop.config.json`, sourced from the `tone` dimension's language half. `tsc --noEmit`/`eslint src` clean.
       └─ `question-bank.md`'s `tone` dimension can record it; nothing consumes it. The prompt is English-only — a real gap for a non-English project.
 - [ ] T011 [agent] [status:todo] Move T9's checks into `007-orchestrator-unit-tests` as committed tests
       └─ T9 was run from a scratch fixture; it is not a regression suite.

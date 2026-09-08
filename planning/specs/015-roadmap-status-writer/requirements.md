@@ -1,7 +1,5 @@
 # 015 — roadmap-status-writer
 
-## Priority: 3
-
 ## What's being built
 
 **Largely implemented on 2026-09-02** alongside the `001` scope restoration, because

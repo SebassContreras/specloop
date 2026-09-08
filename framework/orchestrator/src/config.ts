@@ -26,6 +26,12 @@ export interface LoopConfig {
    * styles from the task text alone. Consumed by spec `014`.
    */
   contextFiles: string[];
+  /**
+   * The project's working language (from the interview's `tone` dimension),
+   * e.g. "Spanish". Undefined when the project is English-only or the
+   * dimension was never answered. Consumed by spec `014` T10.
+   */
+  language?: string;
 }
 
 const DEFAULT_CONTEXT_FILES = [
@@ -66,6 +72,10 @@ export function loadConfig(cwd: string = process.cwd()): LoopConfig {
     splitMode: parsed.splitMode ?? 'none',
     logDir: parsed.logDir ?? '.specloop/logs',
     contextFiles: parsed.contextFiles ?? DEFAULT_CONTEXT_FILES,
+    language:
+      typeof parsed.language === 'string' && parsed.language
+        ? parsed.language
+        : undefined,
   };
 }
 

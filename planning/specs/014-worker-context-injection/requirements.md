@@ -1,7 +1,5 @@
 # 014 — worker-context-injection
 
-## Priority: 2
-
 Second only to `001`. Until this lands, nothing `001` records and nothing `018`
 captures reaches the agent that needs it — a style palette or a stack convention is
 decoration. It is also the fix for a stated fixed rule (`planning/architecture.md`) that

@@ -1,7 +1,5 @@
 # 011 — windows-path-safety
 
-## Priority: 6
-
 ## Requirements (draft — to be reviewed)
 
 - `framework/orchestrator/src/security.ts`'s `assertSafePath()` (world-writable

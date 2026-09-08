@@ -57,6 +57,12 @@ export function promptFor(
       `- ${context.join(', ')} — the project's stack, conventions and style rules. Follow them.`,
     );
   }
+  if (config.language) {
+    lines.push(
+      '',
+      `Write all user-facing text, comments and commit/PR messages in ${config.language}.`,
+    );
+  }
   lines.push(
     '',
     'Do only this task. Do not start the next one.',

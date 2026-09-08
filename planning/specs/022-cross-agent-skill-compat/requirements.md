@@ -1,7 +1,5 @@
 # 022 — cross-agent-skill-compat
 
-## Priority: 5
-
 ## What's being built
 
 Raised alongside `020`: "just as the loop orchestrator is CLI-agnostic, the plugin

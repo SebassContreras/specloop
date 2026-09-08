@@ -30,6 +30,18 @@ with "no remaining runnable tasks" when there's nothing to do. Gating installati
 a populated `tasks.md` blocks a freshly-scaffolded repo from ever being set up. Report
 the backlog state in Phase 3 instead.
 
+**Check for an all-`human` backlog before Phase 1.** Look at the specs `loop run` would
+actually consider next: `planning/roadmap.md` rows with status `todo`/`in_progress`
+whose dependencies are satisfied, or already `in_progress`. Read each one's
+`tasks.md`. If every task in all of them is `[human]` — no `[agent]` task is currently
+runnable anywhere — say so plainly before asking the worker-CLI question: a worker CLI
+has nothing to run yet, so setup would configure a loop that never fires this round.
+Ask whether to continue anyway (e.g. to have it ready for when an agent task becomes
+eligible, such as once a dependency clears) or stop here. This is common for a project
+whose current spec is mostly human-owned work (research, approvals, physical steps) —
+not a bug, just worth naming before walking through a Q&A whose answer won't be
+exercised yet.
+
 ## Phase 1 — Guided config Q&A (only what's missing)
 
 Ask, one at a time, waiting for each reply:
@@ -69,12 +81,15 @@ Ask, one at a time, waiting for each reply:
      ],
      "splitMode": "<answer>",
      "logDir": ".specloop/logs",
-     "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
+     "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
+     "language": "<preserve if already set by specloop:start>"
    }
    ```
    A single-worker config still works with the legacy `"workerCli"`/`"workerArgs"`
    shape — the orchestrator normalizes it to a one-element `workers` array at load
-   time — but write the `workers` array form here going forward.
+   time — but write the `workers` array form here going forward. **Never drop an
+   existing `"language"` field** when rewriting this file — this skill doesn't ask
+   about it (that's `specloop:start`'s Phase 5), it only must not silently erase it.
 3. Verify `.specloop/.gitignore` exists and ignores `orchestrator/` and `logs/`
    (`specloop:start` writes it) — create it if the repo was scaffolded before that
    existed, so a `pnpm install` doesn't get committed.

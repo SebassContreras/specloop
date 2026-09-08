@@ -1,7 +1,5 @@
 # 021 — harness-worker-backend
 
-## Priority: 9 (lowest, speculative)
-
 ## What's being built
 
 A second `WorkerSpec` kind, additive alongside today's CLI-spawn one

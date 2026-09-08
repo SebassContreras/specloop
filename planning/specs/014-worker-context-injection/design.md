@@ -37,6 +37,9 @@ scope at every call site and simply weren't forwarded.
 - `src/splitPane/index.ts` — `dispatchTask` passes `spec` to `runNone`.
 - `src/cli.ts` — `runTask` builds a `SpecRef` from its arguments instead of dropping
   them.
+- `src/config.ts` — optional `LoopConfig.language`, from the interview's `tone`
+  dimension; `src/worker.ts`'s `promptFor` appends a "write in `<language>`" line when
+  set (T10).
 
 ## Sequencing
 
@@ -50,6 +53,3 @@ scope at every call site and simply weren't forwarded.
   sequencing, and `pickNextSpec` owns that. Revisit if workers start duplicating work.
 - Per-task context selection (only the files a given task plausibly needs). Needs
   evidence that the full list is actually a problem; premature now.
-- The prompt is English-only. `question-bank.md`'s `tone` dimension can record a
-  project's working language, but nothing feeds it into the prompt yet — a real gap for
-  a non-English project, deferred rather than guessed at.

@@ -1,7 +1,5 @@
 # 016 — interview-engine
 
-## Priority: 4
-
 ## What's being built
 
 The machinery that makes specloop's interview exhaustive **by contract rather than by

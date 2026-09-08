@@ -1,7 +1,5 @@
 # 009 — status-dashboard-skill
 
-## Priority: 4
-
 ## Requirements (draft — to be reviewed)
 
 - New skill, `specloop:status`, **read-only** — never writes to any file, no

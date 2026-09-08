@@ -1,7 +1,5 @@
 # 008 — ci-pipeline
 
-## Priority: 3
-
 ## Requirements (draft — to be reviewed)
 
 - Add `.github/workflows/` CI for **this** repo (specloop itself) — target repos get

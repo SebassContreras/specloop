@@ -1,7 +1,5 @@
 # 013 — task-retry-backoff
 
-## Priority: 8 (lowest)
-
 ## Requirements (draft — to be reviewed)
 
 - Today a failed task (`worker.ts` reporting a non-zero exit) goes straight to

@@ -99,23 +99,48 @@ Create, only if missing:
   Both CLIs therefore see one set of facts. Never write project content into
   `CLAUDE.md` itself.
 - **`planning/product.md`** — headers only: "What this is", "Who uses it", "Out of scope".
-- **`planning/architecture.md`** — headers only. Phase 4 fills it and keys its headers to
-  the project type (software → container/stack/conventions; marketing → channels/tools/
-  data sources; operations → systems/cadence/handoffs; research → sources/method/output).
+- **`planning/architecture.md`** — headers keyed to `project-type` (asked in Phase 2,
+  just before this file is written), content filled by Phase 3's Q&A:
+
+  ```markdown
+  # Architecture
+
+  ## <type-keyed headers>
+
+  ## Fixed rules
+
+  ## Still to define
+
+  ## Declined
+  ```
+
+  Use the header set matching the answered `project-type`:
+  - **software** → `Container`, `Stack`, `Conventions`
+  - **marketing/content** → `Channels`, `Tools`, `Data sources`
+  - **operations/process** → `Systems`, `Cadence`, `Handoffs`
+  - **research** → `Sources`, `Method`, `Output`
+  - **other** → `Tools`, `Inputs/Outputs` (mirrors Phase B's `B-other` generic dimensions)
+
+  `design-closing`/`task-breakdown` tolerate this file staying header-only (no
+  `project-type` answered yet, or Phase 3 skipped) — never gate on it having content.
 - **`planning/roadmap.md`**:
   ```markdown
   # Roadmap
 
   Index of all specs: order, status, dependencies.
 
-  | ID  | Plan | Status | Depends on |
-  |-----|------|--------|------------|
+  | ID  | Plan | Status | Depends on | Priority |
+  |-----|------|--------|------------|----------|
 
   Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.
   ```
   The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment — the
   orchestrator concatenates the two into a filesystem path. Verify this after every
-  row you write.
+  row you write. `Priority` is a trailing column the row parser ignores positionally
+  (safe to ship with or without values in it) — leave cells `—` until Phase 6 asks the
+  user to rank the seeded specs, then fill it from that ranking. Never invent a
+  priority the user hasn't actually given; a spec with no stated priority stays `—`,
+  not a guessed number.
 - **`planning/specs/.gitkeep`** — so the directory survives a commit before the first spec.
 - **`.specloop/logs/.gitkeep`** and **`.specloop/.gitignore`**:
   ```gitignore
@@ -196,11 +221,15 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
   ],
   "splitMode": "none",
   "logDir": ".specloop/logs",
-  "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
+  "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
+  "language": "<working language from the tone dimension, omit the field entirely if English>"
 }
 ```
 One entry per worker CLI the user named — more than one round-robins across them by
-task order.
+task order. `language` comes from Phase 5's `tone` dimension ("what tone... and in
+which language?") — write it here too, not just into `AGENTS.md`'s "Style" section, so
+`worker.ts` can put it directly in every task's prompt (`014` T10). Omit the field
+(don't write `"English"`) when the project is English-only.
 
 Use `"TBD"` for anything the user defers. `specloop:loop-setup` installs the
 orchestrator payload later and will re-ask anything left `TBD`.
@@ -221,7 +250,9 @@ or skills to be implemented" turn into ordered spec entries.
    later. Group the roadmap accordingly.
 3. Show the proposal and get it confirmed — add / remove / reorder — before writing
    anything. Ask an explicit dependency question per item rather than defaulting
-   silently to the previous row.
+   silently to the previous row. The confirmed order is itself a priority ranking —
+   ask whether to record it in the `Priority` column (lower = more urgent), or leave
+   it `—` if the user only cares about row order, not a portable number.
 4. Once confirmed, create one spec per item, in order: `planning/specs/NNN-name/` with stub
    `design.md`/`tasks.md`, and a `planning/roadmap.md` row. Leave `requirements.md` for
    Phase 7.

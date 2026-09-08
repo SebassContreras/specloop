@@ -1,7 +1,5 @@
 # 018 — project-style-preferences
 
-## Priority: 6
-
 ## What's being built
 
 The user's objective 6 — *"add styles, let the user choose colors or preferences"* —

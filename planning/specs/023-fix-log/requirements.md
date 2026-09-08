@@ -1,7 +1,5 @@
 # 023 — fix-log
 
-## Priority: 6
-
 ## What's being built
 
 **Implemented 2026-09-05**, in the same pass it was decided, same as `020`/`015`

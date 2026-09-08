@@ -1,7 +1,5 @@
 # 017 — project-type-genericity
 
-## Priority: 5
-
 ## What's being built
 
 Makes the pipeline usable for a project that isn't software — an app, a website, a

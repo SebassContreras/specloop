@@ -1,7 +1,5 @@
 # 010 — loop-auto-continue
 
-## Priority: 5
-
 ## Requirements (draft — to be reviewed)
 
 - `loop run` currently stops once the active spec has no remaining runnable tasks —

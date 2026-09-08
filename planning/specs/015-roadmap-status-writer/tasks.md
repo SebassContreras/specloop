@@ -23,10 +23,10 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
       └─ Inert until `014`.
 - [x] T011 [agent] [status:done] Verify: `tsc --noEmit` and `eslint src` clean; round-trip both table layouts, a 5-column roadmap, a piped note, and dependency-eligibility after a status flip
       └─ 16/16 checks passed against a scratch fixture. Not yet a committed test suite — that's T14.
-- [ ] T012 [agent] [status:todo] Add the `Priority` column to the scaffolded roadmap template
-      └─ Now safe: the parser tolerates it.
-- [ ] T013 [agent] [status:todo] Retire the `## Priority: N` requirements-header convention in favour of the column
-      └─ Present in `006`–`013`, absent from `001`–`005` and from the template. Two unsynchronised sources of the same fact.
+- [x] T012 [agent] [status:done] Add the `Priority` column to the scaffolded roadmap template
+      └─ `skills/start/SKILL.md` Phase 1's roadmap template gains a trailing `Priority` column (parser-safe, ignored positionally); Phase 6 asks whether to record the confirmed seeding order into it. Also backfilled this repo's own `planning/roadmap.md` from the values `## Priority: N` used to carry, with a note that it's historical, not authoritative — the Build order list still governs.
+- [x] T013 [agent] [status:done] Retire the `## Priority: N` requirements-header convention in favour of the column
+      └─ Removed the header from all 17 specs that had one (`006`–`023` minus `005`/`019` which never had it). The current Phase 7 requirements template never included this header, so nothing in the skill itself needed changing — this was pure cleanup of stale content predating the template.
 - [ ] T014 [agent] [status:todo] Move T11's checks into `007-orchestrator-unit-tests` as real tests
       └─ Depends on `007`.
 - [ ] T015 [human] [status:todo] Decide whether `Stage` belongs here or in `009`

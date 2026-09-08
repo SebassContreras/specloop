@@ -1,7 +1,5 @@
 # 012 — spec-amend-skill
 
-## Priority: 7
-
 ## Requirements (draft — to be reviewed)
 
 - Today's pipeline is strictly one-directional: `requirements.md` → closed

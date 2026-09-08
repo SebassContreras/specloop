@@ -1,7 +1,5 @@
 # 007 — orchestrator-unit-tests
 
-## Priority: 2
-
 ## Requirements (draft — to be reviewed)
 
 - Add a test runner to `framework/orchestrator/` — no automated tests exist today,

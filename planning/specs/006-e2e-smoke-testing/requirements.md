@@ -1,7 +1,5 @@
 # 006 — e2e-smoke-testing
 
-## Priority: 1 (highest)
-
 ## Requirements (draft — to be reviewed)
 
 - Goal: actually run the full specloop pipeline end-to-end at least once, for real —

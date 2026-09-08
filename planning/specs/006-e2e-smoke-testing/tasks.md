@@ -23,7 +23,7 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
       └─ Owned by `001` T29. Replaces the statically-checkable part of the four `interrupted` local-test tasks.
 - [ ] T010 [human] [status:todo] Live interactive pipeline run: `/specloop:start` -> `design-closing` -> `task-breakdown` -> `loop-setup` -> `loop run` with a real worker CLI
       └─ The remaining gap, and genuinely human-only: the interview elicits the user's answers, and a real worker CLI *honoring* the prompt is not something a stub can establish. `014` T9 proves the briefing is delivered and correct; this proves a model acts on it. Supersedes `001` T8, `002` T11, `003` T7, `004` T7 — flip those once it runs.
-- [ ] T011 [agent] [status:todo] Add a non-software fixture alongside the CLI one
-      └─ `017`. Without it the project-type generality claim stays untested — which is how it broke the first time.
+- [x] T011 [agent] [status:done] Add a non-software fixture alongside the CLI one
+      └─ `017`. Built `test/sample-marketing-repo/` (a fictional marketing/content persona, "Loopwell") through `specloop:start` → `design-closing` → `task-breakdown`, plus `examples/marketing-content-spec/` as the paired hand-authored reference. Confirms the `B-marketing-content` branch never surfaces a software dimension, `planning/architecture.md` scaffolds with the marketing header set, and `task-breakdown` assigns `human` correctly for contractor/Legal/publish steps. Does **not** prove interview bearability for a real user — every answer was agent-authored for an invented persona; see `test/sample-marketing-repo/NOTES.md`. That gap stays `001` T30 / `006` T10's, unchanged.
 - [ ] T012 [human] [status:todo] Split-pane backends (`windowsTerminal`/`tmux`) end-to-end
       └─ They detach, so the master cannot observe the outcome; needs a real interactive terminal on each OS.

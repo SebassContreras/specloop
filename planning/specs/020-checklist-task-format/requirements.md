@@ -1,7 +1,5 @@
 # 020 — checklist-task-format
 
-## Priority: 4
-
 ## What's being built
 
 **Implemented 2026-09-05**, in the same session that decided it, the same way `015`
