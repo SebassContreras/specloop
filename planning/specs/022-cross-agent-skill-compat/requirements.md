@@ -8,8 +8,10 @@ finding changes the shape of the work:
 
 **Agent Skills (`SKILL.md`) is now an open, cross-tool standard**, not a Claude Code
 invention. Cursor, Codex CLI, Gemini CLI, GitHub Copilot, OpenCode, Windsurf and Goose
-all read it natively — several (OpenCode confirmed) via the exact same
-`.claude/skills/<name>/SKILL.md` discovery path specloop already produces. That means
+all read it natively — several (OpenCode confirmed) via the vendor-neutral
+`.agents/skills/<name>/SKILL.md` discovery path, equally reachable via
+`.opencode/skills/` or `.claude/skills/` as aliases, the same shape specloop's
+`skills/` folder already matches. That means
 the actual content of `skills/start`, `skills/design-closing`, `skills/task-breakdown`,
 `skills/loop-setup` is likely *already* far more portable than the repo's "Claude Code
 Plugin" framing suggested. `planning/architecture.md`'s Container section and
@@ -27,8 +29,9 @@ pass:**
   `when_to_use`).
 - An install path for a tool that doesn't read `.claude-plugin/plugin.json` at all —
   likely means documenting (or scripting) a copy of `skills/` into whatever directory
-  that tool scans (`.claude/skills/`, `.opencode/skills/`, `.agents/skills/`, or a
-  global equivalent), since specloop's own `skills/` folder already matches the shape
+  that tool scans — `.agents/skills/` first, `.opencode/skills/` and `.claude/skills/`
+  named as equivalent aliases, or a global equivalent — since specloop's own `skills/`
+  folder already matches the shape
   those paths expect.
 - Whether `skills/start`'s "recommends Claude Code skills" step (Phase 2) needs
   generalizing for a non-Claude-Code target environment, or stays as-is since it's

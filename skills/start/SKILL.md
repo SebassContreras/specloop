@@ -185,9 +185,12 @@ decision spec for it in Phase 6 — never invent a stack on their behalf.
 Question-bank Phase C. This runs **after** Phase 3, so recommendations key off the
 user's actual selections rather than a guess from the goal.
 
-1. Given the Phase 3 answers, name the Claude Code skills/plugins (other than specloop)
-   that would help this project's worker agents. Only what's relevant — don't pad to a
-   count. Check what's already available in-session before recommending it.
+1. Given the Phase 3 answers, name the skills/plugins (other than specloop) available
+   in this session that would help this project's worker agents. Only what's relevant
+   — don't pad to a count. Check what's already available in-session before
+   recommending it; this is about the current interviewing session's own toolset, not
+   a specific vendor's — the session running this interview need not be Claude Code
+   (see `022-cross-agent-skill-compat`).
 2. Ask which, if any, to install. **Never install anything without explicit
    confirmation.** If a plugin-install mechanism is available, use it for what's
    confirmed; otherwise print plain manual install instructions rather than guessing a

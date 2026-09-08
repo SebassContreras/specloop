@@ -51,6 +51,14 @@ claude --plugin-dir /path/to/specloop
 
 (from inside the repo you want to bootstrap — not from this repo itself).
 
+For a harness that doesn't read `.claude-plugin/plugin.json`, there's no manifest to
+install — point it at (or copy) this repo's `skills/` directory into wherever that
+harness scans for skills. `.agents/skills/` is the vendor-neutral form to reach for
+first (several harnesses, including OpenCode, also accept `.opencode/skills/` or
+`.claude/skills/` as equivalent aliases, or a global home-directory equivalent). Which
+harnesses this has actually been verified against is tracked in `planning/roadmap.md`'s
+`022`, not asserted here.
+
 ## Quickstart
 
 Run these skills from inside your **target** repo, one at a time, whenever each is
@@ -59,9 +67,9 @@ actually ready — none of them chain automatically:
 1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` +
    `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
    project type → goal/audience/MVP → technologies, architecture and tools →
-   recommended Claude Code skills → styles and preferences. Each answer is written to
-   disk as it lands, the roadmap is seeded from all of it, and each spec's
-   `requirements.md` is filled in roadmap order.
+   recommended skills/plugins already available in your session → styles and
+   preferences. Each answer is written to disk as it lands, the roadmap is seeded from
+   all of it, and each spec's `requirements.md` is filled in roadmap order.
 
    The interview is exhaustive by contract, not by script: it draws from a
    per-project-type question bank, tracks coverage in `.specloop/interview.md`, follows

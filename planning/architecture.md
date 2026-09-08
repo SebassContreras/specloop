@@ -6,7 +6,9 @@
 themselves (`SKILL.md`: `name`/`description`/`when_to_use` frontmatter + instructions)
 target the open, cross-tool Agent Skills format — the same format Cursor, Codex CLI,
 Gemini CLI, GitHub Copilot, OpenCode, Windsurf and Goose all read natively, several via
-the exact same `.claude/skills/<name>/SKILL.md` discovery path. `.claude-plugin/
+the vendor-neutral `.agents/skills/<name>/SKILL.md` discovery path (OpenCode confirmed
+also accepts `.opencode/skills/` and `.claude/skills/` as equivalent aliases).
+`.claude-plugin/
 plugin.json` is a *distribution* convenience for `claude --plugin-dir` installs, not a
 claim that the skills only work there. What full cross-tool parity still requires
 (frontmatter-field tolerance beyond the base spec, an install path for tools that don't

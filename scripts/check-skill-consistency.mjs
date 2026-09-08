@@ -149,5 +149,21 @@ ok(/Do not refuse on an empty `tasks\.md`/.test(loopSetup), 'refusal moved to ex
 ok(!/Refuse and stop/.test(loopSetup), 'no leftover hard refusal');
 ok(/contextFiles/.test(loopSetup), 'loop-setup confirms contextFiles');
 
+group('[10] No new harness-specific assumptions in the helper-skills recommendation step');
+// Legitimate Claude-Code-specific mentions (the .claude-plugin/ distribution path)
+// stay out of scope here — only the recommendation step itself must be session-generic
+// (022-cross-agent-skill-compat: recommending "Claude Code skills" from a session
+// running under a different harness would assert something false).
+const helperSkillsStep = start.match(/## Phase 4 — Helper skills[\s\S]*?(?=\n## Phase 5)/);
+ok(
+  !!helperSkillsStep && !/Claude Code skill/i.test(helperSkillsStep[0]),
+  "start's helper-skills step (Phase 4) doesn't hardcode \"Claude Code skills\"",
+);
+const helperSkillsRow = questionBank.match(/\| `helper-skills` \|.*\|/);
+ok(
+  !!helperSkillsRow && !/Claude Code skill/i.test(helperSkillsRow[0]),
+  "question-bank's helper-skills row doesn't hardcode \"Claude Code skills\"",
+);
+
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);

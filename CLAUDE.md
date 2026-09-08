@@ -25,9 +25,12 @@ backlog check, `examples/marketing-content-spec/`, and a local-only
 `test/sample-marketing-repo/` fixture run (untracked — `test/` is gitignored) are
 done; a second non-software fixture and an absent-`architecture.md` live
 run are deferred (see its `tasks.md`). Specs `016`, `018`, `019` are specced but
-unstarted; `021` (harness-worker-backend) and `022` (cross-agent-skill-compat) are
-reserved on the roadmap but not yet designed. Check `planning/roadmap.md` before
-touching anything.
+unstarted; `021` (harness-worker-backend) is reserved on the roadmap but not yet
+designed. `022` (cross-agent-skill-compat) is in progress: design closed, the
+session-generic wording fixes and consistency-script check are done, and the
+`human`-owned live audit (Cursor, Codex CLI, OpenCode) plus the `architecture.md`
+Container update it unlocks are still `todo`/`blocked` (see its `tasks.md`). Check
+`planning/roadmap.md` before touching anything.
 `skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
 see `planning/architecture.md`'s Container section.
 
