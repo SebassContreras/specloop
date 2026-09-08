@@ -125,9 +125,10 @@ read `.claude-plugin/`, actually testing a few) is unaudited — see
   `002-loop-orchestrator/design.md`.
 
 - **A non-software e2e fixture is built against a declared fictional persona, not a
-  second real project** (`017`) — `test/sample-marketing-repo/` states this plainly in
-  its own notes. It proves the type-branching logic (no software question fires, headers/
-  phrasing are type-appropriate), not interview bearability for a real user, which stays
+  second real project** (`017`) — run local-only under the gitignored `test/` dir,
+  where the fixture's own notes state this plainly. It proves the type-branching
+  logic (no software question fires, headers/phrasing are type-appropriate), not
+  interview bearability for a real user, which stays
   `001` T30 / `006` T10's human-only job.
 
 ## Still to define

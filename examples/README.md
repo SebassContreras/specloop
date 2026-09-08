@@ -15,9 +15,9 @@ isn't concrete enough on its own.
   **non-software** target project (a toy product-launch announcement), showing the
   `B-marketing-content` question-bank branch's output: `Deliverables` phrased as
   assets/approvals rather than files, and `human`-owned tasks for anything needing a
-  live publish action, a contractor, or a Legal sign-off. Pairs with
-  `test/sample-marketing-repo/`, the scriptable fixture built from the same persona
-  (`017-project-type-genericity`).
+  live publish action, a contractor, or a Legal sign-off. Built alongside a
+  local-only scriptable fixture from the same persona (untracked — `test/` is
+  gitignored; `017-project-type-genericity`).
 - [`loop.config.sample.json`](loop.config.sample.json) — an annotated example of
   the `.specloop/loop.config.json` file `specloop:loop-setup` writes into a
   target repo.

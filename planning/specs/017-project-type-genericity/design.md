@@ -16,11 +16,12 @@ use yet. Those are now fixed directly in `skills/start/SKILL.md` and
 `skills/loop-setup/SKILL.md`.
 
 What remains is proof: a non-software worked example under `examples/`, and a
-non-software fixture run per `006`. The fixture is built the same way
+non-software fixture run per `006`. The fixture is run the same way
 `test/sample-new-repo/`'s was for the CLI case — the phases are followed for real
 against a fresh throwaway repo — but for a fictional persona (a marketing/content
 project invented for this run) rather than a real second project of the author's,
-since there isn't one. That's declared plainly in the fixture's own notes: it proves
+since there isn't one. It stays local-only (the gitignored `test/` dir, never
+committed). That's declared plainly in the fixture's own notes: it proves
 the branching logic never asks a software question and produces type-appropriate
 artifacts (structural correctness), not interview *bearability* for a real user — that
 remains `001` T30 / `006` T10's job, and stays human-only for the reason recorded
@@ -36,10 +37,11 @@ there.
 - `examples/marketing-content-spec/` — one complete spec (`requirements.md` → closed
   `design.md` → populated `tasks.md`) for a toy marketing project, mirroring
   `examples/hello-cli-spec/`'s shape, added to `examples/README.md`.
-- `test/sample-marketing-repo/` — the non-software fixture: `specloop:start` through
-  its first spec's `requirements.md`, that spec's closed `design.md`, and populated
-  `tasks.md`, run against a declared fictional marketing persona. A `NOTES.md` in the
-  fixture root states the persona and what this run does/doesn't prove.
+- A local-only non-software fixture run (gitignored `test/` dir, never committed):
+  `specloop:start` through its first spec's `requirements.md`, that spec's closed
+  `design.md`, and populated `tasks.md`, run against a declared fictional marketing
+  persona. A `NOTES.md` in the fixture root states the persona and what this run
+  does/doesn't prove.
 - `006-e2e-smoke-testing/tasks.md` T011 flipped to `done`, pointing at this fixture.
 
 ## Sequencing

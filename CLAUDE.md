@@ -21,8 +21,9 @@ reference orchestrator lives under `framework/orchestrator/`; `015` and `014` ar
 partly implemented there too (`014`'s worker-language feed, T10, landed). `005`, `020`
 (checklist-task-format) and `023` (fix-log) are done. `017` (project-type-genericity)
 is in progress: type-keyed `architecture.md` headers, `loop-setup`'s all-`human`-
-backlog check, `examples/marketing-content-spec/`, and the `test/sample-marketing-repo/`
-fixture are done; a second non-software fixture and an absent-`architecture.md` live
+backlog check, `examples/marketing-content-spec/`, and a local-only
+`test/sample-marketing-repo/` fixture run (untracked — `test/` is gitignored) are
+done; a second non-software fixture and an absent-`architecture.md` live
 run are deferred (see its `tasks.md`). Specs `016`, `018`, `019` are specced but
 unstarted; `021` (harness-worker-backend) and `022` (cross-agent-skill-compat) are
 reserved on the roadmap but not yet designed. Check `planning/roadmap.md` before

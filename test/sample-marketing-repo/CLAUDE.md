@@ -1,3 +1,0 @@
-# Loopwell marketing
-
-@AGENTS.md

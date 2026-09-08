@@ -1,8 +1,0 @@
-{
-  "workers": [
-    { "cli": "claude", "args": ["-p"] }
-  ],
-  "splitMode": "none",
-  "logDir": ".specloop/logs",
-  "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]
-}

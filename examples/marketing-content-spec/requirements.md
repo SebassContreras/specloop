@@ -2,8 +2,7 @@
 
 > Example output of `specloop:start`'s Phase 7 (spec requirements Q&A), for a toy
 > **marketing/content** target project — "Loopwell" (fictional SaaS product)
-> announcing a new "Instant Export" feature. See `examples/README.md` and
-> `test/sample-marketing-repo/NOTES.md` for the fuller fixture this is paired with.
+> announcing a new "Instant Export" feature. See `examples/README.md` for context.
 
 ## What's being built
 
