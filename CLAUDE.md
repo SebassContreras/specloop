@@ -19,18 +19,19 @@ Entry point. Everything else lives under `planning/`:
 Current state: specs `001`, `003`, `004` have working skills under `skills/`; `002`'s
 reference orchestrator lives under `framework/orchestrator/`; `015` and `014` are
 partly implemented there too (`014`'s worker-language feed, T10, landed). `005`, `020`
-(checklist-task-format) and `023` (fix-log) are done. `017` (project-type-genericity)
-is in progress: type-keyed `architecture.md` headers, `loop-setup`'s all-`human`-
-backlog check, `examples/marketing-content-spec/`, and a local-only
-`test/sample-marketing-repo/` fixture run (untracked — `test/` is gitignored) are
-done; a second non-software fixture and an absent-`architecture.md` live
-run are deferred (see its `tasks.md`). Specs `016`, `018`, `019` are specced but
-unstarted; `021` (harness-worker-backend) is reserved on the roadmap but not yet
-designed. `022` (cross-agent-skill-compat) is in progress: design closed, the
-session-generic wording fixes and consistency-script check are done, and the
-`human`-owned live audit (Cursor, Codex CLI, OpenCode) plus the `architecture.md`
-Container update it unlocks are still `todo`/`blocked` (see its `tasks.md`). Check
-`planning/roadmap.md` before touching anything.
+(checklist-task-format), `022` (cross-agent-skill-compat) and `023` (fix-log) are done.
+`022`'s acceptance criteria only required one non-Claude-Code harness verified —
+OpenCode passed a live audit 2026-09-08 (discovery/auto-trigger, `when_to_use`
+tolerance, full-phase write-as-you-go), so `planning/architecture.md`'s Container
+section now names it; Cursor and Codex CLI audits (`022` T001/T002) remain open as
+optional follow-up, not blocking. `017` (project-type-genericity) is in progress:
+type-keyed `architecture.md` headers, `loop-setup`'s all-`human`-backlog check,
+`examples/marketing-content-spec/`, and a local-only `test/sample-marketing-repo/`
+fixture run (untracked — `test/` is gitignored) are done; a second non-software fixture
+and an absent-`architecture.md` live run are deferred (see its `tasks.md`). Specs
+`016`, `018`, `019` are specced but unstarted; `021` (harness-worker-backend) is
+reserved on the roadmap but not yet designed. Check `planning/roadmap.md` before
+touching anything.
 `skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
 see `planning/architecture.md`'s Container section.
 

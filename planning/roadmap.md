@@ -25,7 +25,7 @@ Index of all specs: order, status, dependencies.
 | 019 | public-showcase           | todo        | 001, 005           | —        |
 | 020 | checklist-task-format     | done        | 002, 003           | 4        |
 | 021 | harness-worker-backend    | todo        | 002, 014           | 9        |
-| 022 | cross-agent-skill-compat  | in_progress | 001                | 5        |
+| 022 | cross-agent-skill-compat  | done        | 001                | 5        |
 | 023 | fix-log                   | done        | —                  | 6        |
 
 Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.

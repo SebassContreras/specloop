@@ -10,10 +10,11 @@ the vendor-neutral `.agents/skills/<name>/SKILL.md` discovery path (OpenCode con
 also accepts `.opencode/skills/` and `.claude/skills/` as equivalent aliases).
 `.claude-plugin/
 plugin.json` is a *distribution* convenience for `claude --plugin-dir` installs, not a
-claim that the skills only work there. What full cross-tool parity still requires
-(frontmatter-field tolerance beyond the base spec, an install path for tools that don't
-read `.claude-plugin/`, actually testing a few) is unaudited — see
-`022-cross-agent-skill-compat`.
+claim that the skills only work there. **Verified: OpenCode** — live-audited
+2026-09-08 (`022-cross-agent-skill-compat` T003), confirmed to auto-trigger a skill
+from its `description` unmodified, tolerate the non-base-spec `when_to_use` key, and
+sustain `start`'s one-question-at-a-time write-as-you-go interview across a full
+phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-compat`.
 
 ## Plugin components
 
