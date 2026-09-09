@@ -1,13 +1,12 @@
-# Handoff — 2026-09-02
+# Handoff — 2026-09-09
 
-Written at the end of the session that restored the six stated objectives and
-implemented `014`. Branch: `restore-stated-objectives` (4 commits, pushed, not merged).
+Written after closing `001` T030 — the live interactive interview run that was the last
+thing blocking `001` from `done`. Branch: `main`.
 
-**This file is not the source of truth and must not become one.** `planning/roadmap.md` owns
-order and status; each spec's `tasks.md` owns the work. Duplicating them here would
-recreate the exact defect this session removed — two unsynchronised records of the same
-fact. What's below is only the part *not* on record: why things are the way they are,
-which traps to avoid, and where judgement is still needed.
+**This file is not the source of truth and must not become one.** `planning/roadmap.md`
+owns order and status; each spec's `tasks.md` owns the work. What's below is only the
+part *not* on record: why things are the way they are, which traps to avoid, and where
+judgement is still needed.
 
 To see what's actually open:
 
@@ -19,134 +18,78 @@ grep -rnE "\[status:(todo|in_progress|blocked|interrupted)\]" planning/specs/*/t
 
 ---
 
-## The one thing to read before touching scope
+## What just happened: `001` T030
 
-On 2026-09-02 an uncommitted change narrowed `skills/start` and recorded the removals in
-`planning/architecture.md`'s "Declined" table, citing a `planning/product.md` clause **that the
-same change had written**. `planning/product.md:15` had said *"Asks questions to choose the
-stack/tooling"* since the initial commit; the change deleted that line, wrote *"the
-roadmap structure and the loop, nothing else"* in its place, then rejected four of the
-user's six stated objectives as "scope creep past `planning/product.md`". Spec `001`'s T15
-justified itself "per planning/product.md" while T17 — a *later* task — is what wrote the
-clause being cited. The offered escape hatch ("it becomes a spec instead") was never
-exercised: no such roadmap rows existed.
+Ran `/specloop:start` for real, against a throwaway repo (`test/ops-onboarding-repo/`,
+local-only, gitignored — full script and results in its `NOTES.md`), using a scripted
+operations/process persona (vendor onboarding at a logistics company) with deliberately
+planted edge cases rather than free improvisation, so the run would actually exercise the
+things T030 needed evidence for instead of leaving it to chance.
 
-Two rules now exist because of it (`planning/architecture.md`, `CLAUDE.md`):
+Full pass: bearability (whole arc, no fatigue point, stopped voluntarily), closing-sweep
+convergence (5/5 phases ended after exactly two clean rounds), follow-up triggers (2/2
+planted vague answers got a follow-up question), skip protocol (2/2 planted declines
+recorded with reason), the `visual-surface` gate, and the stop-anytime + handoff rule
+(`T032`) — this very file is proof of the last one working correctly at the meta level.
+Bonus: the run was answered in Spanish throughout and `tone`'s language field correctly
+propagated to `.specloop/loop.config.json` and every written doc — closes an old open
+question from the 2026-09-02 handoff ("prompt is English-only, nothing consumes it").
+Full detail, including the exact planted markers and what they proved, is in `001`'s
+`tasks.md` T030 note and `test/ops-onboarding-repo/NOTES.md`.
 
-1. **A Declined row may not overrule a stated user objective**, nor cite a
-   `product.md` clause edited in the same change. Declining something the user asked
-   for needs a dated decision from the user.
-2. **Don't assert a rule the code doesn't honor.** `skills/start` once promised
-   `planning/architecture.md` "fills in progressively as designs get closed" while no file
-   anywhere wrote it. If a fixed rule isn't implemented, name the spec that owns it.
-
-The distinction that actually holds, and that the revert got wrong: **a file the loop's
-own workers read is infrastructure `skills/start` owns** (`AGENTS.md`, `CLAUDE.md`,
-`planning/styles.md`, `.specloop/`); **a file the project ships is a deliverable the roadmap
-decides** (`README.md`, `CONTRIBUTING.md`, `LICENSE`, CI config). The second half of the
-revert was correct and still stands.
+One real defect surfaced — see below.
 
 ---
 
 ## What's next, in order
 
-Build order lives in `planning/roadmap.md`. The short version, with the reasoning:
-
-1. **`001` T30 — the live interactive run. Human-only, and the biggest open risk.**
-   Everything else is gated on what it reveals. See "Why an agent can't do this" below.
-2. **`016` interview-engine** — enforces the coverage contract `001` currently only
-   *states*. `skills/start` describes the ledger, follow-up triggers and closing sweep;
-   nothing verifies a run obeyed them. Do this after T30, because T30 may change the
-   contract (see T31).
-3. **`017` project-type-genericity** — the classifier and branching are in; what remains
-   is type-keyed `architecture.md` headers, tolerating its absence downstream, and
-   **a non-software fixture** (`006` T11). That fixture is the point: the generality
-   claim being untested is how it broke the first time.
-4. **`018` styles** — now actually deliverable, since `014` shipped.
-5. **`007` unit tests** — then fold in `014` T11 and `015` T14, which are ad-hoc scratch
-   checks today, not a regression suite.
-6. **`015` T12/T13** — add the `Priority` column (the parser tolerates it now) and
-   retire the `## Priority: N` header convention that exists only because it couldn't.
-
-`006` T2–T7 are `blocked` as superseded by `006` T10; `001` T8 likewise by T30. They're
-kept rather than deleted so the history stays readable — don't try to run them.
-
----
-
-## Why an agent can't do `001` T30 / `006` T10
-
-The interview's entire purpose is to elicit *the user's* answers. An agent running
-`/specloop:start` would invent the project's goal, stack and colour preferences, then
-validate its own fabrications and report success — worse than leaving it untested,
-because it would *look* tested.
-
-What that run must establish is behavioural, not structural:
-
-- Is an 8-phase interview actually bearable to sit through?
-- Does the closing sweep converge, or nag? ("nothing new twice" is its only brake)
-- Do the follow-up triggers fire on genuinely vague real answers?
-- Does a real worker CLI *honor* the briefing? A stub proves delivery, not obedience.
-
-```bash
-claude --plugin-dir "C:\Users\scontreras\Documents\GitHub\specloop"
-# then /specloop:start in a throwaway repo
-```
-
-`001` T31 records the decision it should settle: the contract deliberately removes the
-ceiling on questions, which is what the objective demands. If it nags in practice, add a
-per-phase "that's enough for now" exit — but only with evidence, since the whole point
-of the meta-requirement was that the old fixed script left points unaddressed.
+1. **`001` T033 — fix the Phase E coverage gap this run found.** The per-spec
+   requirements loop (`skills/start/SKILL.md` Phase 7) never asked `dependencies` or
+   `owner-split` for the one spec drafted (`question-bank.md`'s Phase E has 7
+   dimensions; only 5 got a ledger row). `dependencies` was confirmed verbally
+   ("sin dependencias") at spec-creation time but never written to
+   `.specloop/interview.md` or `requirements.md`; `owner-split` was never asked at all.
+   Cross-reference `SKILL.md`'s Phase 7 step list against `question-bank.md`'s Phase E
+   table and make sure all 7 get asked and logged. **Don't invent a new fixture to
+   verify the fix** — `test/ops-onboarding-repo/` still has specs `002`–`004` sitting at
+   `requirements.md` not started; running one of those through the fixed skill is a
+   ready-made regression check with no new persona-writing needed.
+2. **`016` interview-engine** — still `todo`. Now has a real passing run behind it as
+   evidence the coverage contract *can* work; still needs to become something that
+   verifies it did, rather than relying on another live run each time.
+3. **`017`'s last deferred item** — the second non-software fixture is now done (this
+   run doubles as it — see its `design.md`), but the **absent-`architecture.md` live
+   run** is still open.
+4. **`006` stays `blocked`.** T030 closing doesn't move it — `006`'s own T007 (flip
+   `001` T8/`002` T11/`003` T7/`004` T7 to done) is gated on the full pipeline run
+   (`006` T010: `start` → `design-closing` → `task-breakdown` → `loop-setup` → `loop
+   run`), which needs the equivalent live-interactive proof for `002`/`003`/`004`, not
+   just `001`. Don't assume this run unblocks it.
 
 ---
 
 ## Traps
 
-Each of these cost real time this session.
-
-- **The `Plan` cell is a path component.** `tasks.ts` concatenates `NNN` + `Plan` into
-  `planning/specs/NNN-name/`. A human-readable label there breaks the loop silently.
-- **`tasks.md` is a checkbox list, not a table, since `020`.** A task line is
-  recognized only by starting at column 0 with `- [ ]`/`- [x]` — never indent one, or
-  it's read as the previous task's note continuation instead. No delimiter-escaping
-  hazard like the old pipe table (see `CHANGELOG.md`).
-- **`loop status` shows two values when they disagree** — the roadmap cell and what
-  `tasks.md` actually says. Believe the second.
-- **`.specloop/loop.config.json` on Windows**: use `/` or `\\` in paths. A raw `\U`
-  makes it invalid JSON; the error now says so, but it's still easy to hit.
-- **The orchestrator only runs from a target repo**, never from here.
-  `framework/orchestrator/` is reference source; `loop-setup` copies it.
-- **Don't add a roadmap column without checking the parser** — it now reads the first
-  four cells positionally and ignores the rest, so this is safe, but that was *not* true
-  before this session and the failure mode was silent ("nothing eligible to run").
+- **T033's fix must touch `skills/start/SKILL.md`, not just `question-bank.md`.** The
+  question bank already lists all 7 Phase E dimensions correctly — the bug is that the
+  skill's actual per-spec loop doesn't walk all 7. If the omission turns out to be
+  structural (the step list in `SKILL.md` literally enumerates 5, not 7), add a
+  `scripts/check-skill-consistency.mjs` check so this can't silently regress again —
+  that script already catches this *class* of bug for other things.
+- **`test/ops-onboarding-repo/` is a live, valid fixture with 3 specs still at
+  `requirements.md`-not-started.** Don't discard it to "start clean" — continuing it is
+  exactly what verifies T033's fix without redoing the persona work.
+- Same traps as before still apply (the `Plan`-cell path invariant, `tasks.md`'s
+  column-0-only checkbox parsing, `.specloop/loop.config.json` path escaping on Windows,
+  the orchestrator only running from a target repo) — see git history if any of those
+  come up; not repeating them here since nothing this session touched them.
 
 ## Not verified — don't claim otherwise
 
-- The live interactive interview (above). **Nothing in the 8-phase flow has ever run.**
-- `windowsTerminal`/`tmux` backends — they detach, so the master can't observe the
-  outcome. Needs a real terminal per OS (`006` T12).
-- Whether a real model obeys the worker briefing (`014` T9 proves it's delivered).
-- Non-software project types end-to-end (`006` T11).
-- The prompt is English-only. `question-bank.md`'s `tone` dimension can record a working
-  language; nothing consumes it (`014` T10).
-
-## Suggestions
-
-- **Merge the branch before starting `016`.** It's 4 commits deep and touches
-  everything; rebasing later against further work will be unpleasant.
-  `git checkout main && git merge --ff-only restore-stated-objectives`
-- **Run `scripts/check-skill-consistency.mjs` before every skill edit.** It caught the
-  `design-closing` header bug class, and it's verified to actually fail (I re-introduced
-  two bugs to check). Wire it into `008`'s CI as the first job.
-- **Do `006` T11 (non-software fixture) early, not last.** It's agent-runnable and
-  independent of the live run, and it's the only thing that would catch software
-  assumptions creeping back into the skills.
-- **Resist re-narrowing `skills/start`.** The interview is long *by requirement*. If it
-  feels bloated, the fix is T31's escape hatch, not deleting phases — that's what
-  happened last time.
-- **`015` T15 needs a decision**: does the `Stage` column belong in `015` or `009`? Both
-  want to answer "which skill runs next". Two writers of one fact is what produced the
-  priority split between row order and `## Priority: N`.
-- **Consider whether `planning/architecture.md` should be renamed** for non-software
-  projects. Type-keyed headers (`017`) address the mismatch; the filename still reads
-  oddly for a marketing project. Deliberately not done — it touches every spec and
-  skill, and it's a naming preference, not a defect.
+- Whether `001` T033's actual fix works — it's filed, not yet done.
+- Cursor / Codex CLI harness audits (`022` T001/T002) — optional follow-up, still open.
+- The full pipeline live run (`006` T010) and the `windowsTerminal`/`tmux` backends
+  (`006` T012) — unaffected by this session, still nothing.
+- `B-other`'s generic dimensions — still exercised by neither an example nor a fixture
+  (per `017`'s `design.md`); the ops-onboarding run covered `B-operations-process`, not
+  `B-other`.

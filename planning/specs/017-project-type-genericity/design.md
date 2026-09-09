@@ -52,7 +52,11 @@ smoothed over still surfaces).
 
 ## Open questions / deferred
 
-- A second non-software fixture (operations or research) — deferred; one is enough to
-  retire the "only ever tested against software" defect, and `B-other`'s generic
-  dimensions are exercised by neither example nor fixture yet. Noted for whoever picks
-  up `022` or a future genericity pass, not blocking this spec's acceptance criteria.
+- ~~A second non-software fixture (operations or research) — deferred~~. Done as a
+  side-effect of `001` T030's live human-run interview test (2026-09-09):
+  `test/ops-onboarding-repo/` (local-only, gitignored), an operations/process persona,
+  human-answered rather than agent-authored — a stronger version of this item than
+  originally scoped, since it also proves the type branching holds up under a real
+  reaction rather than an invented one. Results in that fixture's `NOTES.md` and in
+  `001`'s `tasks.md` T030 note. `B-other`'s generic dimensions are still unexercised by
+  any example or fixture — that part of the gap remains open.

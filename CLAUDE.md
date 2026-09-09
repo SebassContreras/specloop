@@ -28,7 +28,11 @@ optional follow-up, not blocking. `017` (project-type-genericity) is in progress
 type-keyed `architecture.md` headers, `loop-setup`'s all-`human`-backlog check,
 `examples/marketing-content-spec/`, and a local-only `test/sample-marketing-repo/`
 fixture run (untracked — `test/` is gitignored) are done; a second non-software fixture
-and an absent-`architecture.md` live run are deferred (see its `tasks.md`). Specs
+landed as a side-effect of `001` T030 (below) — an absent-`architecture.md` live run is
+still deferred (see its `design.md`). `001` (scaffold-and-spec-skill) closed T030, its
+last open item (a live human-answered interview run — `test/ops-onboarding-repo/
+NOTES.md`, local-only, not committed), but stays `in_progress` pending the new T033 it
+surfaced (Phase E skips the `dependencies`/`owner-split` dimensions). Specs
 `016`, `018`, `019` are specced but unstarted; `021` (harness-worker-backend) is
 reserved on the roadmap but not yet designed. Check `planning/roadmap.md` before
 touching anything.
