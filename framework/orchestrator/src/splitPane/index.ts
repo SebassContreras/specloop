@@ -9,18 +9,18 @@ import { runInTmux } from './tmux.js';
 export type { SpecRef };
 
 /**
- * `"none"` runs synchronously and returns the result so the master can flip
- * the task's status itself. The split-pane modes return `undefined` — they
- * hand the task off to a detached pane that flips its own status later, so
- * the master moves on without waiting.
+ * `"none"` awaits the worker and returns the result so the master can flip
+ * the task's status itself. The split-pane modes return `undefined`
+ * immediately — they hand the task off to a detached pane that flips its
+ * own status later, so the master moves on without waiting.
  */
-export function dispatchTask(
+export async function dispatchTask(
   config: LoopConfig,
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
   workerIndex: number,
-): RunResult | undefined {
+): Promise<RunResult | undefined> {
   switch (config.splitMode) {
     case 'none':
       return runNone(config, spec, task, cwd, workerIndex);

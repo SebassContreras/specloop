@@ -78,9 +78,14 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
 
 ## Execution model
 
-- **`splitMode: "none"`**: master runs the worker CLI as a synchronous child process
-  per task, streaming its stdout/stderr inline, updating `tasks.md`'s row
-  (`todo` → `in_progress` → `done`) around the call.
+- **`splitMode: "none"`**: master runs the worker CLI as a child process per task
+  (awaited, not literally synchronous — `worker.ts`'s `runWorker` uses `spawn`, not
+  `spawnSync`, precisely so it can relay stdout/stderr to the master's own terminal
+  as each chunk arrives, not just buffer everything for the log), updating
+  `tasks.md`'s row (`todo` → `in_progress` → `done`) around the call. This doc
+  claimed inline streaming before it was actually true (`002` T22) — fixed live
+  during `006` T012's split-pane test, when a visible pane turned out to print
+  "running task X" once and then go silent until the whole task finished.
 - **`splitMode: "windowsTerminal"` / `"tmux"`**: master spawns a detached child
   process per task and opens it in a new split pane (`wt split-pane …` /
   `tmux split-window …` respectively) running a small worker script that does the

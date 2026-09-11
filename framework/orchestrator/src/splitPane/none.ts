@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LoopConfig } from '../config.js';
 import type { TaskRow } from '../tasks.js';
-import { runWorkerSync } from '../worker.js';
+import { runWorker } from '../worker.js';
 import type { SpecRef } from '../roadmap.js';
 
 export interface RunResult {
@@ -11,15 +11,15 @@ export interface RunResult {
 }
 
 /** Always-works fallback: runs the task inline in the master terminal. */
-export function runNone(
+export async function runNone(
   config: LoopConfig,
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
   workerIndex: number,
-): RunResult {
+): Promise<RunResult> {
   console.log(`[loop] running task ${task.id}: ${task.task}`);
-  const { ok, log } = runWorkerSync(config, spec, task, cwd, workerIndex);
+  const { ok, log } = await runWorker(config, spec, task, cwd, workerIndex);
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   // Spec-prefixed to match the split-pane path (cli.ts's runTask). Without the
   // prefix, task ids collide across specs — every spec has a T1 — and each new

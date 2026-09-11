@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { assertSafePath } from './security.js';
@@ -76,46 +76,64 @@ export function pickWorker(config: LoopConfig, workerIndex: number) {
   return config.workers[workerIndex % config.workers.length];
 }
 
-/** Runs the picked worker CLI for one task and blocks until it exits. */
-export function runWorkerSync(
+/**
+ * Runs the picked worker CLI for one task, relaying its stdout/stderr to
+ * this process's own as each chunk arrives — not just to the returned log
+ * once the whole thing exits. Whichever terminal is running this (the
+ * master's own in `splitMode: "none"`, or a detached split-pane) is the
+ * whole reason that mode exists: a pane that only prints "running task X"
+ * and then goes silent until the process ends isn't showing the agent work
+ * live, it's just hiding a buffered result behind a delay.
+ */
+export function runWorker(
   config: LoopConfig,
   spec: SpecRef,
   task: TaskRow,
   cwd: string,
   workerIndex = 0,
-): WorkerResult {
+): Promise<WorkerResult> {
   assertSafePath();
   const worker = pickWorker(config, workerIndex);
-  const result = spawnSync(
-    worker.cli,
-    [...worker.args, promptFor(spec, task, config, cwd)],
-    {
-      encoding: 'utf8',
-      // Never let the worker sit on an interactive prompt: with stdin left
-      // as an open, unfed pipe (the spawnSync default), a CLI that isn't
-      // told it's running headlessly (e.g. plain `claude "<prompt>"`
-      // without `-p`) blocks indefinitely waiting for terminal input, and
-      // the whole loop hangs with it. `workerArgs` is where a CLI's
-      // non-interactive flag belongs (specloop:loop-setup asks for it);
-      // this is a backstop, not a substitute for that.
-      stdio: ['ignore', 'pipe', 'pipe'],
-      timeout: WORKER_TIMEOUT_MS,
-    },
-  );
-  if (result.error) {
-    return {
-      ok: false,
-      log: `${result.stdout ?? ''}${result.stderr ?? ''}[loop] worker failed to run: ${result.error.message}`,
-    };
-  }
-  if (result.signal) {
-    return {
-      ok: false,
-      log: `${result.stdout ?? ''}${result.stderr ?? ''}[loop] worker killed by signal ${result.signal} (likely the ${WORKER_TIMEOUT_MS / 60000}min timeout — check "${worker.cli}"'s args in loop.config.json for a headless/non-interactive flag).`,
-    };
-  }
-  return {
-    ok: result.status === 0,
-    log: `${result.stdout ?? ''}${result.stderr ?? ''}`,
-  };
+  return new Promise((resolve) => {
+    let log = '';
+    const relay =
+      (sink: NodeJS.WritableStream) =>
+      (chunk: Buffer): void => {
+        log += chunk.toString('utf8');
+        sink.write(chunk);
+      };
+    const child = spawn(
+      worker.cli,
+      [...worker.args, promptFor(spec, task, config, cwd)],
+      {
+        // Never let the worker sit on an interactive prompt: with stdin left
+        // as an open, unfed pipe, a CLI that isn't told it's running
+        // headlessly (e.g. plain `claude "<prompt>"` without `-p`) blocks
+        // indefinitely waiting for terminal input, and the whole loop hangs
+        // with it. `workerArgs` is where a CLI's non-interactive flag
+        // belongs (specloop:loop-setup asks for it); this is a backstop,
+        // not a substitute for that.
+        stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: WORKER_TIMEOUT_MS,
+      },
+    );
+    child.stdout?.on('data', relay(process.stdout));
+    child.stderr?.on('data', relay(process.stderr));
+    child.on('error', (err) => {
+      resolve({
+        ok: false,
+        log: `${log}[loop] worker failed to run: ${err.message}`,
+      });
+    });
+    child.on('close', (code, signal) => {
+      if (signal) {
+        resolve({
+          ok: false,
+          log: `${log}[loop] worker killed by signal ${signal} (likely the ${WORKER_TIMEOUT_MS / 60000}min timeout — check "${worker.cli}"'s args in loop.config.json for a headless/non-interactive flag).`,
+        });
+        return;
+      }
+      resolve({ ok: code === 0, log });
+    });
+  });
 }

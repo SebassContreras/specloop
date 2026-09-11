@@ -16,7 +16,7 @@ import {
   pendingHumanTasks,
   type TaskRow,
 } from './tasks.js';
-import { runWorkerSync } from './worker.js';
+import { runWorker } from './worker.js';
 import { dispatchTask } from './splitPane/index.js';
 import {
   requestStop,
@@ -95,7 +95,7 @@ function recoverStaleTasks(
   }
 }
 
-function run(): void {
+async function run(): Promise<void> {
   const config = loadConfig(cwd);
   clearStop(config, cwd);
   const roadmap = parseRoadmap(cwd);
@@ -143,7 +143,7 @@ function run(): void {
       registerTaskPid(config, cwd, spec.id, task.id);
     }
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
-    const result = dispatchTask(config, spec, task, cwd, workerIndex);
+    const result = await dispatchTask(config, spec, task, cwd, workerIndex);
     workerIndex++;
 
     if (config.splitMode !== 'none') {
@@ -165,12 +165,12 @@ function run(): void {
 }
 
 /** Invoked inside a split-pane by windowsTerminal.ts / tmux.ts — one task, one process. */
-function runTask(
+async function runTask(
   specId: string,
   specName: string,
   taskId: string,
   workerIndexArg: string,
-): void {
+): Promise<void> {
   const config = loadConfig(cwd);
   const path = tasksPath(cwd, specId, specName);
   const tasks = parseTasks(path);
@@ -184,7 +184,7 @@ function runTask(
   // task's true owner while it runs — the master already moved on.
   registerTaskPid(config, cwd, specId, taskId);
   const workerIndex = Number(workerIndexArg ?? 0) || 0;
-  const { ok, log } = runWorkerSync(
+  const { ok, log } = await runWorker(
     config,
     { id: specId, name: specName },
     task,
@@ -231,7 +231,7 @@ function status(): void {
 const [, , command, ...args] = process.argv;
 switch (command) {
   case 'run':
-    run();
+    void run();
     break;
   case 'stop':
     stop();
@@ -240,7 +240,7 @@ switch (command) {
     status();
     break;
   case '_run-task':
-    runTask(args[0], args[1], args[2], args[3]);
+    void runTask(args[0], args[1], args[2], args[3]);
     break;
   default:
     console.log('Usage: loop <run|stop|status>');
