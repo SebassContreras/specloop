@@ -67,6 +67,13 @@ Ask, one at a time, waiting for each reply:
    non-existent entries are skipped at run time). If the configured `workerCli` is not
    `claude`, say plainly that `AGENTS.md` is the only context that CLI auto-loads, so
    this list is how it learns the project's stack and conventions.
+5. **Package manager** for installing the orchestrator's own dependencies — never
+   assume `pnpm`. Check `planning/architecture.md`'s decision register first (a
+   software project's `toolchain` dimension may have already settled this); if it
+   has, use that and don't re-ask. Otherwise ask: "Which package manager should
+   install the loop orchestrator's dependencies — `pnpm`, `npm`, `yarn`, or another
+   on PATH?", defaulting to whichever lockfile (if any) already exists at the
+   target repo's root.
 
 ## Phase 2 — Generate
 
@@ -92,10 +99,17 @@ Ask, one at a time, waiting for each reply:
    about it (that's `specloop:start`'s Phase 5), it only must not silently erase it.
 3. Verify `.specloop/.gitignore` exists and ignores `orchestrator/` and `logs/`
    (`specloop:start` writes it) — create it if the repo was scaffolded before that
-   existed, so a `pnpm install` doesn't get committed.
-4. Run, inside `.specloop/orchestrator/`: `pnpm install && pnpm link --global`.
-   This puts `loop` directly on PATH for this shell. If the user doesn't want a
-   global link, tell them the fallback: `pnpm --dir .specloop/orchestrator exec loop run`.
+   existed, so an install doesn't get committed.
+4. Run, inside `.specloop/orchestrator/`, install then link with the **chosen**
+   package manager only — e.g. `pnpm install && pnpm link --global`. This puts
+   `loop` directly on PATH for this shell. **If the global-link step fails or the
+   package manager doesn't support it** (e.g. `pnpm link --global` erroring on some
+   pnpm versions), do not silently retry with a *different* package manager — that
+   changes what installed the dependencies without telling the user. Report the
+   failure and offer the documented fallback with the *same* manager instead:
+   `pnpm --dir .specloop/orchestrator exec loop run` (or the equivalent for
+   whichever manager was chosen). If the user wants `loop` on PATH regardless, ask
+   before reaching for a different package manager's link command.
 
 ## Phase 3 — Report backlog state. Do not run it.
 

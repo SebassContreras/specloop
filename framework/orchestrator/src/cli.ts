@@ -5,6 +5,7 @@ import {
   parseRoadmap,
   pickNextSpec,
   writeSpecStatus,
+  type SpecRef,
   type SpecStatus,
 } from './roadmap.js';
 import {
@@ -41,14 +42,23 @@ function rollUpStatus(tasks: TaskRow[]): SpecStatus {
   return 'in_progress';
 }
 
+function specHasRunnableWork(spec: SpecRef): boolean {
+  try {
+    const tasks = parseTasks(tasksPath(cwd, spec.id, spec.name));
+    return !!nextRunnableTask(tasks);
+  } catch {
+    return false;
+  }
+}
+
 function run(): void {
   const config = loadConfig(cwd);
   clearStop(config, cwd);
   const roadmap = parseRoadmap(cwd);
-  const spec = pickNextSpec(roadmap);
+  const spec = pickNextSpec(roadmap, specHasRunnableWork);
   if (!spec) {
     console.log(
-      '[loop] nothing eligible to run — check planning/roadmap.md status/deps.',
+      '[loop] nothing eligible to run — check planning/roadmap.md status/deps, or every eligible spec has no runnable tasks yet.',
     );
     return;
   }

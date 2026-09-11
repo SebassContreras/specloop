@@ -5,11 +5,11 @@ Index of all specs: order, status, dependencies.
 | ID  | Plan                      | Status      | Depends on         | Priority |
 |-----|---------------------------|-------------|--------------------|----------|
 | 001 | scaffold-and-spec-skill   | done        | —                  | —        |
-| 002 | loop-orchestrator         | interrupted | 001, 003           | —        |
-| 003 | task-breakdown-skill      | interrupted | 001, 004           | —        |
-| 004 | design-closing-skill      | interrupted | 001                | —        |
+| 002 | loop-orchestrator         | in_progress | 001, 003           | —        |
+| 003 | task-breakdown-skill      | done        | 001, 004           | —        |
+| 004 | design-closing-skill      | in_progress | 001                | —        |
 | 005 | open-source-release       | done        | 001                | —        |
-| 006 | e2e-smoke-testing         | blocked     | 001, 002, 003, 004 | 1        |
+| 006 | e2e-smoke-testing         | in_progress | 001, 002, 003, 004 | 1        |
 | 007 | orchestrator-unit-tests   | todo        | 002                | 2        |
 | 008 | ci-pipeline               | todo        | 007                | 3        |
 | 009 | status-dashboard-skill    | todo        | 001                | 4        |
@@ -37,10 +37,13 @@ per below). **It's a historical/informational value, not the authoritative seque
 priorities were assigned once at spec-creation time and go stale as work completes; the
 "Build order" list below, updated as decisions change, is what actually governs.
 
-`002`/`003`/`004` are `interrupted` rather than `done`: every task is complete except a
-live-interactive local test that cannot be scripted (`002` T11, `003` T7, `004` T7).
-Those runs are what `006` exists to perform. `006` is `blocked` for the same reason —
-it cannot start until those interactive sessions happen.
+`002`/`003`/`004`/`006`'s live-interactive local tests (`002` T11, `003` T7, `004` T7,
+`006` T10) all ran 2026-09-11 under a live OpenCode session against
+`test/architecture-absent-fixture/` — `003` closed with nothing else open, `002` and
+`004` each surfaced one real follow-up task from the run (`002` T21: recovering a task
+stuck `in_progress` after an ungraceful kill; `004` T13: reusing `start`'s type-keyed
+header template when `design-closing` has to create `planning/architecture.md` from
+scratch), and `006` still has `T012` (split-pane backends) open, unrelated to this run.
 
 ## Build order
 

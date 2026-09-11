@@ -19,11 +19,14 @@ generated, personal-use tool) — `bin/loop.cjs` is a two-line shim that require
 ## The console command: `loop`
 
 Package declares `"bin": { "loop": "./bin/loop.cjs" }`. `specloop:loop-setup` runs
-`pnpm install && pnpm link --global` inside the generated package so `loop` resolves
-directly on PATH in that shell — no `pnpm exec`/`npx` prefix needed, matching the
-target shape (`loop run`). Document the direct-invocation fallback
-(`pnpm --dir .specloop/orchestrator exec loop run`) for a shell where global linking
-isn't wanted.
+`<manager> install && <manager> link --global` inside the generated package (the
+target repo's own package manager — from its `toolchain` decision if one exists,
+asked otherwise, never hardcoded `pnpm`) so `loop` resolves directly on PATH in that
+shell — no `exec`/`npx` prefix needed, matching the target shape (`loop run`).
+Document the direct-invocation fallback (`<manager> --dir .specloop/orchestrator
+exec loop run`, e.g. `pnpm --dir ...`) for a shell where global linking isn't
+wanted, or where the global-link step itself fails for that manager — fall back to
+the same manager's local form, never switch managers silently.
 
 Subcommands:
 
@@ -112,7 +115,8 @@ reasoning and `tasks.md` T19.
    `"none"` if the user is unsure).
 3. Copy `framework/orchestrator/` into the target repo at `.specloop/orchestrator/`.
 4. Write `.specloop/loop.config.json` from the answers.
-5. Run `pnpm install && pnpm link --global` inside `.specloop/orchestrator/`.
+5. Run `<manager> install && <manager> link --global` inside `.specloop/orchestrator/`,
+   using the target repo's own package manager (never a hardcoded `pnpm`).
 6. Tell the user it's ready: run `loop run` whenever they choose. **Do not run it
    automatically** — same deliberate-step rule as every other spec here.
 

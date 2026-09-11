@@ -82,11 +82,26 @@ export function writeSpecStatus(
   if (changed) writeFileSync(path, lines.join('\n'));
 }
 
-export function pickNextSpec(rows: RoadmapRow[]): RoadmapRow | undefined {
+/**
+ * `hasRunnableWork` lets the caller check a candidate's own `tasks.md` without
+ * this module knowing about task parsing. Required because roadmap row order
+ * is not execution order: specs with no shared dependency are routinely
+ * closed (`design-closing`/`task-breakdown`) out of row order, so the spec
+ * listed first can easily still be an empty stub while a later one already
+ * has runnable tasks. Without this check, a `todo` spec with 0 tasks parses
+ * as "not done" forever (`rollUpStatus` has nothing to roll up to but
+ * `'todo'`), so the loop would re-select it every run and never reach the
+ * spec that's actually ready.
+ */
+export function pickNextSpec(
+  rows: RoadmapRow[],
+  hasRunnableWork: (row: RoadmapRow) => boolean,
+): RoadmapRow | undefined {
   const byId = new Map(rows.map((r) => [r.id, r]));
   const resuming = rows.find((r) => r.status === 'in_progress');
   if (resuming) return resuming;
   return rows
     .filter((r) => r.status === 'todo')
-    .find((r) => r.dependsOn.every((dep) => byId.get(dep)?.status === 'done'));
+    .filter((r) => r.dependsOn.every((dep) => byId.get(dep)?.status === 'done'))
+    .find((r) => hasRunnableWork(r));
 }

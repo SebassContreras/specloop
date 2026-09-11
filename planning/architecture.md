@@ -138,7 +138,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   tasks pipeline, and nothing in the loop/roadmap reads it. See `023`'s design for why.
 - Orchestrator runtime: Node.js + TypeScript, run via `tsx` (no build step to
   maintain). Console command: `loop` (`loop run` / `loop stop` / `loop status`),
-  linked into PATH by `loop-setup` via `pnpm link --global`.
+  linked into PATH by `loop-setup` — using whichever package manager the target
+  repo's own `toolchain` decision names, or asks if there isn't one, never a
+  hardcoded `pnpm`. A global-link failure falls back to running the *same*
+  manager's local exec form, never a silent switch to a different one (found live,
+  `006` T010: `pnpm link --global` failed on pnpm 11 and the first attempt fell back
+  to `npm link` unasked).
 - Per-target-repo config file: `.specloop/loop.config.json` (`workers` — an array of
   `{cli, args}`, round-robined by task order when there's more than one — plus
   `splitMode`, `logDir`, `contextFiles`) — written by `skills/start`'s guided Q&A,

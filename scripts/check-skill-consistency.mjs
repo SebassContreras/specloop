@@ -27,6 +27,7 @@ const ok = (cond, msg) => {
 };
 const group = (name) => console.log(`\n${name}`);
 const read = (p) => readFileSync(p, 'utf8');
+const normalize = (s) => s.toLowerCase().replace(/\s+/g, ' ');
 
 const start = read('skills/start/SKILL.md');
 const designClosing = read('skills/design-closing/SKILL.md');
@@ -150,6 +151,19 @@ group('[9] loop-setup gates execution, not scaffolding');
 ok(/Do not refuse on an empty `tasks\.md`/.test(loopSetup), 'refusal moved to execution');
 ok(!/Refuse and stop/.test(loopSetup), 'no leftover hard refusal');
 ok(/contextFiles/.test(loopSetup), 'loop-setup confirms contextFiles');
+const loopSetupFlat = normalize(loopSetup);
+ok(
+  loopSetupFlat.includes('package manager') && loopSetupFlat.includes('never assume `pnpm`'),
+  'loop-setup asks which package manager to use, rather than assuming pnpm (regression check for 002 T020)',
+);
+ok(
+  !/^Run, inside `\.specloop\/orchestrator\/`: `pnpm install && pnpm link --global`\.$/m.test(loopSetup),
+  "loop-setup's install step doesn't hardcode pnpm as the only manager",
+);
+ok(
+  loopSetupFlat.includes('do not silently retry with a *different* package manager'),
+  'loop-setup forbids silently switching package managers on a link failure',
+);
 
 group('[10] No new harness-specific assumptions in the helper-skills recommendation step');
 // Legitimate Claude-Code-specific mentions (the .claude-plugin/ distribution path)
@@ -186,7 +200,6 @@ ok(
   questionBank.includes('## Help-me-decide protocol'),
   'question-bank documents the help-me-decide protocol',
 );
-const normalize = (s) => s.toLowerCase().replace(/\s+/g, ' ');
 const startFlat = normalize(start);
 const questionBankFlat = normalize(questionBank);
 for (const phrase of ['researchable', 'never infer a choice', 'never pass a guess off as researched']) {
