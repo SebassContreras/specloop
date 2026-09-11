@@ -52,6 +52,49 @@ function specHasRunnableWork(spec: SpecRef): boolean {
   }
 }
 
+/**
+ * Recovers tasks left `in_progress` by a process that's gone — an enclosing
+ * shell's own timeout, a crash, `kill -9`, anything that skipped safeStop's
+ * clean path. Deliberately called exactly **once**, before this `run()` call's
+ * own dispatch loop starts: any task already `in_progress` at that moment
+ * predates this invocation, so it's safe to judge by its registered PID. A
+ * task *this* loop or a split-pane it just launched puts into `in_progress`
+ * a moment later must never be re-examined here — the detached process
+ * hasn't had a chance to register its own PID yet, so re-checking on every
+ * loop iteration (as an earlier version of this function did) reads a
+ * just-launched task as already-dead and re-dispatches it, spawning a fresh
+ * pane every iteration until one finally wins the race.
+ */
+function recoverStaleTasks(
+  config: ReturnType<typeof loadConfig>,
+  spec: SpecRef,
+  path: string,
+): void {
+  const tasks = parseTasks(path);
+  const stuck = tasks.filter(
+    (t) =>
+      t.owner === 'agent' &&
+      t.status === 'in_progress' &&
+      !isTaskStillRunning(config, cwd, spec.id, t.id),
+  );
+  for (const t of stuck) {
+    writeTaskStatus(
+      path,
+      t.id,
+      'interrupted',
+      'recovered — no live process was still working this task',
+    );
+    clearTaskPid(config, cwd, spec.id, t.id);
+  }
+  if (stuck.length > 0) {
+    console.log(
+      `[loop] recovered ${stuck.length} task(s) left in_progress by a process that's gone: ${stuck
+        .map((t) => t.id)
+        .join(', ')}`,
+    );
+  }
+}
+
 function run(): void {
   const config = loadConfig(cwd);
   clearStop(config, cwd);
@@ -65,6 +108,7 @@ function run(): void {
   }
   const path = tasksPath(cwd, spec.id, spec.name);
   console.log(`[loop] working spec ${spec.id}-${spec.name}`);
+  recoverStaleTasks(config, spec, path);
 
   // Round-robins across config.workers by task order, across all specs the
   // loop works in one `run()` call.
@@ -78,35 +122,6 @@ function run(): void {
     const tasks = parseTasks(path);
     const task = nextRunnableTask(tasks);
     if (!task) {
-      // A task can sit at `in_progress` with nothing actually working it: the
-      // process that was running it (this loop, or a detached split-pane) got
-      // killed without going through safeStop's clean path. nextRunnableTask
-      // deliberately won't resume an `in_progress` row on its own — that's
-      // right when the registered owner is still alive — so recover only the
-      // ones whose owner is provably gone before giving up on this spec.
-      const stuck = tasks.filter(
-        (t) =>
-          t.owner === 'agent' &&
-          t.status === 'in_progress' &&
-          !isTaskStillRunning(config, cwd, spec.id, t.id),
-      );
-      if (stuck.length > 0) {
-        for (const t of stuck) {
-          writeTaskStatus(
-            path,
-            t.id,
-            'interrupted',
-            'recovered — no live process was still working this task',
-          );
-          clearTaskPid(config, cwd, spec.id, t.id);
-        }
-        console.log(
-          `[loop] recovered ${stuck.length} task(s) left in_progress by a process that's gone: ${stuck
-            .map((t) => t.id)
-            .join(', ')}`,
-        );
-        continue;
-      }
       // The roadmap's Status column has no other writer: without this the row
       // stays in_progress forever, pickNextSpec keeps resuming this same spec,
       // and no todo row can ever become eligible.

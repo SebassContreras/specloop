@@ -115,12 +115,23 @@ working it.
   `windowsTerminal`/`tmux` (`cli.ts`'s `runTask()`, invoked via `_run-task`) — never
   the master for a detached task, since the master moves on immediately and would
   go stale itself while the pane is still genuinely working.
-- Before a spec with no `todo`/`interrupted` task left is reported as having "no
-  remaining runnable tasks", `run()` checks any `in_progress` task's registered PID
-  (`process.kill(pid, 0)`, a portable liveness probe on both POSIX and Windows): a
-  live PID is left alone; a dead or missing one is flipped to `interrupted` (same
-  recovery path `nextRunnableTask` already gives an interrupted task) and retried in
-  the same `run()` call.
+- Before `run()`'s dispatch loop starts (`recoverStaleTasks`, called **exactly
+  once** per invocation, never inside the loop), it checks any `in_progress` task's
+  registered PID (`process.kill(pid, 0)`, a portable liveness probe on both POSIX
+  and Windows): a live PID is left alone; a dead or missing one is flipped to
+  `interrupted` (same recovery path `nextRunnableTask` already gives an interrupted
+  task) so the dispatch loop picks it up like any other runnable task.
+- **Why exactly once, and before the loop rather than inside it**: a task already
+  `in_progress` when `run()` starts necessarily predates this invocation, so judging
+  it by its registered PID is safe. A task *this* call dispatches into a detached
+  pane is a different story — the master writes `in_progress` and moves on
+  immediately, before the pane has had any chance to register its own PID. Checking
+  on every loop iteration (an earlier version of this code did) reads that
+  just-dispatched task as already-dead a moment later, and re-dispatches it — every
+  iteration, forever, each one spawning a fresh pane. Found live testing `006` T012
+  (`windowsTerminal`): 13 iterations, 9 real stray `cmd` windows each running a real
+  worker, before one finally won the race. `splitMode: "none"` was never affected
+  (synchronous, no such gap).
 - Not a defense against PID reuse after a reboot — an unrelated process landing on
   the same PID would misread as still running. Acceptable for a local dev-loop tool,
   not a distributed lock.

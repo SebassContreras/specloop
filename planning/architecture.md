@@ -118,13 +118,19 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   never left stuck.** Whichever process actually blocks on a task's worker (the master
   under `splitMode: "none"`, or the detached pane's own process under
   `windowsTerminal`/`tmux`) registers its own PID in `.specloop/logs/task-pids.json`
-  before starting it, and clears the entry when it finishes. Before giving up on a
-  spec with no `todo`/`interrupted` task left, `loop run` checks any `in_progress` task
-  against that registry: a live PID means genuinely still running (left alone); a dead
-  or missing one means the owning process died without going through safe stop, so the
-  task is flipped to `interrupted` and retried. Found live (`006` T010): an invoking
-  shell's own command timeout — not the orchestrator's own 30-minute one — killed a
-  worker mid-task, and nothing before this recovered it automatically.
+  before starting it, and clears the entry when it finishes. **Exactly once** before
+  `loop run`'s dispatch loop starts — never on every loop iteration — it checks any
+  `in_progress` task against that registry: a live PID means genuinely still running
+  (left alone); a dead or missing one means the owning process died without going
+  through safe stop, so the task is flipped to `interrupted` and picked up like any
+  other runnable task. Found live (`006` T010): an invoking shell's own command
+  timeout — not the orchestrator's own 30-minute one — killed a worker mid-task, and
+  nothing before this recovered it automatically. **The "exactly once" part is load-
+  bearing, not an optimization**: an in-loop version of this check (found live
+  testing `006` T012, `windowsTerminal` mode) read a task the master had *just*
+  dispatched into a detached pane as already-dead — before the pane had any chance to
+  register its own PID — and re-dispatched it every iteration, spawning a fresh
+  window each time (13 iterations, 9 real stray processes before one won the race).
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
