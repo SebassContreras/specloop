@@ -84,6 +84,18 @@ dumb on purpose now — that's not an oversight to fix.
   SDK worker kind for a script that has no harness of its own to prefer.
   Still undesigned.
 
+## Also done this session, minor
+
+A general alignment pass after the above: `CLAUDE.md`'s "current state" paragraph
+was stale from *before* this whole session (still said `001` `in_progress`,
+`016`/`017`/`006` unstarted) — rewritten against the actual roadmap. `CHANGELOG.md`'s
+`002` entry still claimed `windowsTerminal`/`tmux` backends ship — corrected in
+place (nothing here has been tagged in a release yet, so this isn't rewriting
+shipped history). Fixed one real pre-existing bug unrelated to today's pivot:
+`loop-setup` still said "the configured `workerCli`" (singular) after the config
+moved to a `workers[]` array a while ago. `scripts/check-skill-consistency.mjs`
+now also loads `skills/loop/SKILL.md` so its own file references get validated.
+
 ## Not verified — don't claim otherwise
 
 - `skills/loop/SKILL.md` itself has not been run live yet — it was written and
