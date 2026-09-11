@@ -97,7 +97,16 @@ Replace the file's `TBD` stub with:
    the operative form to `AGENTS.md`'s "Stack & conventions". This is the mechanism
    that keeps those files current as specs close — without it they stay whatever the
    bootstrap left behind. Append only; never rewrite an existing decision without
-   telling the user which one is changing.
+   telling the user which one is changing. **If `planning/architecture.md` doesn't
+   exist yet** (the project's `start` run never got to Phase 3, or the file was
+   otherwise never created), create it using `skills/start/SKILL.md` Phase 1's
+   type-keyed header template — read `planning/product.md` for the project type and
+   use its matching header set (`Container`/`Stack`/`Conventions` for software,
+   `Channels`/`Tools`/`Data sources` for marketing, `Systems`/`Cadence`/`Handoffs` for
+   operations, `Sources`/`Method`/`Output` for research, `Tools`/`Inputs/Outputs` for
+   other), plus the `Fixed rules`/`Still to define`/`Declined` headers — never
+   improvised ad-hoc headers, so the file's shape doesn't depend on which skill
+   happens to create it first.
 
 ## Phase 3 — Stop. Do not chain into task-breakdown.
 

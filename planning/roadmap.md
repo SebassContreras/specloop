@@ -7,7 +7,7 @@ Index of all specs: order, status, dependencies.
 | 001 | scaffold-and-spec-skill   | done        | —                  | —        |
 | 002 | loop-orchestrator         | done        | 001, 003           | —        |
 | 003 | task-breakdown-skill      | done        | 001, 004           | —        |
-| 004 | design-closing-skill      | in_progress | 001                | —        |
+| 004 | design-closing-skill      | done        | 001                | —        |
 | 005 | open-source-release       | done        | 001                | —        |
 | 006 | e2e-smoke-testing         | in_progress | 001, 002, 003, 004 | 1        |
 | 007 | orchestrator-unit-tests   | todo        | 002                | 2        |

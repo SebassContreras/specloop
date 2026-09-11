@@ -214,5 +214,18 @@ ok(
   'architecture.md\'s fixed-rules summary mentions the help-me-decide protocol',
 );
 
+group("[13] design-closing reuses start's type-keyed architecture.md header template (004 T013)");
+const headerSetBlock = start.match(/Use the header set matching the answered `project-type`:[\s\S]*?(?=\n\n|\n  `design-closing`)/);
+ok(!!headerSetBlock, "start's Phase 1 defines the type-keyed header sets");
+const headerNames = [...(headerSetBlock ? headerSetBlock[0] : '').matchAll(/`([A-Za-z /]+)`/g)].map((m) => m[1]);
+ok(headerNames.length >= 10, `found ${headerNames.length} type-keyed header names in start`);
+for (const h of headerNames) {
+  ok(designClosing.includes(`\`${h}\``), `design-closing also names header \`${h}\` (not an improvised one)`);
+}
+ok(
+  normalize(designClosing).includes("skills/start/skill.md` phase 1's"),
+  'design-closing points at start Phase 1 as the template source, rather than restating an independent one',
+);
+
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);
