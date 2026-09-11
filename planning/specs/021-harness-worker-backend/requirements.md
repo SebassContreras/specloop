@@ -1,5 +1,18 @@
 # 021 — harness-worker-backend
 
+## Scope narrowed 2026-09-11
+
+`skills/loop/SKILL.md` (new, `002` T026) already covers the same efficiency
+goal for its own execution path: when the agent running that skill is itself
+the same provider as a task's configured worker, it prefers its own harness's
+native way of spawning a sub-agent over shelling out that provider's CLI —
+in-process, structured, watchable. That happens for free there, no SDK
+integration file needed, because the "master" in that skill already is a live
+agent. **This spec is now specifically about the deterministic `loop run`
+path** (`framework/orchestrator/`) — a plain Node script with no harness of
+its own, which can only ever shell out unless it embeds the Claude Agent SDK
+directly, as originally proposed below.
+
 ## What's being built
 
 A second `WorkerSpec` kind, additive alongside today's CLI-spawn one

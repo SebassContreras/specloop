@@ -55,11 +55,12 @@ Ask, one at a time, waiting for each reply:
    `claude` suggest `-p` (print mode); for another CLI, ask the user what its
    headless/non-interactive flag is. Nothing visual runs for the user — every
    task runs sequentially, inline in whichever terminal the user starts
-   `loop run` in, with output relayed live and also logged to disk. If a task's
-   output looks like a hit usage/rate limit, the loop pauses and asks
-   interactively which configured worker to switch to (or a brand-new CLI
-   name) before retrying — mention this so the user understands why naming
-   more than one worker CLI here is useful even outside round-robin.
+   `loop run` in, with output relayed live and also logged to disk. Naming
+   more than one worker CLI here also matters for `specloop:loop` (the
+   interactive, chat-driven alternative to `loop run` — see its own SKILL.md):
+   it can ask the user, mid-run, to switch to a different configured worker if
+   one looks like it hit a usage/rate limit. `loop run` itself has no such
+   judgement — a suspected limit there just becomes an ordinary `blocked` task.
 2. Default `logDir` to `.specloop/logs` unless the user wants something else.
 3. **Context files** — confirm `contextFiles` lists the files a worker must read
    before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;
@@ -111,8 +112,10 @@ Ask, one at a time, waiting for each reply:
 
 ## Phase 3 — Report backlog state. Do not run it.
 
-Tell the user setup is done and that `loop run` is ready whenever they choose to start
-it — plus `loop stop` (safe stop from another terminal) and `loop status`.
+Tell the user setup is done and name both ways to actually run it, whenever they
+choose to: `specloop:loop` (interactive — run it in this chat, gets asked about
+worker switches on a suspected usage-limit hit) or the deterministic `loop run`
+CLI (unattended/CI-friendly, no judgement, `loop stop`/`loop status` alongside it).
 
 Then report what the loop would actually find: if no spec has agent-runnable tasks
 yet, say so and name the next step (`specloop:design-closing`, then

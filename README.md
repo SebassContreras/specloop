@@ -24,7 +24,7 @@ flowchart LR
     A["/specloop:start"] -->|"AGENTS.md, product.md,<br/>architecture.md, roadmap.md"| B["/specloop:design-closing"]
     B -->|"design.md"| C["/specloop:task-breakdown"]
     C -->|"tasks.md"| D["/specloop:loop-setup"]
-    D -->|".specloop/orchestrator/"| E["loop run"]
+    D -->|".specloop/orchestrator/"| E["/specloop:loop (interactive)<br/>or loop run (unattended)"]
 ```
 
 <!--
@@ -96,9 +96,16 @@ actually ready — none of them chain automatically:
    your repo (`.specloop/orchestrator/`) and puts `loop` on PATH. The loop folder's
    config already exists from step 1; this adds the payload. It no longer refuses on
    an empty backlog — it installs and tells you what's still needed.
-5. **`loop run`** — starts working through the roadmap's next eligible spec, task by
-   task. `loop stop` triggers a safe stop (marks the in-flight task `interrupted`,
-   logs where it left off); `loop status` shows what's running.
+5. Two ways to actually run it, pick one per session:
+   - **`/specloop:loop`** — interactive: this chat session is the master. It reads
+     the roadmap and tasks itself, runs each one, and asks you directly if a worker
+     looks like it hit a usage/rate limit — no separate process, nothing to watch
+     elsewhere.
+   - **`loop run`** — deterministic and unattended (CI, or nobody watching): works
+     through the roadmap's next eligible spec task by task with no judgement calls;
+     a failure just becomes `blocked` for you to resolve later. `loop stop` triggers
+     a safe stop (marks the in-flight task `interrupted`, logs where it left off);
+     `loop status` shows what's running.
 
 ## Docs
 

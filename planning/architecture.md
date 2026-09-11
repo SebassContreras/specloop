@@ -134,12 +134,26 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   re-dispatched it every iteration, spawning a fresh window each time (13 iterations,
   9 real stray processes before one won the race). The race no longer applies now
   that there's no detached pane to race against, but the exactly-once rule stays.
-- **A worker hitting its own usage/rate limit pauses the loop with an interactive
-  prompt, not a silent `blocked`.** `quota.ts`'s heuristic scans a failed task's
-  captured log for wording that looks like a usage/rate-limit hit; on a match,
-  `loop run` asks which configured worker to switch to (or a new CLI name on the
-  spot) before retrying. Detection is best-effort and unverified against any real
-  CLI's actual wording — see `002-loop-orchestrator/design.md`.
+- **Two loop modes, one deterministic, one interactive — quota-exhaustion
+  handling only lives in the latter.** `loop run` (`framework/orchestrator/`)
+  is a plain, unattended Node script: a failed task is just `blocked`,
+  exit-code only, no judgement, nothing asked — correct for CI or any run
+  nobody is watching. `skills/loop/SKILL.md` is the interactive alternative:
+  the chat session running it *is* the master, reads a worker's output itself,
+  judges success/failure/quota-exhaustion with real judgement (no regex), and
+  asks the user directly in the conversation which configured worker to
+  switch to on a suspected usage/rate-limit hit. A first attempt put a regex
+  heuristic (`quota.ts`) and a blocking prompt into `loop run` itself,
+  reasoning "the master always holds the terminal" — corrected same day once
+  it became clear "the master" is meant to be a chat session, not necessarily
+  this script, and an unattended run has nobody to answer a prompt regardless.
+  See `002-loop-orchestrator/design.md`.
+- **A skill's own harness can stand in for a worker CLI of the same
+  provider.** `skills/loop`'s Phase 3: when the harness running the skill
+  matches a task's configured worker's provider, prefer that harness's own
+  native way of spawning a sub-agent over shelling out that provider's CLI —
+  phrased generically so it holds under any compatible harness, not
+  Claude-Code-only (matches the Container section's open-format rule).
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
@@ -188,8 +202,6 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 
 - Optional subagents (stack research, etc.).
 - Multi-spec parallelism (see `002-loop-orchestrator/design.md`'s open questions).
-- `quota.ts`'s usage/rate-limit detection patterns, unverified against any real
-  worker CLI's actual wording yet.
 
 ## Declined
 

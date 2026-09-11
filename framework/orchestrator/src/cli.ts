@@ -1,6 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createInterface } from 'node:readline/promises';
 import { loadConfig } from './config.js';
 import {
   parseRoadmap,
@@ -25,7 +24,6 @@ import {
   markInterrupted,
 } from './safeStop.js';
 import { registerTaskPid, clearTaskPid, isTaskStillRunning } from './taskLock.js';
-import { looksLikeQuotaExhausted } from './quota.js';
 
 const cwd = process.cwd();
 
@@ -96,65 +94,13 @@ async function runOne(
   spec: SpecRef,
   task: TaskRow,
   workerIndex: number,
-): Promise<{ ok: boolean; log: string; lastLogLine: string }> {
+): Promise<{ ok: boolean; lastLogLine: string }> {
   console.log(`[loop] running task ${task.id}: ${task.task}`);
   const { ok, log } = await runWorker(config, spec, task, cwd, workerIndex);
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   writeFileSync(join(cwd, config.logDir, `${spec.id}-${task.id}.log`), log);
   const lines = log.trim().split('\n');
-  return { ok, log, lastLogLine: lines.at(-1) ?? '' };
-}
-
-type WorkerSwitchChoice =
-  | { action: 'retry'; workerIndex: number }
-  | { action: 'skip' }
-  | { action: 'stop' };
-
-/**
- * Asked only when a task's output looks like a hit usage/rate limit
- * (`quota.ts`'s heuristic) — never proactively. The master is always the one
- * holding this terminal now (no detached panes), so it can safely block on
- * stdin here without stalling anything else.
- */
-async function promptForWorkerSwitch(
-  config: ReturnType<typeof loadConfig>,
-  task: TaskRow,
-  lastLogLine: string,
-): Promise<WorkerSwitchChoice> {
-  console.log(
-    `[loop] task ${task.id}'s worker looks like it hit a usage/rate limit: "${lastLogLine.slice(0, 200)}"`,
-  );
-  console.log('[loop] configured workers:');
-  config.workers.forEach((w, i) =>
-    console.log(`  ${i}: ${w.cli} ${w.args.join(' ')}`),
-  );
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  try {
-    const answer = (
-      await rl.question(
-        '[loop] type a worker number to switch to it, a new CLI name to add one, "skip" to mark this task blocked and move on, "stop" to halt the loop, or Enter to retry the same worker: ',
-      )
-    ).trim();
-    if (answer === '') return { action: 'retry', workerIndex: -1 };
-    if (answer.toLowerCase() === 'skip') return { action: 'skip' };
-    if (answer.toLowerCase() === 'stop') return { action: 'stop' };
-    const asNumber = Number(answer);
-    if (Number.isInteger(asNumber) && config.workers[asNumber]) {
-      return { action: 'retry', workerIndex: asNumber };
-    }
-    const extraArgs = (
-      await rl.question(
-        `[loop] extra args for "${answer}" (space-separated, or blank): `,
-      )
-    ).trim();
-    config.workers.push({
-      cli: answer,
-      args: extraArgs ? extraArgs.split(' ') : [],
-    });
-    return { action: 'retry', workerIndex: config.workers.length - 1 };
-  } finally {
-    rl.close();
-  }
+  return { ok, lastLogLine: lines.at(-1) ?? '' };
 }
 
 async function run(): Promise<void> {
@@ -201,23 +147,7 @@ async function run(): Promise<void> {
     }
     registerTaskPid(config, cwd, spec.id, task.id);
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
-    let result = await runOne(config, spec, task, workerIndex);
-    let skippedByUser = false;
-
-    while (!result.ok && looksLikeQuotaExhausted(result.log)) {
-      const choice = await promptForWorkerSwitch(config, task, result.lastLogLine);
-      if (choice.action === 'stop') {
-        clearTaskPid(config, cwd, spec.id, task.id);
-        markInterrupted(path, task.id, result.lastLogLine);
-        return;
-      }
-      if (choice.action === 'skip') {
-        skippedByUser = true;
-        break;
-      }
-      workerIndex = choice.workerIndex === -1 ? workerIndex : choice.workerIndex;
-      result = await runOne(config, spec, task, workerIndex);
-    }
+    const result = await runOne(config, spec, task, workerIndex);
     workerIndex++;
     clearTaskPid(config, cwd, spec.id, task.id);
 
@@ -228,7 +158,7 @@ async function run(): Promise<void> {
     writeTaskStatus(
       path,
       task.id,
-      !skippedByUser && result.ok ? 'done' : 'blocked',
+      result.ok ? 'done' : 'blocked',
       result.lastLogLine,
     );
   }

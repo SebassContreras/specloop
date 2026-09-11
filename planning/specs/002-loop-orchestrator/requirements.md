@@ -20,11 +20,26 @@
   - Mark the task in progress as `interrupted` in its corresponding `tasks.md` (not
     `done` nor `todo`).
   - Leave a log of where it stopped, so it can be resumed later.
-- **Quota-exhaustion recovery**: if a worker's output looks like it hit its own
-  usage/rate limit, pause before marking the task `blocked` and ask the user
-  interactively which configured worker to switch to (or name a new CLI on the
-  spot), then retry the same task with it. Detection is a best-effort heuristic
-  (`quota.ts`), not a guarantee — see `design.md`.
+- **Quota-exhaustion recovery lives in the interactive skill, not the script.**
+  First built as a regex heuristic (`quota.ts`) plus a blocking `readline`
+  prompt directly in the deterministic `loop run` CLI — reasoning that the
+  master always holds the terminal now that split panes are gone. **Corrected
+  same day**: the user's actual intent is a chat session *being* the master,
+  which may or may not be the same thing as this Node script — and an
+  unattended `loop run` (CI, or nobody watching) has nobody to answer a
+  prompt regardless. Split into two answers: `loop run` reverted to plain
+  exit-code-only `blocked` on any failure, no judgement, nothing asked;
+  `skills/loop/SKILL.md` (new) is the chat-driven alternative — the agent
+  running it reads worker output itself, decides success/failure/quota-
+  exhaustion with real judgement (no regex), and asks the user directly in
+  the conversation which worker to switch to. See `design.md`.
+- **Harness synergy**: because the interactive skill's master is a live agent
+  session, a task whose worker is the same provider as whichever harness is
+  running the skill can be handed to that harness's own native sub-agent
+  mechanism instead of shelled out as a CLI subprocess — phrased generically
+  in the skill so it holds under any compatible harness, not Claude-Code-only
+  (`022`'s rule). Narrows `021` (harness-worker-backend) to just the
+  deterministic `loop run` path, which has no harness of its own to prefer.
 - Reads the target repo's `planning/roadmap.md` as the index of which spec is next and its
   dependencies.
 - **specloop ships a reference implementation**, not just a spec: a working

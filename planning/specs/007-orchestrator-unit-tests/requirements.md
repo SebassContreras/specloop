@@ -19,14 +19,18 @@
 
 ## Out of scope
 
-- Testing `quota.ts`'s interactive `promptForWorkerSwitch` prompt itself (needs
-  real stdin) — cover only `looksLikeQuotaExhausted`'s pure pattern-matching.
+- Testing `skills/loop/SKILL.md` (the interactive orchestrator) — it's
+  instructions for an agent, not code; nothing to unit-test.
 - Wiring this into CI — that's `008-ci-pipeline`.
 
 ## Note
 
-`splitPane/` (`windowsTerminal.ts`/`tmux.ts`) no longer exists — the loop-orchestrator
-was reverted to a single sequential in-process execution model (`002` T023,
-2026-09-11). Anyone picking this spec up after that date won't find that module;
-`pickNextSpec`/`recoverStaleTasks` (see `002`'s tasks.md T011/T021 notes) are the
-signatures worth writing tests against instead.
+Two things changed shape since this spec was drafted, both 2026-09-11:
+`splitPane/` (`windowsTerminal.ts`/`tmux.ts`) no longer exists — reverted to a
+single sequential in-process execution model (`002` T023); and `quota.ts`/
+`promptForWorkerSwitch` (briefly added as `002` T024, a regex-based
+quota-exhaustion prompt in `cli.ts`) were removed again in `002` T025 — that
+judgement call now lives only in `skills/loop`, not in this package. Anyone
+picking this spec up after that date won't find any of those files;
+`pickNextSpec`/`recoverStaleTasks` (see `002`'s tasks.md T011/T021 notes) are
+the signatures worth writing tests against instead.
