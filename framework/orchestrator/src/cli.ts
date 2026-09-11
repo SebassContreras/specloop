@@ -24,6 +24,7 @@ import {
   clearStop,
   markInterrupted,
 } from './safeStop.js';
+import { registerTaskPid, clearTaskPid, isTaskStillRunning } from './taskLock.js';
 
 const cwd = process.cwd();
 
@@ -77,6 +78,35 @@ function run(): void {
     const tasks = parseTasks(path);
     const task = nextRunnableTask(tasks);
     if (!task) {
+      // A task can sit at `in_progress` with nothing actually working it: the
+      // process that was running it (this loop, or a detached split-pane) got
+      // killed without going through safeStop's clean path. nextRunnableTask
+      // deliberately won't resume an `in_progress` row on its own — that's
+      // right when the registered owner is still alive — so recover only the
+      // ones whose owner is provably gone before giving up on this spec.
+      const stuck = tasks.filter(
+        (t) =>
+          t.owner === 'agent' &&
+          t.status === 'in_progress' &&
+          !isTaskStillRunning(config, cwd, spec.id, t.id),
+      );
+      if (stuck.length > 0) {
+        for (const t of stuck) {
+          writeTaskStatus(
+            path,
+            t.id,
+            'interrupted',
+            'recovered — no live process was still working this task',
+          );
+          clearTaskPid(config, cwd, spec.id, t.id);
+        }
+        console.log(
+          `[loop] recovered ${stuck.length} task(s) left in_progress by a process that's gone: ${stuck
+            .map((t) => t.id)
+            .join(', ')}`,
+        );
+        continue;
+      }
       // The roadmap's Status column has no other writer: without this the row
       // stays in_progress forever, pickNextSpec keeps resuming this same spec,
       // and no todo row can ever become eligible.
@@ -92,6 +122,11 @@ function run(): void {
       }
       break;
     }
+    if (config.splitMode === 'none') {
+      // Only `none` mode blocks on the worker in this same process — a
+      // detached split-pane registers its own PID from inside `runTask`.
+      registerTaskPid(config, cwd, spec.id, task.id);
+    }
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
     const result = dispatchTask(config, spec, task, cwd, workerIndex);
     workerIndex++;
@@ -100,6 +135,7 @@ function run(): void {
       // Detached pane owns this task's final status flip; move on.
       continue;
     }
+    clearTaskPid(config, cwd, spec.id, task.id);
     if (isStopRequested(config, cwd)) {
       markInterrupted(path, task.id, result?.lastLogLine ?? '');
       break;
@@ -129,7 +165,9 @@ function runTask(
   console.log(`[loop] running task ${task.id}: ${task.task}`);
   // specId/specName/workerIndex arrive as arguments from the split-pane
   // launcher, which runs in its own detached process with no access to the
-  // master's in-memory round-robin counter.
+  // master's in-memory round-robin counter. This process's own PID is this
+  // task's true owner while it runs — the master already moved on.
+  registerTaskPid(config, cwd, specId, taskId);
   const workerIndex = Number(workerIndexArg ?? 0) || 0;
   const { ok, log } = runWorkerSync(
     config,
@@ -141,6 +179,7 @@ function runTask(
   mkdirSync(join(cwd, config.logDir), { recursive: true });
   writeFileSync(join(cwd, config.logDir, `${specId}-${task.id}.log`), log);
   const lastLine = log.trim().split('\n').pop() ?? '';
+  clearTaskPid(config, cwd, specId, taskId);
 
   if (isStopRequested(config, cwd)) {
     markInterrupted(path, task.id, lastLine);

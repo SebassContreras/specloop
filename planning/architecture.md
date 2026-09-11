@@ -114,6 +114,17 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - **Safe stop** (master or child pane): stop, do not start a new task, mark the task in
   progress as `interrupted` in its `tasks.md`, leave a log of where it stopped. A safe
   stop on the master propagates to all active child panes.
+- **A task left `in_progress` by a process that no longer exists is auto-recovered,
+  never left stuck.** Whichever process actually blocks on a task's worker (the master
+  under `splitMode: "none"`, or the detached pane's own process under
+  `windowsTerminal`/`tmux`) registers its own PID in `.specloop/logs/task-pids.json`
+  before starting it, and clears the entry when it finishes. Before giving up on a
+  spec with no `todo`/`interrupted` task left, `loop run` checks any `in_progress` task
+  against that registry: a live PID means genuinely still running (left alone); a dead
+  or missing one means the owning process died without going through safe stop, so the
+  task is flipped to `interrupted` and retried. Found live (`006` T010): an invoking
+  shell's own command timeout — not the orchestrator's own 30-minute one — killed a
+  worker mid-task, and nothing before this recovered it automatically.
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,

@@ -5,7 +5,7 @@ Index of all specs: order, status, dependencies.
 | ID  | Plan                      | Status      | Depends on         | Priority |
 |-----|---------------------------|-------------|--------------------|----------|
 | 001 | scaffold-and-spec-skill   | done        | —                  | —        |
-| 002 | loop-orchestrator         | in_progress | 001, 003           | —        |
+| 002 | loop-orchestrator         | done        | 001, 003           | —        |
 | 003 | task-breakdown-skill      | done        | 001, 004           | —        |
 | 004 | design-closing-skill      | in_progress | 001                | —        |
 | 005 | open-source-release       | done        | 001                | —        |

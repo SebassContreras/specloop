@@ -100,6 +100,31 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
   panes (already polling it) stop the same way independently — no direct
   parent→child signaling required, keeping the split-pane processes decoupled.
 
+## Stale `in_progress` recovery (`taskLock.ts`)
+
+Safe stop only covers a clean shutdown. A process killed some other way (an
+enclosing shell's own command timeout, a crash, `kill -9`) leaves its current task
+at `in_progress` with nothing left to ever move it — `nextRunnableTask` deliberately
+won't resume an `in_progress` row on its own, since a live owner might still be
+working it.
+
+- Whichever process actually blocks on a task's worker registers its own PID in
+  `<logDir>/task-pids.json` (keyed `<specId>-<taskId>`) before starting it, and
+  clears the entry when it finishes: the master itself under `splitMode: "none"`
+  (`cli.ts`'s `run()`), or the detached pane's own process under
+  `windowsTerminal`/`tmux` (`cli.ts`'s `runTask()`, invoked via `_run-task`) — never
+  the master for a detached task, since the master moves on immediately and would
+  go stale itself while the pane is still genuinely working.
+- Before a spec with no `todo`/`interrupted` task left is reported as having "no
+  remaining runnable tasks", `run()` checks any `in_progress` task's registered PID
+  (`process.kill(pid, 0)`, a portable liveness probe on both POSIX and Windows): a
+  live PID is left alone; a dead or missing one is flipped to `interrupted` (same
+  recovery path `nextRunnableTask` already gives an interrupted task) and retried in
+  the same `run()` call.
+- Not a defense against PID reuse after a reboot — an unrelated process landing on
+  the same PID would misread as still running. Acceptable for a local dev-loop tool,
+  not a distributed lock.
+
 ## Skill: `specloop:loop-setup`
 
 **Frontmatter:** no `context`/`background` fields — same correction as `001`/`003`/`004`:
@@ -137,6 +162,7 @@ framework/orchestrator/
     ├── tasks.ts            # parse/write a spec's tasks.md (fixed contract)
     ├── worker.ts           # pick a worker (round-robin) and spawn it for one task
     ├── safeStop.ts         # stop-flag read/write, interrupted-row writer
+    ├── taskLock.ts         # per-task PID registry, stale-in_progress recovery
     ├── security.ts         # assertSafePath(): refuse to spawn if PATH has a
                              # world-writable dir (POSIX only — see note below)
     └── splitPane/
