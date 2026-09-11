@@ -16,26 +16,25 @@ Entry point. Everything else lives under `planning/`:
 - [`planning/fix/`](planning/fix/) — a flat, hand-authored log of post-hoc corrections.
   Not a spec, not loop-runnable — see its own `README.md`.
 
-Current state: specs `001`, `003`, `004` have working skills under `skills/`; `002`'s
-reference orchestrator lives under `framework/orchestrator/`; `015` and `014` are
-partly implemented there too (`014`'s worker-language feed, T10, landed). `005`, `020`
-(checklist-task-format), `022` (cross-agent-skill-compat) and `023` (fix-log) are done.
-`022`'s acceptance criteria only required one non-Claude-Code harness verified —
-OpenCode passed a live audit 2026-09-08 (discovery/auto-trigger, `when_to_use`
-tolerance, full-phase write-as-you-go), so `planning/architecture.md`'s Container
-section now names it; Cursor and Codex CLI audits (`022` T001/T002) remain open as
-optional follow-up, not blocking. `017` (project-type-genericity) is in progress:
-type-keyed `architecture.md` headers, `loop-setup`'s all-`human`-backlog check,
-`examples/marketing-content-spec/`, and a local-only `test/sample-marketing-repo/`
-fixture run (untracked — `test/` is gitignored) are done; a second non-software fixture
-landed as a side-effect of `001` T030 (below) — an absent-`architecture.md` live run is
-still deferred (see its `design.md`). `001` (scaffold-and-spec-skill) closed T030, its
-last open item (a live human-answered interview run — `test/ops-onboarding-repo/
-NOTES.md`, local-only, not committed), but stays `in_progress` pending the new T033 it
-surfaced (Phase E skips the `dependencies`/`owner-split` dimensions). Specs
-`016`, `018`, `019` are specced but unstarted; `021` (harness-worker-backend) is
-reserved on the roadmap but not yet designed. Check `planning/roadmap.md` before
-touching anything.
+Current state (2026-09-11): `001`–`006`, `016`, `017`, `020`, `022`, `023` are `done`.
+`001`/`003`/`004` are working skills under `skills/`; `002`'s reference orchestrator
+lives under `framework/orchestrator/`, with two ways to actually run it — the
+deterministic `loop run` CLI (unattended/CI-friendly, no judgement) and the newer
+interactive `skills/loop/SKILL.md` (the chat session running it is the master: reads
+`tasks.md` itself, runs workers, and asks the user directly on a suspected
+usage/rate-limit hit). `014` (worker-context-injection) and `015`
+(roadmap-status-writer) are `in_progress` — both partly implemented already
+(`014`'s worker-language feed, T10, landed). `022`'s acceptance criteria only
+required one non-Claude-Code harness verified — OpenCode passed a live audit
+2026-09-08, so `planning/architecture.md`'s Container section names it; Cursor and
+Codex CLI audits (`022` T001/T002) remain open as optional follow-up, not blocking.
+`021` (harness-worker-backend) is `todo`, narrowed 2026-09-11 to just the
+deterministic `loop run` path (the interactive skill already gets the same benefit
+for free via its own harness-synergy rule) — still not designed. Specs `018`, `019`
+and `007`–`013` are `todo`, unstarted (`007`/`011` requirements.md were corrected
+2026-09-11 to stop describing now-removed `splitPane`/`quota.ts` modules, not
+otherwise touched). Check `planning/roadmap.md` before touching anything — its own
+top section and `planning/handoff.md` carry the detail this paragraph doesn't.
 `skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
 see `planning/architecture.md`'s Container section.
 

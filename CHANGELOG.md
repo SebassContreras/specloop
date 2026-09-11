@@ -154,9 +154,15 @@ bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `00
 - **002 — loop-orchestrator**: `framework/orchestrator/` reference implementation
   (Node.js/TypeScript via `tsx`) + `specloop:loop-setup` skill. `loop run` /
   `loop stop` / `loop status`; safe stop (stop-flag, `interrupted` status,
-  resume log); `windowsTerminal` / `tmux` / `none` split-pane backends; ESLint +
-  Prettier tooling; Sonar S8786 (ReDoS) and S4036 (unsafe `PATH`, POSIX-only)
-  fixes.
+  resume log); ESLint + Prettier tooling; Sonar S8786 (ReDoS) and S4036 (unsafe
+  `PATH`, POSIX-only) fixes. Also ships `skills/loop/SKILL.md`: an interactive
+  alternative where the chat session itself is the master (reads
+  roadmap/tasks.md and runs workers directly, asking the user which worker to
+  switch to on a suspected usage-limit hit) — `loop run` stays the plain,
+  unattended/CI-friendly path with no judgement calls. (An earlier
+  `windowsTerminal`/`tmux` split-pane mode was built, confirmed working, and
+  then deliberately removed the same day — never shipped in a tagged release,
+  not listed here.)
 - **001 — scaffold-and-spec-skill**: `specloop:start` — scaffolds `AGENTS.md` +
   `CLAUDE.md` + `planning/{product,architecture,roadmap}.md` + `.specloop/`; the full
   interview (project type → vision → technologies/architecture/tools → skill

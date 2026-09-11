@@ -83,10 +83,15 @@ kept current as decisions change, is:
    Slotted here rather than earlier because every existing spec's `tasks.md` had to
    migrate in the same pass — doing it before `019`'s content settled would have meant
    migrating twice.
-10. **`021`** — a Claude-Agent-SDK-backed worker kind, additive alongside today's
-    CLI-spawning workers (`codex`/`opencode` keep using a CLI; only Claude gains an
-    in-process option). Not designed yet — depends on `014` for the context-injection
-    contract it must also honor, and on a permission-mode decision `loop-setup`'s Q&A
+10. **`021`** — a Claude-Agent-SDK-backed worker kind for the *deterministic*
+    `loop run` path specifically (a plain script with no harness of its own to
+    prefer), additive alongside today's CLI-spawning workers (`codex`/`opencode`
+    keep using a CLI; only Claude gains an in-process option). Narrowed
+    2026-09-11: the new interactive `skills/loop/SKILL.md` already gets the same
+    efficiency for free on its own path (prefer the running harness's own native
+    sub-agent mechanism when the provider matches), so this is scoped to what's
+    left. Not designed yet — depends on `014` for the context-injection contract
+    it must also honor, and on a permission-mode decision `loop-setup`'s Q&A
     doesn't ask yet.
 11. **`022`** — cross-agent skill compatibility. The positioning shift (specloop's
     skills target the open Agent Skills format, not a Claude-Code-only one) is

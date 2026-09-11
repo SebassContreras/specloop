@@ -33,8 +33,9 @@ const start = read('skills/start/SKILL.md');
 const designClosing = read('skills/design-closing/SKILL.md');
 const taskBreakdown = read('skills/task-breakdown/SKILL.md');
 const loopSetup = read('skills/loop-setup/SKILL.md');
+const loop = read('skills/loop/SKILL.md');
 const questionBank = read('skills/start/references/question-bank.md');
-const allSkills = [start, designClosing, taskBreakdown, loopSetup, questionBank];
+const allSkills = [start, designClosing, taskBreakdown, loopSetup, loop, questionBank];
 
 group('[1] Files referenced by a skill actually exist');
 const refs = new Set();

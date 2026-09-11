@@ -64,7 +64,7 @@ Ask, one at a time, waiting for each reply:
 2. Default `logDir` to `.specloop/logs` unless the user wants something else.
 3. **Context files** — confirm `contextFiles` lists the files a worker must read
    before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;
-   non-existent entries are skipped at run time). If the configured `workerCli` is not
+   non-existent entries are skipped at run time). If any configured `workers[].cli` is not
    `claude`, say plainly that `AGENTS.md` is the only context that CLI auto-loads, so
    this list is how it learns the project's stack and conventions.
 4. **Package manager** for installing the orchestrator's own dependencies — never
