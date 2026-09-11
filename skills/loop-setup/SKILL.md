@@ -2,9 +2,8 @@
 name: loop-setup
 description: >
   One-time setup that generates the loop-orchestrator into the current repo:
-  copies the reference framework, asks which worker CLI and split-pane
-  mechanism to use, writes .specloop/loop.config.json, and wires up the `loop`
-  console command.
+  copies the reference framework, asks which worker CLI(s) to use, writes
+  .specloop/loop.config.json, and wires up the `loop` console command.
 when_to_use: >
   Use when the user wants to install the loop orchestrator so their backlog can
   run automatically. Trigger on phrasing like "set up the loop orchestrator",
@@ -54,20 +53,20 @@ Ask, one at a time, waiting for each reply:
    flag will hang until the orchestrator's timeout kills it, wasting the whole
    task. Ask explicitly for each CLI's flag rather than defaulting to `[]`: for
    `claude` suggest `-p` (print mode); for another CLI, ask the user what its
-   headless/non-interactive flag is.
-2. **Split mode** — explain the tradeoffs plainly, then ask which to use:
-   - `"windowsTerminal"` — live split panes via the `wt` CLI (Windows only).
-   - `"tmux"` — live split panes via `tmux` (Mac/Linux, needs tmux installed).
-   - `"none"` — sequential execution in the master terminal with log-file output
-     instead of live panes. Works everywhere; suggest this by default if the user
-     is unsure or on an OS/setup without `wt`/`tmux`.
-3. Default `logDir` to `.specloop/logs` unless the user wants something else.
-4. **Context files** — confirm `contextFiles` lists the files a worker must read
+   headless/non-interactive flag is. Nothing visual runs for the user — every
+   task runs sequentially, inline in whichever terminal the user starts
+   `loop run` in, with output relayed live and also logged to disk. If a task's
+   output looks like a hit usage/rate limit, the loop pauses and asks
+   interactively which configured worker to switch to (or a brand-new CLI
+   name) before retrying — mention this so the user understands why naming
+   more than one worker CLI here is useful even outside round-robin.
+2. Default `logDir` to `.specloop/logs` unless the user wants something else.
+3. **Context files** — confirm `contextFiles` lists the files a worker must read
    before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;
    non-existent entries are skipped at run time). If the configured `workerCli` is not
    `claude`, say plainly that `AGENTS.md` is the only context that CLI auto-loads, so
    this list is how it learns the project's stack and conventions.
-5. **Package manager** for installing the orchestrator's own dependencies — never
+4. **Package manager** for installing the orchestrator's own dependencies — never
    assume `pnpm`. Check `planning/architecture.md`'s decision register first (a
    software project's `toolchain` dimension may have already settled this); if it
    has, use that and don't re-ask. Otherwise ask: "Which package manager should
@@ -86,7 +85,6 @@ Ask, one at a time, waiting for each reply:
      "workers": [
        { "cli": "<answer>", "args": ["<headless flag>"] }
      ],
-     "splitMode": "<answer>",
      "logDir": ".specloop/logs",
      "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
      "language": "<preserve if already set by specloop:start>"
@@ -126,5 +124,5 @@ name them — the loop will skip those.
 ## Style rules
 
 - Terse and structural, no filler prose.
-- Never guess `workers`/`splitMode` — always ask; these are explicitly
-  user-configurable per the orchestrator's requirements.
+- Never guess `workers` — always ask; explicitly user-configurable per the
+  orchestrator's requirements.

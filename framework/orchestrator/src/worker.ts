@@ -79,11 +79,10 @@ export function pickWorker(config: LoopConfig, workerIndex: number) {
 /**
  * Runs the picked worker CLI for one task, relaying its stdout/stderr to
  * this process's own as each chunk arrives — not just to the returned log
- * once the whole thing exits. Whichever terminal is running this (the
- * master's own in `splitMode: "none"`, or a detached split-pane) is the
- * whole reason that mode exists: a pane that only prints "running task X"
- * and then goes silent until the process ends isn't showing the agent work
- * live, it's just hiding a buffered result behind a delay.
+ * once the whole thing exits. The master's own terminal is the only place
+ * this ever runs (no detached panes): relaying live means whoever is
+ * watching that terminal sees the worker's own progress lines as they
+ * happen, not a silent wait followed by a delayed final result.
  */
 export function runWorker(
   config: LoopConfig,

@@ -19,7 +19,14 @@
 
 ## Out of scope
 
-- Testing `splitPane/windowsTerminal.ts` / `tmux.ts`'s actual process-spawning —
-  needs a real terminal, not worth mocking deeply. Cover only the pure logic they
-  call into (e.g. command construction).
+- Testing `quota.ts`'s interactive `promptForWorkerSwitch` prompt itself (needs
+  real stdin) — cover only `looksLikeQuotaExhausted`'s pure pattern-matching.
 - Wiring this into CI — that's `008-ci-pipeline`.
+
+## Note
+
+`splitPane/` (`windowsTerminal.ts`/`tmux.ts`) no longer exists — the loop-orchestrator
+was reverted to a single sequential in-process execution model (`002` T023,
+2026-09-11). Anyone picking this spec up after that date won't find that module;
+`pickNextSpec`/`recoverStaleTasks` (see `002`'s tasks.md T011/T021 notes) are the
+signatures worth writing tests against instead.

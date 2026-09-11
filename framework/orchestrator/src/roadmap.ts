@@ -5,11 +5,8 @@ import { splitRow, withCells } from './mdTable.js';
 export type SpecStatus =
   'todo' | 'in_progress' | 'blocked' | 'interrupted' | 'done';
 
-/**
- * The identity half of a roadmap row — enough to locate a spec's folder and
- * name it in a worker prompt. Lives here rather than in splitPane/ so that
- * worker.ts doesn't have to import a type from a subsystem above it.
- */
+/** The identity half of a roadmap row — enough to locate a spec's folder and
+ * name it in a worker prompt. */
 export interface SpecRef {
   id: string;
   name: string;

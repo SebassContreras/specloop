@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { createInterface } from 'node:readline/promises';
 import { loadConfig } from './config.js';
 import {
   parseRoadmap,
@@ -17,7 +18,6 @@ import {
   type TaskRow,
 } from './tasks.js';
 import { runWorker } from './worker.js';
-import { dispatchTask } from './splitPane/index.js';
 import {
   requestStop,
   isStopRequested,
@@ -25,6 +25,7 @@ import {
   markInterrupted,
 } from './safeStop.js';
 import { registerTaskPid, clearTaskPid, isTaskStillRunning } from './taskLock.js';
+import { looksLikeQuotaExhausted } from './quota.js';
 
 const cwd = process.cwd();
 
@@ -53,17 +54,11 @@ function specHasRunnableWork(spec: SpecRef): boolean {
 }
 
 /**
- * Recovers tasks left `in_progress` by a process that's gone — an enclosing
- * shell's own timeout, a crash, `kill -9`, anything that skipped safeStop's
- * clean path. Deliberately called exactly **once**, before this `run()` call's
+ * Recovers tasks left `in_progress` by a process that's gone — a crash,
+ * `kill -9`, the enclosing shell's own timeout, anything that skipped
+ * safeStop's clean path. Called exactly **once**, before this `run()` call's
  * own dispatch loop starts: any task already `in_progress` at that moment
- * predates this invocation, so it's safe to judge by its registered PID. A
- * task *this* loop or a split-pane it just launched puts into `in_progress`
- * a moment later must never be re-examined here — the detached process
- * hasn't had a chance to register its own PID yet, so re-checking on every
- * loop iteration (as an earlier version of this function did) reads a
- * just-launched task as already-dead and re-dispatches it, spawning a fresh
- * pane every iteration until one finally wins the race.
+ * predates this invocation, so it's safe to judge by its registered PID.
  */
 function recoverStaleTasks(
   config: ReturnType<typeof loadConfig>,
@@ -92,6 +87,73 @@ function recoverStaleTasks(
         .map((t) => t.id)
         .join(', ')}`,
     );
+  }
+}
+
+/** Runs one task inline in this process, logging its result to disk. */
+async function runOne(
+  config: ReturnType<typeof loadConfig>,
+  spec: SpecRef,
+  task: TaskRow,
+  workerIndex: number,
+): Promise<{ ok: boolean; log: string; lastLogLine: string }> {
+  console.log(`[loop] running task ${task.id}: ${task.task}`);
+  const { ok, log } = await runWorker(config, spec, task, cwd, workerIndex);
+  mkdirSync(join(cwd, config.logDir), { recursive: true });
+  writeFileSync(join(cwd, config.logDir, `${spec.id}-${task.id}.log`), log);
+  const lines = log.trim().split('\n');
+  return { ok, log, lastLogLine: lines.at(-1) ?? '' };
+}
+
+type WorkerSwitchChoice =
+  | { action: 'retry'; workerIndex: number }
+  | { action: 'skip' }
+  | { action: 'stop' };
+
+/**
+ * Asked only when a task's output looks like a hit usage/rate limit
+ * (`quota.ts`'s heuristic) — never proactively. The master is always the one
+ * holding this terminal now (no detached panes), so it can safely block on
+ * stdin here without stalling anything else.
+ */
+async function promptForWorkerSwitch(
+  config: ReturnType<typeof loadConfig>,
+  task: TaskRow,
+  lastLogLine: string,
+): Promise<WorkerSwitchChoice> {
+  console.log(
+    `[loop] task ${task.id}'s worker looks like it hit a usage/rate limit: "${lastLogLine.slice(0, 200)}"`,
+  );
+  console.log('[loop] configured workers:');
+  config.workers.forEach((w, i) =>
+    console.log(`  ${i}: ${w.cli} ${w.args.join(' ')}`),
+  );
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    const answer = (
+      await rl.question(
+        '[loop] type a worker number to switch to it, a new CLI name to add one, "skip" to mark this task blocked and move on, "stop" to halt the loop, or Enter to retry the same worker: ',
+      )
+    ).trim();
+    if (answer === '') return { action: 'retry', workerIndex: -1 };
+    if (answer.toLowerCase() === 'skip') return { action: 'skip' };
+    if (answer.toLowerCase() === 'stop') return { action: 'stop' };
+    const asNumber = Number(answer);
+    if (Number.isInteger(asNumber) && config.workers[asNumber]) {
+      return { action: 'retry', workerIndex: asNumber };
+    }
+    const extraArgs = (
+      await rl.question(
+        `[loop] extra args for "${answer}" (space-separated, or blank): `,
+      )
+    ).trim();
+    config.workers.push({
+      cli: answer,
+      args: extraArgs ? extraArgs.split(' ') : [],
+    });
+    return { action: 'retry', workerIndex: config.workers.length - 1 };
+  } finally {
+    rl.close();
   }
 }
 
@@ -137,70 +199,39 @@ async function run(): Promise<void> {
       }
       break;
     }
-    if (config.splitMode === 'none') {
-      // Only `none` mode blocks on the worker in this same process — a
-      // detached split-pane registers its own PID from inside `runTask`.
-      registerTaskPid(config, cwd, spec.id, task.id);
-    }
+    registerTaskPid(config, cwd, spec.id, task.id);
     writeTaskStatus(path, task.id, 'in_progress', task.notes);
-    const result = await dispatchTask(config, spec, task, cwd, workerIndex);
-    workerIndex++;
+    let result = await runOne(config, spec, task, workerIndex);
+    let skippedByUser = false;
 
-    if (config.splitMode !== 'none') {
-      // Detached pane owns this task's final status flip; move on.
-      continue;
+    while (!result.ok && looksLikeQuotaExhausted(result.log)) {
+      const choice = await promptForWorkerSwitch(config, task, result.lastLogLine);
+      if (choice.action === 'stop') {
+        clearTaskPid(config, cwd, spec.id, task.id);
+        markInterrupted(path, task.id, result.lastLogLine);
+        return;
+      }
+      if (choice.action === 'skip') {
+        skippedByUser = true;
+        break;
+      }
+      workerIndex = choice.workerIndex === -1 ? workerIndex : choice.workerIndex;
+      result = await runOne(config, spec, task, workerIndex);
     }
+    workerIndex++;
     clearTaskPid(config, cwd, spec.id, task.id);
+
     if (isStopRequested(config, cwd)) {
-      markInterrupted(path, task.id, result?.lastLogLine ?? '');
+      markInterrupted(path, task.id, result.lastLogLine);
       break;
     }
     writeTaskStatus(
       path,
       task.id,
-      result?.ok ? 'done' : 'blocked',
-      result?.lastLogLine ?? '',
+      !skippedByUser && result.ok ? 'done' : 'blocked',
+      result.lastLogLine,
     );
   }
-}
-
-/** Invoked inside a split-pane by windowsTerminal.ts / tmux.ts — one task, one process. */
-async function runTask(
-  specId: string,
-  specName: string,
-  taskId: string,
-  workerIndexArg: string,
-): Promise<void> {
-  const config = loadConfig(cwd);
-  const path = tasksPath(cwd, specId, specName);
-  const tasks = parseTasks(path);
-  const task = tasks.find((t) => t.id === taskId);
-  if (!task) throw new Error(`Task ${taskId} not found in ${path}`);
-
-  console.log(`[loop] running task ${task.id}: ${task.task}`);
-  // specId/specName/workerIndex arrive as arguments from the split-pane
-  // launcher, which runs in its own detached process with no access to the
-  // master's in-memory round-robin counter. This process's own PID is this
-  // task's true owner while it runs — the master already moved on.
-  registerTaskPid(config, cwd, specId, taskId);
-  const workerIndex = Number(workerIndexArg ?? 0) || 0;
-  const { ok, log } = await runWorker(
-    config,
-    { id: specId, name: specName },
-    task,
-    cwd,
-    workerIndex,
-  );
-  mkdirSync(join(cwd, config.logDir), { recursive: true });
-  writeFileSync(join(cwd, config.logDir, `${specId}-${task.id}.log`), log);
-  const lastLine = log.trim().split('\n').pop() ?? '';
-  clearTaskPid(config, cwd, specId, taskId);
-
-  if (isStopRequested(config, cwd)) {
-    markInterrupted(path, task.id, lastLine);
-    return;
-  }
-  writeTaskStatus(path, task.id, ok ? 'done' : 'blocked', lastLine);
 }
 
 function stop(): void {
@@ -228,7 +259,7 @@ function status(): void {
   }
 }
 
-const [, , command, ...args] = process.argv;
+const [, , command] = process.argv;
 switch (command) {
   case 'run':
     void run();
@@ -238,9 +269,6 @@ switch (command) {
     break;
   case 'status':
     status();
-    break;
-  case '_run-task':
-    void runTask(args[0], args[1], args[2], args[3]);
     break;
   default:
     console.log('Usage: loop <run|stop|status>');

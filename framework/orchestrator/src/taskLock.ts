@@ -3,14 +3,13 @@ import { join } from 'node:path';
 import type { LoopConfig } from './config.js';
 
 /**
- * One PID per in-flight task, keyed by `<specId>-<taskId>`. Registered by
- * whichever process actually blocks on running that task's worker — the
- * master itself under `splitMode: "none"`, or the detached pane's own
- * process (`_run-task`) under `windowsTerminal`/`tmux`. This is what lets a
- * later `loop run` tell "still genuinely running" (registered PID alive)
- * apart from "left `in_progress` by a process that's gone" (PID dead or
- * never registered), without assuming anything about which split-pane mode
- * dispatched it or whether the master that dispatched it is still alive.
+ * One PID per in-flight task, keyed by `<specId>-<taskId>` — the master's own
+ * PID, registered before it blocks on that task's worker and cleared when it
+ * finishes. This is what lets a later `loop run` tell "still genuinely
+ * running" (registered PID alive) apart from "left `in_progress` by a
+ * process that's gone" (PID dead or never registered) after an ungraceful
+ * kill of the master itself (a crash, `kill -9`, the enclosing shell's own
+ * timeout — anything that skipped safeStop's clean path).
  *
  * Not a defense against PID reuse after a reboot — an unrelated process
  * landing on the same PID would misread as "still running". Acceptable for

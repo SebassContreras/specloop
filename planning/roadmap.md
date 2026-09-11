@@ -9,7 +9,7 @@ Index of all specs: order, status, dependencies.
 | 003 | task-breakdown-skill      | done        | 001, 004           | —        |
 | 004 | design-closing-skill      | done        | 001                | —        |
 | 005 | open-source-release       | done        | 001                | —        |
-| 006 | e2e-smoke-testing         | in_progress | 001, 002, 003, 004 | 1        |
+| 006 | e2e-smoke-testing         | done        | 001, 002, 003, 004 | 1        |
 | 007 | orchestrator-unit-tests   | todo        | 002                | 2        |
 | 008 | ci-pipeline               | todo        | 007                | 3        |
 | 009 | status-dashboard-skill    | todo        | 001                | 4        |
@@ -43,7 +43,10 @@ priorities were assigned once at spec-creation time and go stale as work complet
 `004` each surfaced one real follow-up task from the run (`002` T21: recovering a task
 stuck `in_progress` after an ungraceful kill; `004` T13: reusing `start`'s type-keyed
 header template when `design-closing` has to create `planning/architecture.md` from
-scratch), and `006` still has `T012` (split-pane backends) open, unrelated to this run.
+scratch). `006` T012 (split-pane backends) then confirmed `windowsTerminal` live —
+and, watching it work, the user decided against the whole split-pane approach and had
+it reverted (`002` T023): the loop now always runs sequentially in the master's own
+process, nothing visual. `006` closed same day.
 
 ## Build order
 

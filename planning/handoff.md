@@ -1,129 +1,101 @@
-# Handoff — 2026-09-11
+# Handoff — 2026-09-11 (updated, same day)
 
-Written after closing `001`, `002`, `003`, `004`, `016`, `017` and most of `006` in one
-long session, all via live runs (OpenCode + a real interactive PowerShell), not just
-static checks. Branch: `main`.
+Supersedes the earlier same-day handoff. That version ended with `windowsTerminal`
+confirmed live and `002`/`006` mostly closed — then the user watched it work, decided
+against the whole visual-terminal approach, and had it reverted in the same session.
+Branch: `main`.
 
 **This file is not the source of truth and must not become one.** `planning/roadmap.md`
-owns order and status; each spec's `tasks.md` owns the work. What's below is only the
-part *not* on record: why things are the way they are, which traps to avoid, and where
-judgement is still needed.
+owns order and status; each spec's `tasks.md` owns the work.
 
 To see what's actually open:
 
 ```bash
 node scripts/check-skill-consistency.mjs        # 54 static checks over the skills
-cd framework/orchestrator && pnpm exec tsc --noEmit && pnpm exec eslint src
+cd framework/orchestrator && pnpm exec tsc --noEmit && pnpm exec eslint .
 grep -rnE "\[status:(todo|in_progress|blocked|interrupted)\]" planning/specs/*/tasks.md
 ```
 
 ---
 
-## What just happened
+## What just happened (the pivot)
 
-Starting point: `001` T033 (a Phase E coverage gap — `dependencies`/`owner-split`
-never asked) was the one open item. From there, one thing kept leading to the next:
+Everything from the earlier handoff (`001` T033, `016` help-me-decide, `017`, `006`
+T010's live pipeline, `002` T21's PID registry + its race-condition fix, `004` T13,
+`006` T012's confirmed `windowsTerminal` pane) still stands — see git history if the
+detail is needed. What's new:
 
-1. **`001` T033** — fixed (`dependencies` now asked from Phase 7 step 2 regardless of
-   whether the spec was newly created or Phase-6-seeded; `owner-split` added).
-   Verified live under OpenCode against `test/ops-onboarding-repo/` spec `002`.
-   `001` closed (T8 was also just a stale checkbox — already superseded by T30).
-2. **`016` (interview-engine)** — closed the design, and added real new scope the
-   user asked for mid-session: the **help-me-decide protocol** (answering "no sé" on
-   a researchable dimension gets 3–5 web-researched options; on a non-researchable
-   one gets a narrower question instead). Verified live in a fresh throwaway fixture
-   (`test/choice-protocol-fixture/`) — both branches confirmed, including a real web
-   search.
-3. **`017`** — closed the last open item: a live run against a repo with
-   `planning/architecture.md` *completely absent* (not just header-only). Both
-   `design-closing` and `task-breakdown` tolerated it correctly; `design-closing`
-   even created the file gracefully mid-run. Filed `004` T13 as a small follow-up —
-   it used improvised headers instead of `start`'s type-keyed template.
-4. **`006` T010 — the big one.** Ran the full live pipeline (`start` →
-   `design-closing` → `task-breakdown` → `loop-setup` → `loop run`, real `claude -p`
-   worker) against `test/architecture-absent-fixture/`. Found and fixed a real bug:
-   `pickNextSpec` picked the first `todo` roadmap row regardless of whether it had
-   any tasks yet, so an unstarted spec sitting first in row order blocked a
-   ready one forever. Also found `loop-setup` hardcoding `pnpm` (which silently fell
-   back to `npm` when `pnpm link --global` failed) — now asks/reads the manager.
-   Flipped `002`/`003`/`004`'s local-test tasks to done, pointing here.
-5. **`002` T21** — a task killed externally (not via clean `safeStop`) stayed stuck
-   `in_progress` forever. Fixed with a per-task PID registry (`taskLock.ts`).
-   **First version had a real bug**, found live testing `006` T12
-   (`windowsTerminal`): the recovery check ran on *every* loop iteration, so a task
-   the master had just dispatched into a detached pane — before that pane registered
-   its own PID — read as already-dead and got re-dispatched, every iteration,
-   spawning a fresh `wt` window each time. 13 iterations, 9 real stray `cmd`
-   processes, before one finally won the race. Fixed by moving the sweep to run
-   **exactly once**, before the dispatch loop starts. Killed the stray processes.
-6. **`004` T13** — `design-closing` now reuses `start`'s type-keyed
-   `architecture.md` header template instead of improvising when it has to create
-   the file from scratch.
-7. **`006` T12 (partial)** — `windowsTerminal` confirmed end-to-end live, by the
-   user, in a real PowerShell 7 window, after the race-condition fix: one pane
-   opens, runs the task, completes cleanly. `tmux` (Mac/Linux) stays open — no such
-   machine in this session.
-8. **`002` T22** — the user watched the `windowsTerminal` pane and correctly
-   objected: it printed "running task X" once and then went silent until the whole
-   task finished — not actually watching the agent work, just a delayed final
-   result. `worker.ts` used `spawnSync` with piped (buffered) stdio; replaced with
-   async `spawn`, relaying each output chunk live while still capturing it for the
-   `.log` file. No cost/speed change to the worker CLI call itself — purely how the
-   parent process reads the same output. Verified with a fast dummy worker showing
-   genuine interleaved timing.
+1. **The user tried the split-pane experience directly** (opened a real Windows
+   Terminal tab running `claude`, watched it, tried to script keystrokes into it via
+   `SendKeys`). Two things fell out of that: (a) controlling another terminal's
+   keyboard input blindly, with no way to read back what it shows, is not a viable
+   orchestration mechanism — confirmed live, sent "hola" to the wrong tab; (b) more
+   importantly, the user decided the whole "sub-agent in a visible split pane" idea
+   wasn't worth it, even with `002` T22's streaming fix working correctly.
+2. **`002` T023 — reverted the split-pane execution path entirely.** Deleted
+   `src/splitPane/` (`index.ts`, `none.ts`, `windowsTerminal.ts`, `tmux.ts`),
+   `config.ts`'s `SplitMode`/`splitMode` field, `cli.ts`'s `runTask()`/`_run-task`
+   dispatch. The master is now the **only** process that ever runs a task —
+   sequential, inline, always. `loop-setup`'s split-mode question is gone; only the
+   worker-CLI question remains. What `002` T22 fixed (live-relaying a worker's
+   stdout/stderr instead of buffering) stayed unchanged — it's still how the
+   master's own terminal shows progress live, just with nothing "split" about it.
+3. **`002` T024 — quota-exhaustion recovery, new scope.** With no other terminal
+   watching a worker, a worker silently exhausting its usage/rate limit would just
+   fail every subsequent task on that CLI forever (`blocked`, one by one). Added
+   `src/quota.ts` (`looksLikeQuotaExhausted(log)` — a best-effort substring
+   heuristic, unverified against any real CLI's actual wording) and `cli.ts`'s
+   `promptForWorkerSwitch()`: on a detected match, before marking a task `blocked`,
+   the loop pauses and asks interactively which configured worker to retry with (by
+   number), or a brand-new CLI name typed on the spot, or `"skip"`/`"stop"`. Safe to
+   do now specifically because the master always owns the terminal — no detached
+   pane to stall.
+4. **`006` T012 closed, and `006` itself closed** (roadmap flipped to `done`) — the
+   `tmux` backend will never get verified because the backend no longer exists;
+   documented as moot rather than left permanently `in_progress`.
+5. **Live-verified** (throwaway fixture in the scratchpad, not committed): two dummy
+   `node` "workers", one always printing usage-limit wording and exiting 1, one
+   always succeeding. Piped `"1\n"` into `loop run`'s stdin → prompt appeared,
+   switched, retried, task closed `done`. Piped `"skip\n"` in a fresh run → task
+   correctly `blocked` with the detected message recorded. Both paths work.
 
-The user's last reaction ("no me gustó del todo") was to this last fix specifically —
-see **Open judgement call** below before assuming `002` T22 is the end of this thread.
-
----
-
-## Open judgement call — streaming isn't fully solved
-
-`002` T22 fixed *our own* buffering (real bug, confirmed fixed). But what the pane
-actually shows beyond that depends on whether `claude -p` (headless/print mode)
-streams its own output token-by-token or only writes once when its response is
-ready — that's the CLI's own behavior, not something `runWorker`'s relay controls.
-The user said the result "no me gustó del todo" right after seeing the fixed
-version (one summary line appearing in the pane, not a token-by-token stream) and
-said they're about to add/modify things next — **it's not confirmed whether their
-dissatisfaction is with this streaming granularity specifically, or something else
-entirely.** Don't assume "make `claude -p` stream more" is the ask until they say
-so explicitly next session — ask rather than guess. If it is that: look for a
-verbose/streaming flag on the worker CLI itself (e.g. `claude`'s own output-format
-options) that `loop-setup`'s Phase 1 could ask about and add to `workers[].args` —
-`runWorker`'s relay would pass any such output through live already, unchanged.
+Docs updated in the same pass (per this repo's own "align every file a mechanism
+touches" rule): `002`'s `requirements.md`/`design.md`/`tasks.md`, `006`'s `tasks.md`,
+`planning/roadmap.md`, `planning/architecture.md`, `skills/loop-setup/SKILL.md`,
+`skills/start/SKILL.md`'s config template, `examples/loop.config.sample.json`,
+`SECURITY.md`, `.github/ISSUE_TEMPLATE/bug-report.yml`, and the now-stale
+split-pane mentions in `007`/`011`/`021`'s not-yet-started `requirements.md` files
+(left `014`'s and `002`'s own historical *done*-task notes alone — those are
+accurate records of what was true when they were written, not live requirements).
 
 ---
 
 ## Traps
 
-- **`test/*` fixtures are local-only (gitignored) and were actively used as live
-  test beds this session**: `test/ops-onboarding-repo/`, `test/
-  choice-protocol-fixture/`, `test/architecture-absent-fixture/` (has a
-  `005-splitpane-test` throwaway spec, currently reset to `todo` for whoever next
-  tests `tmux`). Each has its own `.agents/skills/` copy of this repo's `skills/` —
-  **these copies go stale on every skill edit and must be `cp -r skills/*
-  <fixture>/.agents/skills/` again before the next live test**, or you're testing an
-  old version without knowing it (nearly happened once this session).
-- **Killing stray processes**: if a live split-pane test goes wrong again, check
-  `Get-CimInstance Win32_Process -Filter "Name='cmd.exe'"` for the exact command
-  line before killing anything — don't assume PIDs from a prior check are still the
-  same processes.
-- **`pickNextSpec`/`recoverStaleTasks` now both take extra parameters** — anyone
-  writing orchestrator unit tests (`007`, still `todo`) needs the new signatures:
-  `pickNextSpec(rows, hasRunnableWork)`, and the recovery sweep lives in its own
-  `recoverStaleTasks()`, called once per `run()`, never inside the dispatch loop.
-- Same older traps still apply (the `Plan`-cell path invariant, `tasks.md`'s
-  column-0-only checkbox parsing, `.specloop/loop.config.json` path escaping on
-  Windows) — not repeating them here since nothing this session touched them.
+- **Don't resurrect `splitMode`/`splitPane/`.** It existed, worked (`windowsTerminal`
+  confirmed end-to-end), and was deliberately reverted after the user watched it
+  live and didn't want it — not a regression to "fix back."
+- **`quota.ts`'s detection patterns are unverified against a real worker CLI.**
+  Nobody has actually watched `claude`/`codex`/`opencode` hit a real usage/rate
+  limit and confirmed the exact wording matches. Treat a miss as expected until
+  that happens once, live, and the pattern list gets extended from real text.
+- **`cli.ts`'s `run()` now blocks on `process.stdin`** when `promptForWorkerSwitch`
+  fires. That's fine for a human running `loop run` in their own foreground
+  terminal (the only supported way to run it now) — but would hang forever if
+  `loop run` were ever invoked non-interactively (e.g. from CI, `008`) without
+  stdin connected to something that answers. Worth a guard if `008` ever lands.
+- **`test/*` fixtures still have `.specloop/loop.config.json` files with a leftover
+  `splitMode` key** (gitignored, untracked, not touched this pass) — harmless,
+  the field is just ignored on load now, not worth cleaning up proactively.
 
 ## Not verified — don't claim otherwise
 
-- `tmux` split-pane backend — no Mac/Linux machine available this session.
-- Whether the user's dissatisfaction with the streaming fix is fully resolved, or
-  wants something more (see the judgement call above) — this is what they said
-  they'd get into next.
+- `quota.ts`'s patterns against any real CLI's real usage-limit wording.
+- Whether a non-interactive invocation of `loop run` (stdin not a TTY) hangs
+  cleanly or ugly when a quota prompt fires — not exercised.
 - Cursor / Codex CLI harness audits (`022` T001/T002) — optional follow-up, still
-  open, untouched this session.
+  open, untouched.
 - `007` (orchestrator-unit-tests), `009`–`013`, `018`, `019`, `021` — roadmap says
-  `todo`, nothing this session changed that.
+  `todo`, nothing this pass changed that. `021`'s `requirements.md` was corrected
+  to stop describing a `splitPane`/`splitMode` world that no longer exists, but the
+  spec itself is still undesigned.

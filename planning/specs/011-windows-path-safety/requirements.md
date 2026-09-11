@@ -7,8 +7,9 @@
   skipped entirely on Windows, which is the author's primary OS.
 - Either:
   - implement an equivalent Windows check (ACL-based writable-directory detection
-    on each `PATH` entry), wired into `worker.ts`/`windowsTerminal.ts` the same way
-    the POSIX check is; or
+    on each `PATH` entry), wired into `worker.ts` the same way the POSIX check is
+    (`windowsTerminal.ts` no longer exists — `002` T023 reverted the split-pane
+    execution path); or
   - if a reliable Windows equivalent isn't practical, explicitly document the gap
     in `README.md`/`planning/architecture.md` as a known, deliberate tradeoff rather
     than a silent one.

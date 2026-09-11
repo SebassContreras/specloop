@@ -1,8 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export type SplitMode = 'windowsTerminal' | 'tmux' | 'none';
-
 export interface WorkerSpec {
   cli: string;
   args: string[];
@@ -17,7 +15,6 @@ export interface LoopConfig {
    * after that, so there is exactly one source of truth once loaded.
    */
   workers: WorkerSpec[];
-  splitMode: SplitMode;
   logDir: string;
   /**
    * Files a worker must read before working — the project's context channel.
@@ -69,7 +66,6 @@ export function loadConfig(cwd: string = process.cwd()): LoopConfig {
   const workers = normalizeWorkers(parsed);
   return {
     workers,
-    splitMode: parsed.splitMode ?? 'none',
     logDir: parsed.logDir ?? '.specloop/logs',
     contextFiles: parsed.contextFiles ?? DEFAULT_CONTEXT_FILES,
     language:

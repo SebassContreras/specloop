@@ -108,29 +108,38 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   silently gives non-Claude workers no knowledge of the project's stack, conventions or
   styles. *Required but not yet implemented — `worker.ts` still sends the task text
   alone. Spec `014` owns this; `contextFiles` already exists in `LoopConfig`.*
-- The terminal-splitting mechanism used to watch sub-agents live is **configurable by
-  the user at run time** — no fixed mechanism is assumed (not every OS supports the
-  same tooling).
-- **Safe stop** (master or child pane): stop, do not start a new task, mark the task in
-  progress as `interrupted` in its `tasks.md`, leave a log of where it stopped. A safe
-  stop on the master propagates to all active child panes.
+- **No visual terminals.** The loop runs entirely in one process: the master runs
+  every task inline, sequentially, streaming the worker's own stdout/stderr live to
+  its own terminal (`002` T22) but never opening anything else. **Reversed
+  2026-09-11**: an earlier design spawned a detached child per task in a live split
+  pane (`windowsTerminal`/`tmux`), confirmed working end-to-end (`006` T012), then
+  dropped by explicit user decision after watching it live — not worth the
+  complexity. See `002-loop-orchestrator/design.md`'s "No split panes" section.
+- **Safe stop**: stop, do not start a new task, mark the task in progress as
+  `interrupted` in its `tasks.md`, leave a log of where it stopped.
 - **A task left `in_progress` by a process that no longer exists is auto-recovered,
-  never left stuck.** Whichever process actually blocks on a task's worker (the master
-  under `splitMode: "none"`, or the detached pane's own process under
-  `windowsTerminal`/`tmux`) registers its own PID in `.specloop/logs/task-pids.json`
-  before starting it, and clears the entry when it finishes. **Exactly once** before
-  `loop run`'s dispatch loop starts — never on every loop iteration — it checks any
-  `in_progress` task against that registry: a live PID means genuinely still running
-  (left alone); a dead or missing one means the owning process died without going
-  through safe stop, so the task is flipped to `interrupted` and picked up like any
-  other runnable task. Found live (`006` T010): an invoking shell's own command
-  timeout — not the orchestrator's own 30-minute one — killed a worker mid-task, and
-  nothing before this recovered it automatically. **The "exactly once" part is load-
-  bearing, not an optimization**: an in-loop version of this check (found live
-  testing `006` T012, `windowsTerminal` mode) read a task the master had *just*
-  dispatched into a detached pane as already-dead — before the pane had any chance to
-  register its own PID — and re-dispatched it every iteration, spawning a fresh
-  window each time (13 iterations, 9 real stray processes before one won the race).
+  never left stuck.** The master registers its own PID in
+  `.specloop/logs/task-pids.json` before starting a task's worker, and clears the
+  entry when it finishes. **Exactly once** before `loop run`'s dispatch loop starts —
+  never on every loop iteration — it checks any `in_progress` task against that
+  registry: a live PID means genuinely still running (left alone); a dead or missing
+  one means the owning process died without going through safe stop, so the task is
+  flipped to `interrupted` and picked up like any other runnable task. Found live
+  (`006` T010): an invoking shell's own command timeout — not the orchestrator's own
+  30-minute one — killed a worker mid-task, and nothing before this recovered it
+  automatically. **The "exactly once" part is load-bearing, not an optimization**:
+  an in-loop version of this check, found live while split panes still existed
+  (`006` T012), read a task the master had *just* dispatched into a detached pane as
+  already-dead — before the pane had any chance to register its own PID — and
+  re-dispatched it every iteration, spawning a fresh window each time (13 iterations,
+  9 real stray processes before one won the race). The race no longer applies now
+  that there's no detached pane to race against, but the exactly-once rule stays.
+- **A worker hitting its own usage/rate limit pauses the loop with an interactive
+  prompt, not a silent `blocked`.** `quota.ts`'s heuristic scans a failed task's
+  captured log for wording that looks like a usage/rate-limit hit; on a match,
+  `loop run` asks which configured worker to switch to (or a new CLI name on the
+  spot) before retrying. Detection is best-effort and unverified against any real
+  CLI's actual wording — see `002-loop-orchestrator/design.md`.
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
@@ -162,11 +171,11 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   `006` T010: `pnpm link --global` failed on pnpm 11 and the first attempt fell back
   to `npm link` unasked).
 - Per-target-repo config file: `.specloop/loop.config.json` (`workers` — an array of
-  `{cli, args}`, round-robined by task order when there's more than one — plus
-  `splitMode`, `logDir`, `contextFiles`) — written by `skills/start`'s guided Q&A,
-  never hand-authored or hardcoded. The legacy single `workerCli`/`workerArgs` shape
-  still loads (normalized to a one-element `workers` array). See
-  `002-loop-orchestrator/design.md`.
+  `{cli, args}`, round-robined by task order when there's more than one, and also
+  where a quota-exhaustion worker switch can land — plus `logDir`, `contextFiles`) —
+  written by `skills/start`'s guided Q&A, never hand-authored or hardcoded. The
+  legacy single `workerCli`/`workerArgs` shape still loads (normalized to a
+  one-element `workers` array). See `002-loop-orchestrator/design.md`.
 
 - **A non-software e2e fixture is built against a declared fictional persona, not a
   second real project** (`017`) — run local-only under the gitignored `test/` dir,
@@ -178,8 +187,9 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 ## Still to define
 
 - Optional subagents (stack research, etc.).
-- Multi-spec parallelism, and split-pane backends beyond `windowsTerminal`/`tmux`
-  (see `002-loop-orchestrator/design.md`'s open questions).
+- Multi-spec parallelism (see `002-loop-orchestrator/design.md`'s open questions).
+- `quota.ts`'s usage/rate-limit detection patterns, unverified against any real
+  worker CLI's actual wording yet.
 
 ## Declined
 

@@ -7,7 +7,7 @@ function stopFlagPath(config: LoopConfig, cwd: string): string {
   return join(cwd, config.logDir, 'stop.flag');
 }
 
-/** Master `loop stop`, or a pane's own Ctrl+C handler, both call this. */
+/** `loop stop` from another terminal, or Ctrl+C on the master itself, both call this. */
 export function requestStop(
   config: LoopConfig,
   cwd: string = process.cwd(),
@@ -16,9 +16,6 @@ export function requestStop(
   writeFileSync(stopFlagPath(config, cwd), new Date().toISOString());
 }
 
-// Every running process — master and any detached split-pane child — polls
-// this instead of relying on direct parent→child signaling, since split-pane
-// panes are independent processes with no private IPC channel to the master.
 export function isStopRequested(
   config: LoopConfig,
   cwd: string = process.cwd(),

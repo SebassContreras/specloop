@@ -26,9 +26,9 @@ Include, when known:
 ## Scope
 
 The most relevant attack surface is `framework/orchestrator/`: it spawns a
-user-configured worker CLI and split-pane processes as child processes
-(`src/worker.ts`, `src/splitPane/*.ts`). A `PATH`/command-injection issue there is
-the most likely class of real vulnerability. See `src/security.ts`'s
+user-configured worker CLI as a child process (`src/worker.ts`). A
+`PATH`/command-injection issue there is the most likely class of real
+vulnerability. See `src/security.ts`'s
 `assertSafePath()` for the existing hardening — currently POSIX-only, see
 [`planning/specs/011-windows-path-safety/`](planning/specs/011-windows-path-safety/).
 

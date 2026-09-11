@@ -21,16 +21,17 @@ Findings from initial research (2026-09-05), to save re-deriving them at design 
   `permissionMode`/`canUseTool` must be pre-configured. That's a real decision
   `loop-setup`'s Q&A doesn't ask for yet, and must never default silently (matches
   this repo's existing "never install/configure silently" rule).
-- Isolation wrinkle: today every task is either its own OS process (split-pane modes)
-  or, under `splitMode: 'none'` (`splitPane/none.ts`), still a `spawnSync` subprocess
-  of the master — a crash or hang in the worker can't take the master down with it. An
-  in-process SDK call under `'none'` would remove that boundary unless it's
-  deliberately wrapped in its own child process too. Design must decide this, not lose
-  it by accident.
-- The call chain (`worker.ts`'s `runWorkerSync` → `splitPane/none.ts` → `cli.ts`'s
-  `runTask`) is synchronous today; an SDK branch is async (`query()` is an async
-  generator), so this is an async branch alongside the sync CLI path, not a rewrite of
-  it.
+- Isolation wrinkle: today every task is its own OS subprocess of the master
+  (`worker.ts`'s `runWorker`, async `spawn`, called from `cli.ts`'s `runOne` — the
+  loop runs sequentially, in-process, but each task's worker is still a separate
+  process) — a crash or hang in the worker can't take the master down with it. An
+  in-process SDK call would remove that boundary unless it's deliberately wrapped in
+  its own child process too. Design must decide this, not lose it by accident.
+  (No more split-pane modes as of `002` T023 — `splitPane/`/`splitMode` no longer
+  exist; this isolation property now belongs to `runWorker` alone.)
+- The call chain (`worker.ts`'s `runWorker` → `cli.ts`'s `runOne`) is already async
+  today (`query()` is also an async generator), so an SDK branch is an alternative
+  implementation of `runWorker` for one worker kind, not a rewrite of the call chain.
 
 ## Who/what it serves
 
@@ -44,9 +45,8 @@ projects that mix workers.
   unchanged; nothing about `WorkerSpec`'s current `{cli, args}` shape may break.
 - **No silent permission defaults.** `allowedTools`/`permissionMode` must be an
   explicit, confirmed `.specloop/loop.config.json` field.
-- **Don't lose crash isolation** that `runNone` gets for free today under
-  `splitMode: 'none'` — decide deliberately how an SDK worker preserves an equivalent
-  boundary.
+- **Don't lose crash isolation** that `runWorker`'s subprocess gets for free today —
+  decide deliberately how an SDK worker preserves an equivalent boundary.
 - Worker-context injection (`014`) must be honored the same way for an SDK worker as
   for a CLI one — the prompt still names the spec directory and context files; the SDK
   doesn't get a shortcut to skip that contract.

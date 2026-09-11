@@ -3,6 +3,5 @@
   "workers": [
     { "cli": "claude", "args": ["--print"] }
   ],
-  "splitMode": "windowsTerminal",
   "logDir": ".specloop/logs"
 }

@@ -56,7 +56,7 @@ body:
     attributes:
       label: Environment
       description: >
-        OS, Node.js version (if orchestrator-related), worker CLI
-        (claude/codex/opencode/...), split mode (windowsTerminal/tmux/none).
+        OS, Node.js version (if orchestrator-related), worker CLI(s)
+        (claude/codex/opencode/...).
     validations:
       required: false

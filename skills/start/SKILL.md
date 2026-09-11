@@ -237,7 +237,6 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
   "workers": [
     { "cli": "<answer>", "args": ["<headless flag>"] }
   ],
-  "splitMode": "none",
   "logDir": ".specloop/logs",
   "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
   "language": "<working language from the tone dimension, omit the field entirely if English>"
