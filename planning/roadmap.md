@@ -20,7 +20,7 @@ Index of all specs: order, status, dependencies.
 | 014 | worker-context-injection  | in_progress | 002                | 2        |
 | 015 | roadmap-status-writer     | in_progress | 002                | 3        |
 | 016 | interview-engine          | done        | 001                | 4        |
-| 017 | project-type-genericity   | in_progress | 001, 016           | 5        |
+| 017 | project-type-genericity   | done        | 001, 016           | 5        |
 | 018 | project-style-preferences | todo        | 014, 016           | 6        |
 | 019 | public-showcase           | todo        | 001, 005           | —        |
 | 020 | checklist-task-format     | done        | 002, 003           | 4        |
