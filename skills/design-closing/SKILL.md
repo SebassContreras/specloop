@@ -29,9 +29,11 @@ before asking the next — never batch questions into a single message.
    placeholder.
    Accept **either** layout: the current template (`## What's being built`,
    `## Who/what it serves`, `## Hard constraints`, `## Acceptance criteria`,
-   `## Out of scope`) **or** the older single `## Requirements` heading with real
-   bullets under it. Both are valid on disk; gating on only one makes this skill
-   refuse on every spec written before the template changed.
+   `## Out of scope`, `## Dependencies`, `## Owner split`) **or** the older single
+   `## Requirements` heading with real bullets under it. Both are valid on disk;
+   gating on only one makes this skill refuse on every spec written before the
+   template changed. `## Dependencies`/`## Owner split` may be missing on specs
+   written before those two sections existed — don't refuse solely for that.
    Tell the user requirements need filling first (via `specloop:start`) — never guess
    at requirements content here.
 3. Read `planning/product.md` for the **project type**, and `AGENTS.md` +

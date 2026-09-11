@@ -268,10 +268,21 @@ or skills to be implemented" turn into ordered spec entries.
 
 Question-bank Phase E, for the next unfilled spec.
 
-1. On a repeat invocation, ask what the spec should be called → kebab-case → folder
-   `planning/specs/NNN-name/` (`NNN` = highest existing `ID` + 1, zero-padded to 3), ask
-   its dependencies, and append the roadmap row.
-2. Ask the Phase E dimensions one at a time, **writing to disk after each answer**:
+1. If this spec's folder doesn't exist yet — a brand-new spec added on a later
+   invocation, not one Phase 6 already seeded — ask what it should be called →
+   kebab-case → folder `planning/specs/NNN-name/` (`NNN` = highest existing `ID` + 1,
+   zero-padded to 3), ask which existing spec(s) it depends on, and append the
+   roadmap row. A spec Phase 6 already seeded has its folder and roadmap row already;
+   skip straight to step 2 for it.
+2. Ask the Phase E dimensions one at a time, **writing to disk after each answer**.
+   For `dependencies`, ask it regardless of whether step 1 ran this time: "Does this
+   need anything from another spec that the roadmap doesn't already record?" — use
+   the roadmap's current `Depends on` cell as context (whether it came from step 1
+   just now or from Phase 6's seeding) so the user is confirming/adding to it, not
+   deriving it from scratch. Update the roadmap row if the answer adds anything new.
+   All 7 dimensions (`what`, `serves`, `constraints`, `acceptance`, `out-of-scope`,
+   `dependencies`, `owner-split`) must end up as a row in `.specloop/interview.md`
+   and a section in `requirements.md` — none silently skipped:
 
    ```markdown
    # NNN — name — Requirements
@@ -285,11 +296,19 @@ Question-bank Phase E, for the next unfilled spec.
    ## Acceptance criteria
 
    ## Out of scope
+
+   ## Dependencies
+
+   ## Owner split
    ```
 
    Keep these headers exactly — `specloop:design-closing` reads them to tell real
    content from a stub. `## Acceptance criteria` holds 2–5 observably-checkable
    statements; it's what `task-breakdown` turns into a final verification task.
+   `## Owner split` records anything the user wants to do themselves rather than have
+   an agent do — `task-breakdown` reads it when assigning each task's `Owner`. Omit
+   `## Dependencies`'s body (leave it empty) only if the answer was genuinely "none" —
+   still write the section, don't drop it.
 3. `design.md` and `tasks.md` stay stubs:
    ```markdown
    # NNN — name — Design

@@ -53,6 +53,8 @@ for (const h of [
   '## Hard constraints',
   '## Acceptance criteria',
   '## Out of scope',
+  '## Dependencies',
+  '## Owner split',
 ]) {
   ok(start.includes(h), `start's requirements template writes "${h}"`);
 }
@@ -164,6 +166,16 @@ ok(
   !!helperSkillsRow && !/Claude Code skill/i.test(helperSkillsRow[0]),
   "question-bank's helper-skills row doesn't hardcode \"Claude Code skills\"",
 );
+
+group('[11] start\'s Phase 7 walks every Phase E dimension (regression check for T033)');
+const phase7 = start.match(/## Phase 7 — Spec requirements Q&A[\s\S]*?(?=\n## Phase 8)/);
+ok(!!phase7, 'start defines Phase 7');
+const phaseERow = questionBank.match(/## Phase E — Per-spec requirements[\s\S]*?(?=\n## Phase F)/);
+const phaseEDimensions = [...(phaseERow ? phaseERow[0] : '').matchAll(/^\| `([a-z-]+)` \|/gm)].map((m) => m[1]);
+ok(phaseEDimensions.length === 7, `question-bank Phase E lists 7 dimensions (found ${phaseEDimensions.length})`);
+for (const dim of phaseEDimensions) {
+  ok(!!phase7 && phase7[0].includes(`\`${dim}\``), `start's Phase 7 names dimension \`${dim}\``);
+}
 
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);
