@@ -177,5 +177,29 @@ for (const dim of phaseEDimensions) {
   ok(!!phase7 && phase7[0].includes(`\`${dim}\``), `start's Phase 7 names dimension \`${dim}\``);
 }
 
+group('[12] Help-me-decide protocol (016) is documented consistently');
+ok(
+  /Help the user decide when they're unsure/.test(start),
+  "start's interview contract states the help-me-decide rule",
+);
+ok(
+  questionBank.includes('## Help-me-decide protocol'),
+  'question-bank documents the help-me-decide protocol',
+);
+const normalize = (s) => s.toLowerCase().replace(/\s+/g, ' ');
+const startFlat = normalize(start);
+const questionBankFlat = normalize(questionBank);
+for (const phrase of ['researchable', 'never infer a choice', 'never pass a guess off as researched']) {
+  ok(
+    startFlat.includes(phrase) && questionBankFlat.includes(phrase),
+    `start and question-bank agree on "${phrase}"`,
+  );
+}
+const architecture = read('planning/architecture.md');
+ok(
+  /help-me-decide|genuinely unsure/i.test(architecture),
+  'architecture.md\'s fixed-rules summary mentions the help-me-decide protocol',
+);
+
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);

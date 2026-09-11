@@ -34,6 +34,22 @@ the contract into `skills/start/SKILL.md`; this spec makes it real and enforced.
   asks what the design contains that no task covers.
 - **Answer fan-out** — one answer may yield several roadmap rows; seeding reads the
   ledger rather than re-inferring from the goal.
+- **"Help me decide" protocol** — when the user expresses genuine uncertainty on
+  *any* dimension, in any phase (natural language like "no sé", "not sure" — not
+  gated to an explicit command or to specific phases), the skill judges whether the
+  dimension is the kind researched options can actually help with (technical/stylistic
+  choices — `runtime`, `framework`, `palette`, `typography`, and the like) versus one
+  that's inherently about the user's own project/business (`audience`, `stakeholders`,
+  `mvp`) where a generic web answer wouldn't help. For the researchable kind: search
+  for current, fitting options (via a web-search tool if the session has one) and
+  present 3–5 ranked options with a one-line reason each, tailored to what's already
+  been answered (goal, constraints, audience). If no web-search tool is available
+  in-session, say so explicitly and offer options from the model's own knowledge
+  instead — never silently. For the non-researchable kind: say so, and help by asking
+  a narrower question instead of pretending a search would help. The user picks, asks
+  for more, or leaves it `open`; the engine never infers a choice to close the
+  dimension. The final answer is recorded `covered` with a note that it was resolved
+  via researched options, so it stays distinguishable from a user-originated decision.
 
 ## Who/what it serves
 
@@ -63,6 +79,13 @@ way to tell "the user said no" from "nobody asked".
 - No Q&A phase terminates while any dimension is still `open`.
 - `design-closing` refuses to close a design that leaves an acceptance criterion
   unaddressed.
+- Answering "no sé" (or equivalent) on a researchable dimension (technical/stylistic)
+  produces 3–5 researched, reasoned options rather than a guess, a bare re-ask, or an
+  `open` dimension left as the only outcome — in any phase, not just a whitelisted one.
+- The same on a non-researchable dimension (a project/business fact) gets a narrower
+  follow-up question instead of a fabricated options list.
+- With no web-search tool available in-session, the options come from the model's own
+  knowledge and the skill says so — it never claims to have searched when it hasn't.
 
 ## Out of scope
 

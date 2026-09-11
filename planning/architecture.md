@@ -63,7 +63,20 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   dimensions in `.specloop/interview.md`, generates follow-ups for anything named but
   unspecified, and ends only after a closing sweep returns nothing new twice in a row.
   A dimension the user declines is recorded as skipped, with the reason — never
-  silently dropped.
+  silently dropped. When the user is genuinely unsure rather than declining (`016`),
+  the engine judges whether the dimension is researchable (a technical/stylistic
+  choice — search for current options, or say so and use the model's own knowledge if
+  no web-search tool is available) or not (a fact about the user's own project —
+  ask a narrower question instead of manufacturing options); either way it never
+  infers a choice to close the dimension.
+- **A change to a cross-cutting mechanism must be reflected everywhere it's
+  documented or checked, not just the file most directly touched.** The interview
+  contract, the checklist grammar and similar mechanisms are each described in
+  several places at once — a skill's `SKILL.md` instructions, `question-bank.md`,
+  this file's own summary, and a `scripts/check-skill-consistency.mjs` guard. Editing
+  one without the others is exactly how `001`'s Phase E gap (`T033`) happened. When a
+  spec adds or changes one of these, update every place that names it in the same
+  change.
 - `roadmap.md` is always an index table (ID | Plan | Status | Depends on) — without
   this, an agent dropped into the repo has no idea what's next. The row parser reads
   the first four cells positionally and ignores trailing ones, so the contract can be

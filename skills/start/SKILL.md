@@ -54,6 +54,21 @@ are just where answers land.
   relevant" → `skipped`, with the reason.
 - **Never infer an answer to close a dimension.** Leave it `open` and ask again in the
   sweep. `TBD` on disk is always better than a guess.
+- **Help the user decide when they're unsure.** If the answer shows genuine
+  uncertainty — "no sé", "not sure", "no tengo idea", in any phase, not gated to a
+  specific command — judge whether the dimension is one researched options can
+  actually help with (a technical or stylistic choice: `runtime`, `framework`,
+  `palette`, `typography`, and the like) versus one that's inherently a fact about the
+  user's own project or business (`audience`, `stakeholders`, `mvp`), where a generic
+  web answer wouldn't help. For the researchable kind: search for current, fitting
+  options (a web-search tool if the session has one) and present 3–5 ranked options
+  with a one-line reason each, tailored to what's already been answered. No
+  web-search tool available? Say so explicitly and offer options from your own
+  knowledge instead — never pass a guess off as researched. For the non-researchable
+  kind: say a generic search wouldn't help, and ask a narrower question instead of
+  manufacturing a list. Either way, the user picks, asks for more, or leaves it
+  `open` — never infer a choice to close the dimension. Record the final answer
+  `covered`, noting it was resolved via researched options.
 - **Write to disk after every answer.** An interrupted session must lose nothing.
 - **The user can stop at any point** — "that's enough for now", "let's pause", "stop
   here", or similar. Before actually stopping, ask whether to write `planning/handoff.md`.

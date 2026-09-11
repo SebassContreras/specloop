@@ -137,3 +137,28 @@ Run at the end of every phase above. Not optional, and not a formality.
 3. Ask: **"What haven't we covered that matters here?"**
 4. If steps 1–3 produced anything new, write it down and run the sweep again.
 5. The phase ends only when a full sweep produces nothing new **twice in a row**.
+
+## Help-me-decide protocol (`016`)
+
+Runs whenever the user answers a dimension with genuine uncertainty ("no sé", "not
+sure", "I don't know" — any phase, not gated to a specific command). Judge which kind
+of dimension it is before doing anything else:
+
+**Researchable** — a technical or stylistic choice with real current best-practice
+options: `runtime`, `framework`, `toolchain`, `datastore`, `hosting`, `palette`,
+`typography`, `brand-refs`, and their equivalents in other project-type branches.
+Search for current, fitting options (a web-search tool if the session has one) and
+present 3–5 ranked options with a one-line reason each, tailored to what's already
+been answered (goal, constraints, audience). No web-search tool available? Say so
+explicitly and offer options from your own knowledge instead — never pass a guess
+off as researched.
+
+**Not researchable** — a fact about the user's own project or business, not
+something the web has an opinion on: `audience`, `stakeholders`, `mvp`, `goal`, and
+their equivalents. Say a generic search wouldn't help, and ask a narrower follow-up
+question instead of manufacturing an options list.
+
+Either way: the user picks one, asks for more, or leaves the dimension `open` — never
+infer a choice to close it. Record the final answer `covered` in
+`.specloop/interview.md` with a note that it was resolved via researched options, so
+it stays distinguishable from an answer the user reached on their own.
