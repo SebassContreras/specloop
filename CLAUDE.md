@@ -16,25 +16,29 @@ Entry point. Everything else lives under `planning/`:
 - [`planning/fix/`](planning/fix/) — a flat, hand-authored log of post-hoc corrections.
   Not a spec, not loop-runnable — see its own `README.md`.
 
-Current state (2026-09-11): `001`–`006`, `016`, `017`, `020`, `022`, `023` are `done`.
-`001`/`003`/`004` are working skills under `skills/`; `002`'s reference orchestrator
-lives under `framework/orchestrator/`, with two ways to actually run it — the
-deterministic `loop run` CLI (unattended/CI-friendly, no judgement) and the newer
-interactive `skills/loop/SKILL.md` (the chat session running it is the master: reads
-`tasks.md` itself, runs workers, and asks the user directly on a suspected
-usage/rate-limit hit). `014` (worker-context-injection) and `015`
-(roadmap-status-writer) are `in_progress` — both partly implemented already
-(`014`'s worker-language feed, T10, landed). `022`'s acceptance criteria only
-required one non-Claude-Code harness verified — OpenCode passed a live audit
-2026-09-08, so `planning/architecture.md`'s Container section names it; Cursor and
-Codex CLI audits (`022` T001/T002) remain open as optional follow-up, not blocking.
-`021` (harness-worker-backend) is `todo`, narrowed 2026-09-11 to just the
-deterministic `loop run` path (the interactive skill already gets the same benefit
-for free via its own harness-synergy rule) — still not designed. Specs `018` and
-`007`–`013` are `todo`, unstarted (`007`/`011` requirements.md were corrected
-2026-09-11 to stop describing now-removed `splitPane`/`quota.ts` modules, not
-otherwise touched). `019` (public-showcase) is `in_progress`, not unstarted — its
-first three tasks are `done`, a fourth (screenshot capture) is mid-flight. Check
+Current state (2026-09-12): `001`–`006`, `014`–`017`, `020`, `022`, `023` are `done`.
+`001`/`003`/`004` are working skills under `skills/`; `002` is now a single
+interactive skill, `skills/loop/SKILL.md` — the chat session running it is the
+master: reads `roadmap.md`/`tasks.md` itself, runs workers (any compatible harness,
+not just Claude), and asks the user directly on a suspected usage/rate-limit hit.
+**There is no standalone script or CLI** — the earlier deterministic `loop run`
+(`framework/orchestrator/`) was retired 2026-09-12, along with the six specs that
+existed only for it (`007`, `008`, `010`, `011`, `013`, `021` — all deleted, none
+had gotten past `requirements.md`). See `planning/handoff.md` for why. `014`
+(worker-context-injection) flipped to `done` the same day — its worker-language
+feed (T10) now lives in `skills/loop`'s prompt-building step rather than the
+deleted `worker.ts`; its one remaining task (T11) depended on the now-deleted `007`
+and was dropped as moot. **New spec `024` (loop-skill-verification)** exists
+specifically to live-verify the rewritten `skills/loop`/`skills/loop-setup` text —
+`todo`, `tasks_ready`, not yet run; see `planning/handoff.md`'s "Not verified"
+section. `022`'s acceptance criteria only required one
+non-Claude-Code harness verified — OpenCode passed a live audit 2026-09-08, so
+`planning/architecture.md`'s Container section names it; Cursor and Codex CLI
+audits (`022` T001/T002) remain open as optional follow-up, not blocking. Specs
+`009`, `012`, `018` are `todo`, unstarted. `019` (public-showcase) is `in_progress`,
+not unstarted — its first three tasks are `done`, but T001's `demo-loop.tape`
+demoed the now-deleted CLI and was deleted with it; T005 (screenshot capture) needs
+a fresh interactive-skill demo, not a VHS terminal recording. Check
 `planning/roadmap.md` before touching anything — it's the single source for
 status/dependencies/pipeline-stage/priority and carries nothing else;
 `planning/handoff.md` carries the point-in-time detail this paragraph doesn't.
@@ -45,9 +49,9 @@ see `planning/architecture.md`'s Container section.
 written by whichever skill completes that transition) and made `Priority` a live,
 human-edited ordering number instead of a historical record — its old "Build order"
 prose section is gone, ported into each spec's own docs first where not already
-there. See `planning/architecture.md`'s roadmap Fixed rules and `015`'s `tasks.md`
-`T015`/`T019`/`T020` for what's still open (the deterministic `loop run` CLI path
-doesn't yet write `Stage` or sort by `Priority` — `skills/loop` already does both).
+there. See `planning/architecture.md`'s roadmap Fixed rules; both columns are now
+written/consulted in exactly one place (`skills/loop`), since the deterministic
+`loop run` CLI path that once lagged behind on this no longer exists.
 
 ## Two rules that exist because they were broken once
 

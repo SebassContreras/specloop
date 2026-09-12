@@ -6,10 +6,12 @@ A public-facing presentation pass for the now-public `specloop` repo, so a visit
 landing on it sees proof it works and enough material to understand it, not just prose.
 Adds to `README.md`:
 
-- Screenshots of a real run (`/specloop:start`'s interview, `loop run` working through
-  a spec) — actual terminal captures, not mockups.
+- Screenshots/capture of a real run (`/specloop:start`'s interview, `/specloop:loop`
+  working through a spec — the latter is a chat session, not a terminal CLI, since
+  the deterministic `loop run` this originally targeted was retired 2026-09-12;
+  see `design.md`).
 - An architecture/flow diagram showing how `specloop:start` → `design-closing` →
-  `task-breakdown` → `loop-setup` → `loop run` fit together.
+  `task-breakdown` → `loop-setup` → `loop` fit together.
 - A short demo GIF of the flow end to end.
 - A project banner/logo for the README header.
 
@@ -31,8 +33,8 @@ deciding whether this is worth their time — without having to read through `pl
 
 ## Acceptance criteria
 
-- `README.md` shows at least one real screenshot of the interview and one of `loop run`
-  executing a task.
+- `README.md` shows at least one real screenshot of the interview and one capture of
+  `/specloop:loop` executing a task.
 - A diagram exists showing the five-skill flow and is linked from `README.md`.
 - A short demo GIF exists and is linked from `README.md`.
 - A banner/logo image exists and is used in `README.md`'s header.

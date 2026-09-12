@@ -74,7 +74,10 @@ which spec-kit's own format has no room for.
 - Any change to `requirements.md`/`design.md`'s own shape — only `tasks.md` was in
   scope.
 - `roadmap.md`'s format.
-- Executing tasks through an actual agent harness/SDK instead of CLI-spawning — that's
-  `021-harness-worker-backend`, deliberately sequenced after and not designed here.
-- Committed regression tests for the new parser (folds into `007-orchestrator-unit-tests`
-  same as `015`'s round-trip checks did).
+- Executing tasks through an actual agent harness/SDK instead of CLI-spawning — was
+  `021-harness-worker-backend`, deliberately sequenced after and not designed here;
+  retired 2026-09-12 once `skills/loop` covered the same goal directly (see
+  `002-loop-orchestrator`).
+- Committed regression tests for the new parser — was meant to fold into
+  `007-orchestrator-unit-tests` (retired 2026-09-12, same as `015`'s round-trip
+  checks); no successor exists, since there's no code left to unit-test.

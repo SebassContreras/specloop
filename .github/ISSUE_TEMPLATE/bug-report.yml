@@ -1,5 +1,5 @@
 name: Report a bug
-description: Report a problem with a specloop skill or the loop orchestrator.
+description: Report a problem with a specloop skill.
 title: "[Bug]: "
 labels:
   - bug
@@ -19,7 +19,7 @@ body:
         - specloop:design-closing
         - specloop:task-breakdown
         - specloop:loop-setup
-        - loop orchestrator (framework/orchestrator/ or generated .specloop/)
+        - specloop:loop
         - docs / plugin manifest
         - Other
     validations:
@@ -40,7 +40,7 @@ body:
       description: >
         Exact skill/command invoked, and the relevant state of the target repo
         (planning/roadmap.md row, tasks.md status, .specloop/loop.config.json if
-        orchestrator-related).
+        loop-related).
     validations:
       required: true
 
@@ -56,7 +56,7 @@ body:
     attributes:
       label: Environment
       description: >
-        OS, Node.js version (if orchestrator-related), worker CLI(s)
-        (claude/codex/opencode/...).
+        OS, which harness ran the skill (Claude Code/OpenCode/Codex CLI/...), worker
+        CLI(s) (claude/codex/opencode/...).
     validations:
       required: false

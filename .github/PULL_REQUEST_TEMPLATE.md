@@ -13,8 +13,7 @@ Exact commands run and their results. Do not write only "tests pass".
 
 - `claude plugin validate .` (if `.claude-plugin/plugin.json` or `skills/`
   changed)
-- `framework/orchestrator/`: `pnpm run lint` / `pnpm run typecheck` /
-  `pnpm run format:check` (if orchestrator source changed)
+- `node scripts/check-skill-consistency.mjs` (if any `skills/*/SKILL.md` changed)
 
 ## Checklist
 

@@ -7,13 +7,21 @@ the code currently does not honor.
 
 ## What's being built
 
+**Done, 2026-09-12** — this spec's actual implementation moved when
+`framework/orchestrator/` was retired (see `002-loop-orchestrator`). The
+prompt-building logic described below originally lived in `worker.ts`'s
+`promptFor()`; it now lives directly in `skills/loop/SKILL.md`'s Phase 3,
+ported line for line, since that's the only execution path left. What
+follows is kept as the original problem statement/history.
+
 The worker prompt becomes a real briefing instead of one table cell.
 
-Today `framework/orchestrator/src/worker.ts` builds `Work on this task: ${task.task}`
-and nothing else. `runWorkerSync(config, task)` isn't even given the spec, so a worker
-cannot know which `requirements.md`/`design.md` it is implementing — `cli.ts` has
-`spec.id`/`spec.name` in scope and drops them. A grep across the orchestrator for
-`requirements|design.md|architecture|CLAUDE|AGENTS` returns zero hits.
+At the time this was written, `framework/orchestrator/src/worker.ts` built
+`Work on this task: ${task.task}`
+and nothing else. `runWorkerSync(config, task)` wasn't even given the spec, so a worker
+couldn't know which `requirements.md`/`design.md` it was implementing — `cli.ts` had
+`spec.id`/`spec.name` in scope and dropped them. A grep across the orchestrator for
+`requirements|design.md|architecture|CLAUDE|AGENTS` returned zero hits.
 
 This spec:
 
@@ -56,4 +64,4 @@ first-class per `planning/architecture.md`'s CLI-agnostic rule, and
 - Inlining file contents into the prompt (files are named, not pasted).
 - Per-task context selection or retrieval ranking — the whole `contextFiles` list goes
   to every task.
-- Changing how the worker is spawned, timed out, or logged (that is `002`/`013`).
+- Changing how the worker is spawned, timed out, or logged (that is `002`).

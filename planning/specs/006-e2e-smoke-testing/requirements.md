@@ -23,6 +23,8 @@
 
 ## Out of scope
 
-- Automating this as a CI test — that's covered by `007-orchestrator-unit-tests` /
-  `008-ci-pipeline`. This spec is a manual, once-per-behavior-change smoke run plus
-  the fixture it leaves behind for the next one.
+- Automating this as a CI test — at the time this was written, that was expected to
+  be covered by `007-orchestrator-unit-tests`/`008-ci-pipeline`; both were retired
+  2026-09-12 alongside the deterministic CLI they targeted, so this remains a
+  manual, once-per-behavior-change smoke run plus the fixture it leaves behind for
+  the next one, full stop.

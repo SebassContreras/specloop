@@ -17,25 +17,26 @@ in a public issue, PR, or commit.
 
 Include, when known:
 
-- the affected skill (`skills/*/SKILL.md`) or orchestrator module
-  (`framework/orchestrator/src/*`), and the exact commit;
+- the affected skill (`skills/*/SKILL.md`), and the exact commit;
 - a minimal reproduction;
 - the security impact and conditions required to trigger it;
 - a suggested mitigation, if you have one.
 
 ## Scope
 
-The most relevant attack surface is `framework/orchestrator/`: it spawns a
-user-configured worker CLI as a child process (`src/worker.ts`). A
-`PATH`/command-injection issue there is the most likely class of real
-vulnerability. See `src/security.ts`'s
-`assertSafePath()` for the existing hardening — currently POSIX-only, see
-[`planning/specs/011-windows-path-safety/`](planning/specs/011-windows-path-safety/).
+There is no orchestrator code — the loop runs entirely as `skills/loop/SKILL.md`,
+instructions followed by whatever agent session invokes it, inside the target
+repo. The most relevant attack surface is that skill directing the agent to
+launch a **user-configured worker CLI as a subprocess** (or its own harness's
+native sub-agent tool). A prompt- or config-driven command-injection issue
+there is the most likely class of real vulnerability — review any change to
+`skills/loop`'s Phase 3 (worker invocation) with that in mind.
 
 The skills themselves (`skills/*/SKILL.md`) are Q&A instructions run by an
 interactive agent inside the target repo — they write files, never execute
-arbitrary shell commands, and never install anything without explicit
-confirmation (see each skill's "Style rules").
+arbitrary shell commands outside of running a user-configured worker, and
+never install anything without explicit confirmation (see each skill's
+"Style rules").
 
 ## Non-security bugs
 

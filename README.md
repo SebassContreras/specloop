@@ -6,7 +6,7 @@
 Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills) format,
 that unify how a project gets started and kept moving: they interview you, turn the
 answers into a roadmap that can be built step by step, and then run a CLI-agnostic loop
-orchestrator in your repo to work through that roadmap unattended. Distributed today as
+— right in the chat session you're already in — to work through that roadmap. Distributed today as
 a [Claude Code](https://claude.com/claude-code) plugin for convenient installation —
 the same `SKILL.md` format is also read natively by Cursor, Codex CLI, Gemini CLI,
 OpenCode and others. OpenCode is live-verified (discovery, auto-trigger, and the
@@ -24,14 +24,13 @@ flowchart LR
     A["/specloop:start"] -->|"AGENTS.md, product.md,<br/>architecture.md, roadmap.md"| B["/specloop:design-closing"]
     B -->|"design.md"| C["/specloop:task-breakdown"]
     C -->|"tasks.md"| D["/specloop:loop-setup"]
-    D -->|".specloop/orchestrator/"| E["/specloop:loop (interactive)<br/>or loop run (unattended)"]
+    D -->|".specloop/loop.config.json"| E["/specloop:loop"]
 ```
 
 <!--
 Captured material, dropped into .github/assets/ once generated (planning/specs/019):
 - demo-interview.gif / demo-interview.png — a real /specloop:start session.
-- demo-loop.gif / demo-loop-status.png / demo-loop-run.png — regenerated from
-  .github/assets/demo-loop.tape via `vhs demo-loop.tape`, never re-recorded by hand.
+- a real /specloop:loop session demo, still to be captured — see 019's tasks.md.
 -->
 
 <p align="center">
@@ -39,11 +38,6 @@ Captured material, dropped into .github/assets/ once generated (planning/specs/0
   <sub>A live <code>/specloop:start</code> interview, running under OpenCode — one
   question at a time, written to disk as it lands. Also runs under Claude Code via
   the plugin install above.</sub>
-</p>
-
-<p align="center">
-  <img src=".github/assets/demo-loop.gif" alt="loop run working through a spec" width="700"><br>
-  <sub><code>loop status</code> then <code>loop run</code> working through a spec's tasks unattended.</sub>
 </p>
 
 ## Install
@@ -92,20 +86,16 @@ actually ready — none of them chain automatically:
    the same convention GitHub spec-kit uses, so it renders and reads like any other
    task list, while the `[owner]`/`[status:...]` tags carry the agent/human split and
    5-state status a plain checkbox can't.
-4. **`/specloop:loop-setup`** — one-time step: installs the loop orchestrator into
-   your repo (`.specloop/orchestrator/`) and puts `loop` on PATH. The loop folder's
-   config already exists from step 1; this adds the payload. It no longer refuses on
-   an empty backlog — it installs and tells you what's still needed.
-5. Two ways to actually run it, pick one per session:
-   - **`/specloop:loop`** — interactive: this chat session is the master. It reads
-     the roadmap and tasks itself, runs each one, and asks you directly if a worker
-     looks like it hit a usage/rate limit — no separate process, nothing to watch
-     elsewhere.
-   - **`loop run`** — deterministic and unattended (CI, or nobody watching): works
-     through the roadmap's next eligible spec task by task with no judgement calls;
-     a failure just becomes `blocked` for you to resolve later. `loop stop` triggers
-     a safe stop (marks the in-flight task `interrupted`, logs where it left off);
-     `loop status` shows what's running.
+4. **`/specloop:loop-setup`** — one-time step: asks which worker CLI(s) to use and
+   writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
+   config already exists from step 1; this fills in the rest.
+5. **`/specloop:loop`** — the only way to run it: this chat session is the master.
+   It reads the roadmap and tasks itself, runs each one (your own harness's native
+   sub-agent tool when its provider matches a task's configured worker, a CLI
+   subprocess otherwise), and asks you directly if a worker looks like it hit a
+   usage/rate limit — no separate process, no script, nothing to watch elsewhere.
+   Tell it to stop and it does, marking the in-flight task `interrupted` and
+   reporting what's left.
 
 ## Docs
 
@@ -119,8 +109,6 @@ actually ready — none of them chain automatically:
   `design.md`, `tasks.md`.
 - [`planning/fix/`](planning/fix/) — a flat, hand-authored log of anything found
   wrong after the fact and its correction. Not loop-runnable, not roadmap-tracked.
-- [`framework/orchestrator/`](framework/orchestrator/) — the loop orchestrator's
-  reference implementation, copied into target repos by `specloop:loop-setup`.
 - [`examples/`](examples/) — a worked `requirements.md` → `design.md` →
   `tasks.md` example and a sample `.specloop/loop.config.json`, so you can see
   what a skill's output actually looks like before running one.

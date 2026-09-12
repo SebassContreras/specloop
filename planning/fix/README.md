@@ -5,7 +5,7 @@ parallel in spirit to `planning/specs/` (numbered entries, terse structural writ
 not in shape. A spec is prospective (what to build); a fix report is retrospective
 (something already went wrong, usually already corrected).
 
-**Nothing in `framework/orchestrator/` reads this folder.** It is not loop-runnable and
+**Nothing in the loop reads this folder.** It is not loop-runnable and
 not roadmap-tracked — see `planning/architecture.md` and `023-fix-log`'s design for why.
 No skill authors this; write it directly in an editor or terminal.
 

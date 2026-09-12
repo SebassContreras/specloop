@@ -23,8 +23,8 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 - [x] T010 [agent] [status:done] Feed the project's working language into the prompt
       └─ Added optional `LoopConfig.language`; `promptFor` appends a "write in `<language>`" line when set. `specloop:start` Phase 5 and `specloop:loop-setup` write/preserve it in `loop.config.json`, sourced from the `tone` dimension's language half. `tsc --noEmit`/`eslint src` clean.
       └─ `question-bank.md`'s `tone` dimension can record it; nothing consumes it. The prompt is English-only — a real gap for a non-English project.
-- [ ] T011 [agent] [status:todo] Move T9's checks into `007-orchestrator-unit-tests` as committed tests
-      └─ T9 was run from a scratch fixture; it is not a regression suite.
+- [x] T011 [agent] [status:done] Move T9's checks into `007-orchestrator-unit-tests` as committed tests
+      └─ **Moot, 2026-09-12**: `007` was retired, never designed, and `worker.ts`/`promptFor` themselves were deleted along with the rest of `framework/orchestrator/` — the prompt-building logic T9 tested now lives in `skills/loop/SKILL.md`'s Phase 3 instead, which has no code to unit-test (it's instructions for an agent). T9's own table stays the record of what was verified; there is no successor test suite to move it into.
 
 ## T9 — what the live run actually verified
 

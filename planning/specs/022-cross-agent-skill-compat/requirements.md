@@ -77,7 +77,8 @@ it.
 - Rewriting the loop orchestrator's execution model — it's already CLI-agnostic
   (`workers[]`), unaffected by this spec.
 - `021-harness-worker-backend` (a different concern: execution backend, not skill
-  discovery/invocation).
+  discovery/invocation) — retired 2026-09-12 once `skills/loop` covered the same
+  goal directly (see `002-loop-orchestrator`).
 - Building a universal installer/CLI for specloop across every tool — start from
   documentation of what already works, per the audit above, before building tooling
   around it.

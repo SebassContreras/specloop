@@ -38,7 +38,8 @@ industry-familiar part and now carries specloop's own owner/status tags instead.
 - **Updated** `skills/task-breakdown/SKILL.md` and `skills/start/SKILL.md`'s authoring
   templates to match.
 - **New spec `021`** reserved (not designed): an in-process Claude-Agent-SDK worker
-  kind, additive alongside today's CLI-spawning workers.
+  kind, additive alongside today's CLI-spawning workers. (Retired 2026-09-12
+  alongside the deterministic CLI it targeted — see the `002` entry above.)
 
 ### 2026-09-02 — scope restoration
 
@@ -151,18 +152,18 @@ bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `00
 - **003 — task-breakdown-skill**: `specloop:task-breakdown` — drafts, confirms
   with the user, and writes a spec's `tasks.md` from a closed `design.md`, using
   the fixed `ID | Task | Status | Notes` contract.
-- **002 — loop-orchestrator**: `framework/orchestrator/` reference implementation
-  (Node.js/TypeScript via `tsx`) + `specloop:loop-setup` skill. `loop run` /
-  `loop stop` / `loop status`; safe stop (stop-flag, `interrupted` status,
-  resume log); ESLint + Prettier tooling; Sonar S8786 (ReDoS) and S4036 (unsafe
-  `PATH`, POSIX-only) fixes. Also ships `skills/loop/SKILL.md`: an interactive
-  alternative where the chat session itself is the master (reads
-  roadmap/tasks.md and runs workers directly, asking the user which worker to
-  switch to on a suspected usage-limit hit) — `loop run` stays the plain,
-  unattended/CI-friendly path with no judgement calls. (An earlier
-  `windowsTerminal`/`tmux` split-pane mode was built, confirmed working, and
-  then deliberately removed the same day — never shipped in a tagged release,
-  not listed here.)
+- **002 — loop-orchestrator**: `skills/loop/SKILL.md` — the loop runs as a chat
+  session, which *is* the master: reads `planning/roadmap.md`/a spec's
+  `tasks.md` directly, launches each task's worker itself (a subprocess CLI,
+  or its own harness's native sub-agent tool when the provider matches), and
+  asks the user which worker to switch to on a suspected usage-limit hit —
+  no fixed pattern-match, real judgement. `skills/loop-setup/SKILL.md` is the
+  one-time Q&A that writes `.specloop/loop.config.json`. Safe stop is just
+  telling the session to stop, in the same conversation. (An earlier
+  deterministic Node/TypeScript CLI, `loop run`/`loop stop`/`loop status`, and
+  before that a `windowsTerminal`/`tmux` split-pane mode, were both built,
+  confirmed working, and deliberately removed — never shipped in a tagged
+  release, not listed here.)
 - **001 — scaffold-and-spec-skill**: `specloop:start` — scaffolds `AGENTS.md` +
   `CLAUDE.md` + `planning/{product,architecture,roadmap}.md` + `.specloop/`; the full
   interview (project type → vision → technologies/architecture/tools → skill

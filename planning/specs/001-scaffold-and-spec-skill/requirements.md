@@ -56,7 +56,7 @@
   its folder's post-`NNN-` segment, since the orchestrator concatenates them into a
   path.
 - No governance hooks included — left for the user to define in the target repo later.
-- Does not install the loop orchestrator's payload (that's `002`) — but writes the loop
+- Does not run the loop's own worker-CLI Q&A (that's `002`'s `loop-setup`) — but writes the loop
   folder's static config, and leaves `tasks.md` in a format `002` can consume,
   including the `Owner` column.
 

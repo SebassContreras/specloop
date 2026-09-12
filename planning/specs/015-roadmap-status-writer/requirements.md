@@ -26,13 +26,10 @@ Delivered:
   preserves the column on write. Pre-`Owner` 4-column tables still parse, owner
   defaulting to `agent`.
 
-Remaining:
-
-- Move the round-trip checks written during this pass into `007-orchestrator-unit-tests`.
-- Make `pickNextSpec` prefer the lower `Priority` number among multiple eligible
-  `todo` rows, instead of first-in-file-order (`T019`).
-- Give the deterministic `loop run` CLI path a `Stage` writer, so it sets `looping`
-  on a spec the same way `skills/loop` already does directly (`T020`).
+**Done, 2026-09-12.** All three remaining items below targeted the deterministic
+`loop run` CLI path, which was retired the same day — `skills/loop` already did
+each of them directly, so nothing was actually left open. See `tasks.md`'s
+`T014`/`T019`/`T020`.
 
 Decided 2026-09-12 (was open above): `Priority` is a **live, human-edited** ordering
 number, not a historical record — edit it to reorder, no separate "build order" text

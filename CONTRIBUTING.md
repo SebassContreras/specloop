@@ -7,22 +7,21 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
 - Each feature lives in `planning/specs/NNN-name/`: `requirements.md` first, then a
   closed `design.md`, then a populated `tasks.md`. Open a spec's requirements before
   writing code for it.
-- Skills live in `skills/<name>/SKILL.md`. The loop-orchestrator's reference
-  implementation lives in `framework/orchestrator/` (Node/TypeScript, run via `tsx`).
+- Skills live in `skills/<name>/SKILL.md`. The loop is one of them
+  (`skills/loop/SKILL.md`) — instructions for whatever agent runs it, no
+  separate code or package to build.
 
 ## Local dev
 
 - `claude plugin validate .` — checks the plugin manifest/skills.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
-- `framework/orchestrator/`: `pnpm install`, then `pnpm run typecheck` / `pnpm run
-  lint` / `pnpm run format` (ESLint + Prettier, single quotes).
 
 ## Choose the right path
 
-- Found a bug in a skill or the orchestrator? Use
+- Found a bug in a skill? Use
   [the bug report template](.github/ISSUE_TEMPLATE/bug-report.yml).
-- Want to change a skill's contract, the orchestrator's config shape, or any other
+- Want to change a skill's contract, the loop's config shape, or any other
   product behavior? Open an issue first so the direction can be agreed on before
   you put work into it.
 - Found a security vulnerability? Follow [`SECURITY.md`](SECURITY.md) — do not

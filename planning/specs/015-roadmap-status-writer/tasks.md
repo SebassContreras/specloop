@@ -27,8 +27,6 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
       └─ `skills/start/SKILL.md` Phase 1's roadmap template gains a trailing `Priority` column (parser-safe, ignored positionally); Phase 6 asks whether to record the confirmed seeding order into it. Also backfilled this repo's own `planning/roadmap.md` from the values `## Priority: N` used to carry, with a note that it's historical, not authoritative — the Build order list still governs.
 - [x] T013 [agent] [status:done] Retire the `## Priority: N` requirements-header convention in favour of the column
       └─ Removed the header from all 17 specs that had one (`006`–`023` minus `005`/`019` which never had it). The current Phase 7 requirements template never included this header, so nothing in the skill itself needed changing — this was pure cleanup of stale content predating the template.
-- [ ] T014 [agent] [status:todo] Move T11's checks into `007-orchestrator-unit-tests` as real tests
-      └─ Depends on `007`.
 - [x] T015 [human] [status:done] Decide whether `Stage` belongs here or in `009`
       └─ Decided 2026-09-12: here, in `roadmap.md`. `009` derives it live instead of
          owning a second copy. See design.md's resolved open question.
@@ -38,7 +36,7 @@ Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
       └─ Previously such a row was returned with a garbage status — neither `done` nor runnable, so the loop skipped the task while the spec could never roll up to `done`. Silent, and permanent.
 - [x] T018 [agent] [status:done] Verify: escaped-pipe round trip, idempotent sanitize, malformed-row rejection, piped note survives a write
       └─ 11/11 passed. Plus the full repo: 114 rows across 18 specs, 0 malformed-row warnings.
-- [ ] T019 [agent] [status:todo] Make `pickNextSpec` prefer the lower `Priority` number among multiple eligible `todo` rows
-      └─ Today it takes the first eligible row in file order, ignoring `Priority` entirely. `skills/loop` already breaks ties on `Priority` itself (2026-09-12), so this closes the gap for the unattended `loop run` path only.
-- [ ] T020 [agent] [status:todo] Add a `Stage` writer to `roadmap.ts`; call it from `cli.ts` when `loop run` moves a spec `todo` → `in_progress`, writing `looping`
-      └─ `skills/loop` already writes this directly (2026-09-12) since it edits `roadmap.md` itself; the deterministic CLI path has no equivalent yet, so a spec run only via `loop run` never shows `looping` in `Stage`.
+- [x] T019 [agent] [status:done] Make the loop prefer the lower `Priority` number among multiple eligible `todo` rows
+      └─ `skills/loop` breaks ties on `Priority` itself (2026-09-12). Originally scoped as a gap only in the deterministic `loop run` CLI path (which took the first eligible row in file order, ignoring `Priority`) — that path was retired 2026-09-12, so this is now honored everywhere the loop runs.
+- [x] T020 [agent] [status:done] Write `Stage` when a spec moves `todo` → `in_progress`
+      └─ `skills/loop` writes this directly (2026-09-12) since it edits `roadmap.md` itself. Originally scoped as a gap in the deterministic `loop run` CLI path specifically — that path was retired 2026-09-12, so this is now honored everywhere the loop runs. `T014` (moving T11's checks into `007-orchestrator-unit-tests`) dropped the same day: `007` was retired, never designed.

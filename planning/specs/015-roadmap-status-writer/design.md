@@ -49,10 +49,11 @@ reported separately instead.
   "next suggested action" live from `Stage`/`Status`/`tasks.md`, same as it derives
   task counts, rather than owning a second column that would duplicate this one. No
   single writer, unlike `Status`: each pipeline skill (`start`, `design-closing`,
-  `task-breakdown`, `loop`/`loop-setup`) sets `Stage` once, at its own transition —
-  see `planning/architecture.md`'s roadmap Fixed rules. `T019`/`T020` track the two
-  places the deterministic `loop run` CLI path still doesn't honor this (Priority
-  tie-breaking, Stage on execution start).
+  `task-breakdown`, `loop`) sets `Stage` once, at its own transition —
+  see `planning/architecture.md`'s roadmap Fixed rules. `T019`/`T020` tracked two
+  gaps in the now-retired deterministic `loop run` CLI path (Priority
+  tie-breaking, Stage on execution start); moot since `skills/loop` is the only
+  path left and already honors both.
 - ~~`sanitizeCell` replaces `|` with `/` rather than escaping it.~~ **Reversed.**
   Migrating this repo's own tables (`001` T28) hit two task rows that describe the
   `ID | Task | Status | Notes` contract itself — one already escaped as `\|`, one not.

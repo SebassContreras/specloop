@@ -50,14 +50,16 @@ of this is chained automatically after the scaffold trigger):
    `planning/architecture.md` and `AGENTS.md`.
 8. A guided skill breaks a closed `design.md` into a populated `tasks.md`, marking
    each task as agent-runnable or human-only.
-9. The **loop orchestrator**'s payload gets installed into the target repo — a
-   one-time step run once there's at least one spec with agent-runnable tasks. The
-   loop folder's *static* files already exist from step 1; this step adds the
-   orchestrator itself and puts `loop` on PATH.
-10. The orchestrator then works through each spec's agent-runnable tasks step by step,
-    using whichever CLI the user configures (`claude`, `codex`, `opencode`, ...), and
-    hands every worker the project's context files so its output respects the
-    decisions made in steps 3–5.
+9. A guided Q&A asks which worker CLI(s) to use and writes `.specloop/loop.config.json`
+   — a one-time step, run once there's at least one spec with agent-runnable tasks.
+   The loop folder's *static* files already exist from step 1; this step fills in
+   the rest. Nothing to install — there is no separate orchestrator package.
+10. The **loop** then runs as an interactive chat session — the session running it
+    *is* the master, working through each spec's agent-runnable tasks step by step,
+    using whichever CLI the user configured (`claude`, `codex`, `opencode`, ...) or
+    its own harness's native sub-agent tool when the provider matches, and handing
+    every worker the project's context files so its output respects the decisions
+    made in steps 3–5.
 
 ## Who uses it
 

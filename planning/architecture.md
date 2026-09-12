@@ -32,13 +32,13 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   once its `design.md` is closed, drafts + confirms + writes `tasks.md`, marking each
   task agent-runnable or human-only.
 - **Loop-setup Skill** (`002`, `skills/loop-setup/`): one-time, deliberately-invoked
-  step that copies `framework/orchestrator/` into the target repo and wires up the
-  `loop` console command there. The loop folder's static config already exists from
-  `start`; this step installs the payload.
+  Q&A that asks which worker CLI(s) to use and writes `.specloop/loop.config.json`.
+  The loop folder's static config already exists from `start`; this step fills in
+  the rest. Nothing to install or link — there is no orchestrator package.
+- **Loop Skill** (`002`, `skills/loop/`): the only way to actually run the loop. The
+  chat session running it is the master — see `002-loop-orchestrator`'s Fixed rule
+  below and that spec's own files for the full contract.
 - **No hooks of its own yet** — defined per target repo, not shipped by the plugin.
-- **No orchestrator *runtime* lives or executes in this repo** — `framework/
-  orchestrator/` here is the reference implementation source; it only actually runs
-  once `loop-setup` copies it into a target repo (see spec `002-loop-orchestrator`).
 
 ## Fixed rules
 
@@ -93,88 +93,72 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   has no single writer: each pipeline skill sets it exactly once, at its own
   transition, and never touches another spec's row — `specloop:start` on writing a
   real `requirements.md`, `specloop:design-closing` on closing design,
-  `specloop:task-breakdown` on producing real tasks, `specloop:loop`/`loop-setup` on
-  starting execution. The deterministic `loop run` CLI path doesn't write it yet
-  (`015` T020).
+  `specloop:task-breakdown` on producing real tasks, `specloop:loop` on starting
+  execution.
 - **`Priority`** is a live, human-edited ordering number — lower runs before higher
   among specs `Depends on` doesn't already order. Edited directly to reorder; no
   separate "build order" text to keep in sync. `—` means the spec predates the
   convention or was deliberately left unranked as order-independent (`019`).
-  `skills/loop` breaks ties on it; the deterministic `loop run` CLI doesn't consult it
-  yet (`015` T019).
+  `skills/loop` breaks ties on it.
 - **`tasks.md` is a GFM checkbox list, not a table** (`020-checklist-task-format`):
   `- [ ] T001 [agent] [status:todo] <task>`, with an optional indented note line
   directly below (`      └─ <note>`) replacing the old `Notes` cell. The checkbox
   reflects `done` vs. not; `[status:...]` carries the other 4 states. A task line is
   identified only by starting at column 0 — never by counting delimiters across the
   line, which is what made the old pipe table breakable by an unescaped `|` in a
-  task's own text. `framework/orchestrator/src/checklist.ts` holds the grammar;
-  `tasks.ts`'s `writeTaskStatus` rewrites only the checkbox/status/note substrings,
-  leaving the owner tag and description untouched on every write. IDs are
+  task's own text. `skills/loop/SKILL.md` holds the grammar (no code backs it — the
+  skill's own text is authoritative); a write touches only the checkbox/status/note
+  substrings, leaving the owner tag and description untouched. IDs are
   zero-padded (`T001`), matching GitHub spec-kit's own convention — chosen
   deliberately so the format reads as industry-familiar, not a specloop invention,
   while keeping the owner/status distinction spec-kit has no equivalent for.
 - **The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment** —
-  `framework/orchestrator/src/tasks.ts` concatenates the two into a filesystem path.
-- **The roadmap's `Status` column has exactly one writer**: the orchestrator, which
+  it's how `skills/loop` builds a spec's directory path (`planning/specs/<id>-<name>/`).
+- **The roadmap's `Status` column has exactly one writer**: `skills/loop`, which
   rolls it up from the spec's `tasks.md` when the spec's runnable tasks are exhausted.
-  Without a writer the column goes stale and `pickNextSpec` pins the loop to a spec
+  Without a writer the column goes stale and the loop pins itself to a spec
   that will never complete.
-- The loop orchestrator (spec 002) is **CLI-agnostic** (not tied to Claude Code's
+- The loop (spec 002) is **CLI-agnostic** (not tied to Claude Code's
   native `Workflow` tool): it must be able to invoke `claude`, `codex`, `opencode`, or
   another CLI, configurable per repo/run.
 - **Every worker must get project context through its prompt**, not through ambient
   cwd: the prompt names the spec directory and the `contextFiles` to read before
   working. Relying on a CLI auto-loading a memory file works for `claude` only, and
   silently gives non-Claude workers no knowledge of the project's stack, conventions or
-  styles. *Required but not yet implemented — `worker.ts` still sends the task text
-  alone. Spec `014` owns this; `contextFiles` already exists in `LoopConfig`.*
-- **No visual terminals.** The loop runs entirely in one process: the master runs
-  every task inline, sequentially, streaming the worker's own stdout/stderr live to
-  its own terminal (`002` T22) but never opening anything else. **Reversed
-  2026-09-11**: an earlier design spawned a detached child per task in a live split
+  styles. Implemented in `skills/loop/SKILL.md`'s Phase 3 (`014`).
+- **No visual terminals, no standalone process at all.** The loop runs entirely
+  inside the chat session running `skills/loop` — it runs every task inline,
+  sequentially, in that same conversation. No detached windows, no split panes,
+  nothing else opened for the user to watch, and no separate script or CLI either.
+  **Reversed 2026-09-11 (split panes) and 2026-09-12 (the standalone CLI
+  itself)**: an earlier design spawned a detached child per task in a live split
   pane (`windowsTerminal`/`tmux`), confirmed working end-to-end (`006` T012), then
-  dropped by explicit user decision after watching it live — not worth the
-  complexity. See `002-loop-orchestrator/design.md`'s "No split panes" section.
-- **Safe stop**: stop, do not start a new task, mark the task in progress as
-  `interrupted` in its `tasks.md`, leave a log of where it stopped.
-- **A task left `in_progress` by a process that no longer exists is auto-recovered,
-  never left stuck.** The master registers its own PID in
-  `.specloop/logs/task-pids.json` before starting a task's worker, and clears the
-  entry when it finishes. **Exactly once** before `loop run`'s dispatch loop starts —
-  never on every loop iteration — it checks any `in_progress` task against that
-  registry: a live PID means genuinely still running (left alone); a dead or missing
-  one means the owning process died without going through safe stop, so the task is
-  flipped to `interrupted` and picked up like any other runnable task. Found live
-  (`006` T010): an invoking shell's own command timeout — not the orchestrator's own
-  30-minute one — killed a worker mid-task, and nothing before this recovered it
-  automatically. **The "exactly once" part is load-bearing, not an optimization**:
-  an in-loop version of this check, found live while split panes still existed
-  (`006` T012), read a task the master had *just* dispatched into a detached pane as
-  already-dead — before the pane had any chance to register its own PID — and
-  re-dispatched it every iteration, spawning a fresh window each time (13 iterations,
-  9 real stray processes before one won the race). The race no longer applies now
-  that there's no detached pane to race against, but the exactly-once rule stays.
-- **Two loop modes, one deterministic, one interactive — quota-exhaustion
-  handling only lives in the latter.** `loop run` (`framework/orchestrator/`)
-  is a plain, unattended Node script: a failed task is just `blocked`,
-  exit-code only, no judgement, nothing asked — correct for CI or any run
-  nobody is watching. `skills/loop/SKILL.md` is the interactive alternative:
-  the chat session running it *is* the master, reads a worker's output itself,
+  dropped by explicit user decision after watching it live. A separate
+  deterministic Node CLI (`framework/orchestrator/`) shipped alongside the
+  interactive skill after that, then was itself retired once the user clarified
+  the loop should only ever run as a chat session — see
+  `002-loop-orchestrator/design.md` and `requirements.md`'s history.
+- **Safe stop**: the user says so, in the same conversation — stop, do not start a
+  new task, mark the task in progress as `interrupted` in its `tasks.md`, report
+  where it stopped. No stop-flag file or PID registry needed: there's no detached
+  process to signal, the conversation itself is what would need to keep going.
+- **Quota-exhaustion handling is judgement, not a regex.** `skills/loop/SKILL.md`
+  is the chat session that *is* the master: it reads a worker's output itself,
   judges success/failure/quota-exhaustion with real judgement (no regex), and
   asks the user directly in the conversation which configured worker to
   switch to on a suspected usage/rate-limit hit. A first attempt put a regex
-  heuristic (`quota.ts`) and a blocking prompt into `loop run` itself,
-  reasoning "the master always holds the terminal" — corrected same day once
-  it became clear "the master" is meant to be a chat session, not necessarily
-  this script, and an unattended run has nobody to answer a prompt regardless.
-  See `002-loop-orchestrator/design.md`.
+  heuristic and a blocking prompt into a standalone script, reasoning "the
+  master always holds the terminal" — corrected once it became clear "the
+  master" is meant to be a chat session, not a script; the script itself was
+  later retired entirely. See `002-loop-orchestrator/design.md`.
 - **A skill's own harness can stand in for a worker CLI of the same
   provider.** `skills/loop`'s Phase 3: when the harness running the skill
   matches a task's configured worker's provider, prefer that harness's own
   native way of spawning a sub-agent over shelling out that provider's CLI —
   phrased generically so it holds under any compatible harness, not
-  Claude-Code-only (matches the Container section's open-format rule).
+  Claude-Code-only (matches the Container section's open-format rule). This is
+  true of the loop generally, not just this one rule: the master is any
+  compatible harness's chat session, never Claude specifically.
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
@@ -197,20 +181,19 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   not in shape: one `report.md` per numbered entry (`planning/fix/NNN-name/report.md`),
   naming the `Scope` (which spec caused it) and what changed — no requirements/design/
   tasks pipeline, and nothing in the loop/roadmap reads it. See `023`'s design for why.
-- Orchestrator runtime: Node.js + TypeScript, run via `tsx` (no build step to
-  maintain). Console command: `loop` (`loop run` / `loop stop` / `loop status`),
-  linked into PATH by `loop-setup` — using whichever package manager the target
-  repo's own `toolchain` decision names, or asks if there isn't one, never a
-  hardcoded `pnpm`. A global-link failure falls back to running the *same*
-  manager's local exec form, never a silent switch to a different one (found live,
-  `006` T010: `pnpm link --global` failed on pnpm 11 and the first attempt fell back
-  to `npm link` unasked).
+- The loop has no console command and nothing to install — `specloop:loop` is the
+  entire runtime, run inside whichever chat session invokes it. (An earlier
+  Node.js/TypeScript CLI, run via `tsx` and linked onto PATH by `loop-setup`,
+  existed and was retired 2026-09-12 — see `002-loop-orchestrator`'s history.)
 - Per-target-repo config file: `.specloop/loop.config.json` (`workers` — an array of
   `{cli, args}`, round-robined by task order when there's more than one, and also
   where a quota-exhaustion worker switch can land — plus `logDir`, `contextFiles`) —
-  written by `skills/start`'s guided Q&A, never hand-authored or hardcoded. The
-  legacy single `workerCli`/`workerArgs` shape still loads (normalized to a
-  one-element `workers` array). See `002-loop-orchestrator/design.md`.
+  written by `skills/start`'s and `skills/loop-setup`'s guided Q&A, never
+  hand-authored or hardcoded. A file still in the legacy single
+  `workerCli`/`workerArgs` shape is read by `skills/loop` as equivalent to a
+  one-element `workers` array — there's no load-time normalization code
+  anymore, `skills/loop`'s own text says to treat it that way. See
+  `002-loop-orchestrator/design.md`.
 
 - **A non-software e2e fixture is built against a declared fictional persona, not a
   second real project** (`017`) — run local-only under the gitignored `test/` dir,
@@ -237,11 +220,12 @@ Declining something the user asked for requires a dated decision from the user.
 | Idea | Why not |
 |---|---|
 | Claude Code's native `Workflow` tool as the orchestrator runtime | Doesn't cover non-Claude worker CLIs (`codex`, `opencode`, ...) — the orchestrator is required to be CLI-agnostic (`planning/product.md`). |
-| Auto-*running* `loop run`, or `loop-setup`'s network install/PATH link, as a side effect of `specloop:start` | Installing dependencies and linking a global binary from inside the bootstrap fails in sandboxes and CI, and starting the loop is always the user's explicit call. Scaffolding the loop folder's *static* files in `start` is fine and is what happens (see `002`). Design-closing and task-breakdown likewise stay separate, deliberate per-spec steps — a repo can sit at requirements-only for a while. |
+| Auto-*running* the loop, or folding `loop-setup`'s worker-CLI Q&A, as a side effect of `specloop:start` | Actually starting the loop is always the user's explicit call, regardless of whether there's anything to install (there no longer is — see the row below). Scaffolding the loop folder's *static* files in `start` is fine and is what happens (see `002`). Design-closing and task-breakdown likewise stay separate, deliberate per-spec steps — a repo can sit at requirements-only for a while. |
 | Building the orchestrator on top of `opencode-orchestrator` (a separate, earlier repo solving a similar problem) | Reviewed and discarded as a base — author doesn't like how it's built. Recycling specific pieces may be evaluated later; see `002-loop-orchestrator/requirements.md`'s Notes. |
 | `.claude-plugin/marketplace.json` listing | Not needed for a plugin installed via `--plugin-dir` or a direct repo checkout; revisit only if distributing through a plugin marketplace becomes a goal (`005-open-source-release/requirements.md`). |
 | Formal governance docs beyond `CONTRIBUTING.md`/`SECURITY.md` (code of conduct, CODEOWNERS) | Still a personal project with no active external contributors; revisit only if that changes. |
 | A cross-agent HTTP-based update-notifier embedded in the plugin (checking a remote manifest, prompting on stale installs) | Proportional to a widely-distributed, unknown-install-base product. specloop is installed by one person via `git pull`/`--plugin-dir` — that already *is* the update mechanism. `CHANGELOG.md` covers "what shipped"; nothing more is needed at this scale. |
 | `skills/start` scaffolding `README.md`, `CONTRIBUTING.md`, `LICENSE` or CI config into the target repo | These are project deliverables, not roadmap/loop infrastructure: if a target project needs one, the roadmap decides it as a spec like any other. Note this does **not** extend to `CLAUDE.md`, `AGENTS.md`, `planning/styles.md` or `.specloop/` — those are the context channel the loop's own workers read, so the plugin owns them. |
+| A standalone script or CLI (in any language/runtime) as a way to run the loop, deterministic or otherwise | 2026-09-12. Tried as `framework/orchestrator/`'s `loop run`/`loop stop`/`loop status` (Node/TypeScript), shipped alongside `skills/loop`, then retired: the user's actual intent was never "a script is the master," it's "I open a chat, and that chat is the master" — a plain script has no chat to ask a quota-exhaustion question in, and an unattended run has nobody to answer it regardless. `skills/loop` is the only way to run the loop now, under any compatible harness. See `002-loop-orchestrator`. |
 | Adopting GitHub spec-kit's `tasks.md` wholesale (checkbox-only, grouped by user-story phase, no owner concept) | 2026-09-05. Spec-kit has no agent/human distinction and no 5-state status — everything is assumed agent-executable. Adopting it as-is would drop `nextRunnableTask`/`pendingHumanTasks`, the exact mechanism that makes the loop safe to leave unattended. `020-checklist-task-format` borrows the checkbox *convention* (industry-familiar, GitHub-rendered) but keeps the owner/status tags spec-kit doesn't have. |
 | Automatic bidirectional spec-kit `spec.md`/`plan.md` <-> `requirements.md`/`design.md` conversion | 2026-09-05. spec-kit's `spec.md` is organized by P1/P2/P3 user story with no equivalent of specloop's flat requirements + acceptance criteria shape, and spec-kit has no central roadmap/index to map `roadmap.md` onto. A one-off manual translation remains possible if ever needed; no permanent dual-format reader is planned. |

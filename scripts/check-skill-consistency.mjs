@@ -148,22 +148,17 @@ ok(
 );
 ok(/AGENTS\.md/.test(designClosing), 'design-closing also maintains AGENTS.md');
 
-group('[9] loop-setup gates execution, not scaffolding');
+group('[9] loop-setup gates execution, not scaffolding, and installs nothing');
 ok(/Do not refuse on an empty `tasks\.md`/.test(loopSetup), 'refusal moved to execution');
 ok(!/Refuse and stop/.test(loopSetup), 'no leftover hard refusal');
 ok(/contextFiles/.test(loopSetup), 'loop-setup confirms contextFiles');
-const loopSetupFlat = normalize(loopSetup);
 ok(
-  loopSetupFlat.includes('package manager') && loopSetupFlat.includes('never assume `pnpm`'),
-  'loop-setup asks which package manager to use, rather than assuming pnpm (regression check for 002 T020)',
+  !/framework\/orchestrator/.test(loopSetup) && !/pnpm install/.test(loopSetup),
+  'loop-setup no longer copies/installs the retired deterministic CLI (002 T027)',
 );
 ok(
-  !/^Run, inside `\.specloop\/orchestrator\/`: `pnpm install && pnpm link --global`\.$/m.test(loopSetup),
-  "loop-setup's install step doesn't hardcode pnpm as the only manager",
-);
-ok(
-  loopSetupFlat.includes('do not silently retry with a *different* package manager'),
-  'loop-setup forbids silently switching package managers on a link failure',
+  !/framework\/orchestrator/.test(loop) && !/loop run/.test(loop),
+  'skills/loop no longer refers to the retired deterministic CLI (002 T027)',
 );
 
 group('[10] No new harness-specific assumptions in the helper-skills recommendation step');

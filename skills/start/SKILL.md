@@ -172,7 +172,6 @@ Create, only if missing:
 - **`planning/specs/.gitkeep`** — so the directory survives a commit before the first spec.
 - **`.specloop/logs/.gitkeep`** and **`.specloop/.gitignore`**:
   ```gitignore
-  orchestrator/
   logs/
   ```
   Written here rather than in the repo root `.gitignore`, which this skill doesn't own.
@@ -198,7 +197,7 @@ decision, with what was decided and why:
 ```markdown
 | Decision | Choice | Why |
 |---|---|---|
-| Runtime | Node 22 | Team knows it; orchestrator already uses it |
+| Runtime | Node 22 | Team knows it; LTS |
 ```
 
 Then mirror the short version into `AGENTS.md`'s "Stack & conventions" section, which
@@ -258,11 +257,11 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
 One entry per worker CLI the user named — more than one round-robins across them by
 task order. `language` comes from Phase 5's `tone` dimension ("what tone... and in
 which language?") — write it here too, not just into `AGENTS.md`'s "Style" section, so
-`worker.ts` can put it directly in every task's prompt (`014` T10). Omit the field
+`skills/loop` can put it directly in every task's prompt (`014` T10). Omit the field
 (don't write `"English"`) when the project is English-only.
 
-Use `"TBD"` for anything the user defers. `specloop:loop-setup` installs the
-orchestrator payload later and will re-ask anything left `TBD`.
+Use `"TBD"` for anything the user defers. `specloop:loop-setup` asks the rest of the
+loop's Q&A later and will re-ask anything left `TBD`.
 
 ## Phase 6 — Roadmap seeding
 
@@ -355,8 +354,8 @@ Question-bank Phase E, for the next unfilled spec.
 ## Phase 8 — Report, then stop
 
 Tell the user what exists now, and what the next deliberate step is per spec
-(`specloop:design-closing`), plus that `specloop:loop-setup` installs the orchestrator
-when a spec has agent-runnable tasks. **Do not run any of them.** List any dimension
+(`specloop:design-closing`), plus that `specloop:loop-setup` finishes configuring the
+loop when a spec has agent-runnable tasks. **Do not run any of them.** List any dimension
 left `open` or `skipped` so nothing disappears quietly. Then ask whether to write
 `planning/handoff.md`, same as any other stopping point.
 

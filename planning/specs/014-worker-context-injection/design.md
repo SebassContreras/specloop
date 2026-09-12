@@ -14,7 +14,7 @@ down the dispatch chain so it can be one.
 4. **What not to touch** — status columns belong to the orchestrator, not the worker.
 
 Existence-filtering happens at prompt-build time, not config-load time: a project may
-gain `planning/styles.md` between two `loop run` invocations, and a config default listing
+gain `planning/styles.md` between two loop runs, and a config default listing
 three files shouldn't tell a worker to read one that was never created. Filtering in
 `loadConfig` would freeze the answer at process start and make the default list wrong
 for most projects.
