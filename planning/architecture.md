@@ -77,10 +77,31 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   one without the others is exactly how `001`'s Phase E gap (`T033`) happened. When a
   spec adds or changes one of these, update every place that names it in the same
   change.
-- `roadmap.md` is always an index table (ID | Plan | Status | Depends on) — without
-  this, an agent dropped into the repo has no idea what's next. The row parser reads
-  the first four cells positionally and ignores trailing ones, so the contract can be
-  extended without breaking every existing row.
+- `roadmap.md` is always an index table (ID | Plan | Status | Depends on | Stage |
+  Priority) and **carries no other content** — no prose history, no separate ordering
+  list. Without this, an agent dropped into the repo has no idea what's next, and
+  shouldn't have to read anything else to find out. The row parser reads the first
+  four cells (`ID`/`Plan`/`Status`/`Depends on`) positionally and ignores trailing
+  ones, so the table can gain columns without breaking every existing row — `Stage`
+  and `Priority` exist only as those trailing, code-ignored cells. Any rationale
+  behind a row's dependencies or ordering belongs in that spec's own
+  `requirements.md`/`design.md`, or `planning/handoff.md` for a point-in-time note —
+  never duplicated into the index, which is exactly what went stale before (`015`
+  T015/T019/T020, 2026-09-12).
+- **`Stage`** (`requirements` · `design_closed` · `tasks_ready` · `looping`, `—` once
+  `done` or never tracked) records which skill a spec needs next. Unlike `Status`, it
+  has no single writer: each pipeline skill sets it exactly once, at its own
+  transition, and never touches another spec's row — `specloop:start` on writing a
+  real `requirements.md`, `specloop:design-closing` on closing design,
+  `specloop:task-breakdown` on producing real tasks, `specloop:loop`/`loop-setup` on
+  starting execution. The deterministic `loop run` CLI path doesn't write it yet
+  (`015` T020).
+- **`Priority`** is a live, human-edited ordering number — lower runs before higher
+  among specs `Depends on` doesn't already order. Edited directly to reorder; no
+  separate "build order" text to keep in sync. `—` means the spec predates the
+  convention or was deliberately left unranked as order-independent (`019`).
+  `skills/loop` breaks ties on it; the deterministic `loop run` CLI doesn't consult it
+  yet (`015` T019).
 - **`tasks.md` is a GFM checkbox list, not a table** (`020-checklist-task-format`):
   `- [ ] T001 [agent] [status:todo] <task>`, with an optional indented note line
   directly below (`      └─ <note>`) replacing the old `Notes` cell. The checkbox

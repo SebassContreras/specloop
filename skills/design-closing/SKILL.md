@@ -110,9 +110,11 @@ Replace the file's `TBD` stub with:
 
 ## Phase 3 — Stop. Do not chain into task-breakdown.
 
-Once `design.md` is written, tell the user it's closed and that `specloop:task-
-breakdown` can be run on it whenever they're ready. **Do not invoke it
-automatically** — these are separate, deliberate steps per spec.
+Write `design_closed` into this spec's `Stage` cell in `planning/roadmap.md` —
+touch only that cell, nothing else in the row. Then tell the user it's closed
+and that `specloop:task-breakdown` can be run on it whenever they're ready.
+**Do not invoke it automatically** — these are separate, deliberate steps per
+spec.
 
 ## Style rules
 

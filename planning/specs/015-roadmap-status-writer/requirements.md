@@ -28,13 +28,19 @@ Delivered:
 
 Remaining:
 
-- Add the `Priority` column to the scaffolded roadmap template, now that the parser
-  tolerates it, and retire the `## Priority: N` requirements-header convention that
-  exists because the column didn't.
-- Optional `Stage` column (requirements | design_closed | tasks_ready | looping) so
-  the roadmap says which skill to run next without opening every spec — overlaps
-  `009-status-dashboard-skill`; decide which owns it at design time.
 - Move the round-trip checks written during this pass into `007-orchestrator-unit-tests`.
+- Make `pickNextSpec` prefer the lower `Priority` number among multiple eligible
+  `todo` rows, instead of first-in-file-order (`T019`).
+- Give the deterministic `loop run` CLI path a `Stage` writer, so it sets `looping`
+  on a spec the same way `skills/loop` already does directly (`T020`).
+
+Decided 2026-09-12 (was open above): `Priority` is a **live, human-edited** ordering
+number, not a historical record — edit it to reorder, no separate "build order" text
+to keep in sync. `Stage` (`requirements` · `design_closed` · `tasks_ready` ·
+`looping`) lives in `roadmap.md`, written by whichever pipeline skill completes that
+transition, not by a shared module — `009-status-dashboard-skill` reads it rather than
+owning a second copy of the same fact. See `design.md`'s resolved open question and
+`planning/architecture.md`'s roadmap Fixed rules.
 
 ## Who/what it serves
 
@@ -60,6 +66,13 @@ any agent dropped into the repo trying to work out what's next.
 - `loop status` reports a disagreement between a roadmap cell and the spec's tasks.
 - `Priority` exists as a column, and no `requirements.md` carries a `## Priority:`
   header any more.
+- `roadmap.md` carries only the index table plus its column legends — no prose
+  history, no separate ordering list. *(Done 2026-09-12 — the "Build order" section
+  and the stale test-run/historical-Priority paragraphs were removed; anything not
+  already duplicated in the relevant spec's own docs was ported there first.)*
+- `Stage` exists as a column, written by each pipeline skill at its own transition.
+  *(Done 2026-09-12 — `skills/start`/`design-closing`/`task-breakdown`/`loop` updated;
+  the deterministic `loop run` CLI path is the tracked exception, `T020`.)*
 
 ## Out of scope
 

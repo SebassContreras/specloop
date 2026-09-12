@@ -142,20 +142,33 @@ Create, only if missing:
   ```markdown
   # Roadmap
 
-  Index of all specs: order, status, dependencies.
+  Index of every spec — status, dependencies, pipeline stage, and priority. Read this
+  table first; nothing else in this repo should be needed to get oriented.
 
-  | ID  | Plan | Status | Depends on | Priority |
-  |-----|------|--------|------------|----------|
+  | ID  | Plan | Status | Depends on | Stage | Priority |
+  |-----|------|--------|------------|-------|----------|
 
-  Possible statuses: `todo` · `in_progress` · `blocked` · `interrupted` · `done`.
+  `Status`: `todo` · `in_progress` · `blocked` · `interrupted` · `done`. Written only
+  by the orchestrator — never hand-edit it.
+
+  `Stage`: `requirements` · `design_closed` · `tasks_ready` · `looping` — which skill
+  a spec needs next. `—` until this skill finishes that spec's `requirements.md`.
+
+  `Priority`: a live ordering number — lower runs first among specs `Depends on`
+  doesn't already order. `—` if unranked.
   ```
-  The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment — the
-  orchestrator concatenates the two into a filesystem path. Verify this after every
-  row you write. `Priority` is a trailing column the row parser ignores positionally
-  (safe to ship with or without values in it) — leave cells `—` until Phase 6 asks the
-  user to rank the seeded specs, then fill it from that ranking. Never invent a
-  priority the user hasn't actually given; a spec with no stated priority stays `—`,
-  not a guessed number.
+  Carries no other content — no history, no separate ordering list; that's what goes
+  stale (see `planning/architecture.md`'s roadmap Fixed rules if the reasoning is ever
+  unclear). The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment
+  — the orchestrator concatenates the two into a filesystem path. Verify this after
+  every row you write. `Stage` and `Priority` are trailing columns the row parser
+  ignores positionally (safe to ship with or without values in them). Leave `Stage`
+  `—` when you create a spec's row; once this skill finishes writing that spec's real
+  `requirements.md` (end of Phase 7 for it), write `requirements` into its `Stage`
+  cell — the next skill in the pipeline (`design-closing`) advances it from there.
+  Leave `Priority` `—` until Phase 6 asks the user to rank the seeded specs, then fill
+  it from that ranking. Never invent a priority the user hasn't actually given; a spec
+  with no stated priority stays `—`, not a guessed number.
 - **`planning/specs/.gitkeep`** — so the directory survives a commit before the first spec.
 - **`.specloop/logs/.gitkeep`** and **`.specloop/.gitignore`**:
   ```gitignore

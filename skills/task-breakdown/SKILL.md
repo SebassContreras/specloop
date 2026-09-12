@@ -81,10 +81,12 @@ continuation line directly below it: `      └─ <note text>`.
 
 ## Phase 4 — Stop. Do not start executing tasks.
 
-Tell the user `tasks.md` is populated and ready for spec 002's loop-orchestrator
-whenever they choose to run it, and name any `human` tasks that the loop will skip and
-they'll need to do themselves. **Do not begin executing any task** — running the list
-is entirely the orchestrator's job, not this skill's.
+Write `tasks_ready` into this spec's `Stage` cell in `planning/roadmap.md` — touch
+only that cell, nothing else in the row. Tell the user `tasks.md` is populated and
+ready for spec 002's loop-orchestrator whenever they choose to run it, and name any
+`human` tasks that the loop will skip and they'll need to do themselves. **Do not
+begin executing any task** — running the list is entirely the orchestrator's job, not
+this skill's.
 
 ## Style rules
 

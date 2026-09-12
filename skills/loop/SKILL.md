@@ -35,9 +35,15 @@ doesn't exist. Read it: `workers` (array of `{cli, args}`), `logDir`,
 Read `planning/roadmap.md`'s table yourself. Same eligibility rule the
 deterministic orchestrator uses (`framework/orchestrator/src/roadmap.ts`'s
 `pickNextSpec` — read it if the table's shape is ever ambiguous, don't invent
-a different rule): the lowest-ID `todo` row whose every `Depends on` entry is
-itself `done`, or a row already `in_progress` (resume that one first). If
-none is eligible, say so plainly and stop.
+a different rule): a `todo` row whose every `Depends on` entry is itself
+`done`, or a row already `in_progress` (resume that one first). If none is
+eligible, say so plainly and stop. Among multiple eligible `todo` rows, prefer
+the lower `Priority` number (`—` sorts last); `pickNextSpec` itself doesn't do
+this yet (`015` T019), but you're not bound by its code, only its eligibility
+rule.
+
+The first time you pick a `todo` row this session, write `looping` into its
+`Stage` cell (leave `in_progress` resumes alone — it's already `looping`).
 
 ## Phase 2 — Pick the next task
 

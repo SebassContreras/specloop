@@ -43,9 +43,16 @@ reported separately instead.
 
 ## Open questions / deferred
 
-- Whether the `Stage` column belongs here or in `009-status-dashboard-skill` — both
-  want to answer "which skill runs next". Decide before adding it; two writers of the
-  same fact is what caused the priority split between row order and `## Priority: N`.
+- ~~Whether the `Stage` column belongs here or in `009-status-dashboard-skill`.~~
+  **Resolved 2026-09-12: it belongs in `roadmap.md` itself, this spec's file.** `009`
+  stays purely a read-only reporter over whatever's already on disk — it derives its
+  "next suggested action" live from `Stage`/`Status`/`tasks.md`, same as it derives
+  task counts, rather than owning a second column that would duplicate this one. No
+  single writer, unlike `Status`: each pipeline skill (`start`, `design-closing`,
+  `task-breakdown`, `loop`/`loop-setup`) sets `Stage` once, at its own transition —
+  see `planning/architecture.md`'s roadmap Fixed rules. `T019`/`T020` track the two
+  places the deterministic `loop run` CLI path still doesn't honor this (Priority
+  tie-breaking, Stage on execution start).
 - ~~`sanitizeCell` replaces `|` with `/` rather than escaping it.~~ **Reversed.**
   Migrating this repo's own tables (`001` T28) hit two task rows that describe the
   `ID | Task | Status | Notes` contract itself — one already escaped as `\|`, one not.

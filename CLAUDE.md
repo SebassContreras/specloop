@@ -30,13 +30,24 @@ required one non-Claude-Code harness verified — OpenCode passed a live audit
 Codex CLI audits (`022` T001/T002) remain open as optional follow-up, not blocking.
 `021` (harness-worker-backend) is `todo`, narrowed 2026-09-11 to just the
 deterministic `loop run` path (the interactive skill already gets the same benefit
-for free via its own harness-synergy rule) — still not designed. Specs `018`, `019`
-and `007`–`013` are `todo`, unstarted (`007`/`011` requirements.md were corrected
+for free via its own harness-synergy rule) — still not designed. Specs `018` and
+`007`–`013` are `todo`, unstarted (`007`/`011` requirements.md were corrected
 2026-09-11 to stop describing now-removed `splitPane`/`quota.ts` modules, not
-otherwise touched). Check `planning/roadmap.md` before touching anything — its own
-top section and `planning/handoff.md` carry the detail this paragraph doesn't.
+otherwise touched). `019` (public-showcase) is `in_progress`, not unstarted — its
+first three tasks are `done`, a fourth (screenshot capture) is mid-flight. Check
+`planning/roadmap.md` before touching anything — it's the single source for
+status/dependencies/pipeline-stage/priority and carries nothing else;
+`planning/handoff.md` carries the point-in-time detail this paragraph doesn't.
 `skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
 see `planning/architecture.md`'s Container section.
+
+`planning/roadmap.md` was restructured 2026-09-12: gained `Stage` (pipeline phase,
+written by whichever skill completes that transition) and made `Priority` a live,
+human-edited ordering number instead of a historical record — its old "Build order"
+prose section is gone, ported into each spec's own docs first where not already
+there. See `planning/architecture.md`'s roadmap Fixed rules and `015`'s `tasks.md`
+`T015`/`T019`/`T020` for what's still open (the deterministic `loop run` CLI path
+doesn't yet write `Stage` or sort by `Priority` — `skills/loop` already does both).
 
 ## Two rules that exist because they were broken once
 
