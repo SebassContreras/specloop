@@ -25,9 +25,11 @@ the same day, never past `requirements.md`: `007` (orchestrator-unit-tests),
 
 - **CLI-agnostic**: the loop must be able to invoke any installed CLI as a
   worker — `claude`, `codex`, `opencode`, etc. — configurable per repo/run,
-  not hardcoded to one. And, when the harness running `specloop:loop` is
-  itself the same provider as a task's configured worker, it may prefer its
-  own native way of spawning a sub-agent instead of shelling out that CLI.
+  not hardcoded to one. And, whenever the harness running `specloop:loop` is
+  itself the same provider as a task's configured worker and offers a native
+  way to spawn a sub-agent, it **always uses that first** — a CLI subprocess
+  is the fallback for a different provider or a harness with no native
+  mechanism, never the default when the native path is available.
 - **One process, no visual terminals**: the chat session itself is the
   master — it runs every task sequentially, one at a time, in the same
   conversation. No detached windows, no split panes, nothing else opened for

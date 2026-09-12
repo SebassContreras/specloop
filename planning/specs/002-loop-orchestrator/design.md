@@ -81,19 +81,30 @@ the wrong layer for it. A regex can't tell "the CLI printed a rate-limit
 error" from "the CLI printed a stack trace mentioning the words rate limit"
 as reliably as an agent reading it can.
 
-## Harness synergy (`skills/loop/SKILL.md` Phase 3)
+## Harness synergy (`skills/loop/SKILL.md` Phase 3) — a priority order, not a preference
 
 Because the master is a live agent session, a task whose configured worker is
 the **same provider as the harness currently running the skill** doesn't need
-to shell out to that provider's CLI at all — the skill instructs preferring
-that harness's own native way of spawning a sub-agent instead (in-process,
-structured result, watchable live), falling back to a CLI subprocess only for
-a different provider. Phrased generically ("your own harness", not
-"Claude Code's X tool") so the instruction stays true under whichever
-compatible harness is actually running it, per `022`'s open-format rule. This
-was `021`'s (harness-worker-backend) whole efficiency goal, achieved here for
-free — `021` was retired 2026-09-12 once the only other execution path it
-could have targeted (the deterministic CLI) no longer existed.
+to shell out to that provider's CLI at all — the skill instructs **always
+using** that harness's own native way of spawning a sub-agent first
+(in-process, structured result), falling back to a CLI subprocess only when
+the provider doesn't match or the harness has no native mechanism. Not a
+soft preference either party can skip: whenever the native path is
+available for the matching provider, it's the one used, every time. Phrased
+generically ("your own harness", not "Claude Code's X tool") so the
+instruction stays true under whichever compatible harness is actually
+running it, per `022`'s open-format rule. This was `021`'s
+(harness-worker-backend) whole efficiency goal, achieved here for free —
+`021` was retired 2026-09-12 once the only other execution path it could
+have targeted (the deterministic CLI) no longer existed.
+
+**Live-verified under Claude Code (`024`, 2026-09-12), one correction:** the
+native path is not "watchable live" as originally assumed here — it's
+asynchronous (dispatch, then a completion notification arrives once the
+sub-agent finishes), unlike a CLI subprocess's live-streamed stdout/stderr.
+`skills/loop`'s Phase 3/4 read the result either way before deciding the
+outcome; only the *how* differs. See `024`'s `tasks.md` for the full
+observed-result table.
 
 ## Open questions / deferred
 

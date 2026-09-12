@@ -3,11 +3,11 @@ name: loop
 description: >
   Loop orchestration: this chat session becomes the master. Reads
   planning/roadmap.md and the next eligible spec's tasks.md, runs each
-  agent-owned task with a configured worker (a subprocess CLI, or this
-  session's own native sub-agent tool when the provider matches), and asks
-  the user directly, in this conversation, when a worker looks like it hit a
-  usage/rate limit. This is the only way to run the loop — there is no
-  separate script or CLI.
+  agent-owned task with a configured worker — always this session's own
+  native sub-agent tool first when its provider matches the worker's, a
+  subprocess CLI only otherwise — and asks the user directly, in this
+  conversation, when a worker looks like it hit a usage/rate limit. This is
+  the only way to run the loop — there is no separate script or CLI.
 when_to_use: >
   Use when the user wants to actually work the backlog now, in this chat —
   phrasing like "let's run the loop", "start working through the backlog",
@@ -88,15 +88,28 @@ line is identified only by starting at column 0.
    leave the rest of the line untouched).
 2. Pick a worker from `config.workers` — round-robin by task order, unless
    the user already told you to prefer a specific one this run.
-3. **Prefer your own native way of spawning a sub-agent over shelling out a
-   CLI, when your own harness already is the same provider as the picked
-   worker.** E.g. if this conversation is itself running under a harness
-   whose provider matches `workers[i].cli`, and that harness offers a native
-   way to hand off a task to a sub-agent, prefer that — it runs in-process,
-   gives you a structured result, and you can watch it as it works, instead
-   of an opaque subprocess. For any other provider, launch that CLI as a
-   subprocess with its configured headless/non-interactive flag from `args`.
-   Either way, build the same briefing:
+3. **If your own harness offers a native way to hand off work to a sub-agent
+   and its provider matches the picked worker's, use that — always, before
+   falling back to a CLI subprocess.** This takes priority over shelling out
+   whenever it's available for the matching provider; only fall back to a
+   subprocess when it isn't (a different provider, or a harness with no
+   native mechanism). It runs in-process and gives you a structured result
+   instead of an opaque subprocess. **Live-verified under Claude Code
+   (`024`, 2026-09-12): this mechanism is asynchronous** — you dispatch it
+   and get a completion notification later with the result, not a live
+   stream. That's still "watching it happen" in Phase 3.4's sense (you get
+   and read the real result before deciding the outcome) — just not
+   synchronously. Don't wait for real-time output from a native sub-agent
+   the way you would from a subprocess; wait for its completion signal
+   instead. For any other provider, launch that CLI as a
+   subprocess: `<cli> <args...> "<briefing>"` — the configured `args` first,
+   the whole briefing text last, as one argument (same convention the
+   deleted `worker.ts` used, so an existing `args` entry like `["-p"]` still
+   means what whoever configured it expects). Give the subprocess a bounded
+   timeout (~30 minutes is what the deleted code used) and never feed it
+   anything on stdin — a CLI not told it's headless (missing its
+   non-interactive flag in `args`) will otherwise hang waiting for input
+   until that timeout kills it. Either way, build the same briefing:
    - Name the repo's working directory and the task: `Task <id> of spec
      <specId>-<specName>: <task text>`.
    - Tell it to read `planning/specs/<specId>-<specName>/requirements.md` and
@@ -109,13 +122,15 @@ line is identified only by starting at column 0.
      comments, and commit/PR messages in that language.
    - Tell it to do only this task, not start the next one, and not to touch
      the `[owner]`/`[status:...]` tags in `tasks.md` itself — you own those.
-4. Watch the output as it happens. Decide **with your own judgement** whether
-   it succeeded, genuinely failed, or looks like it hit a usage/rate limit —
-   there is no fixed pattern-match for this on purpose. Read what the worker
-   actually said, the same way you'd read any other tool output.
+4. Read the result — live, streamed output for a CLI subprocess; a
+   completion notification for a native sub-agent (see step 3). Decide **with
+   your own judgement** whether it succeeded, genuinely failed, or looks like
+   it hit a usage/rate limit — there is no fixed pattern-match for this on
+   purpose. Read what the worker actually said, the same way you'd read any
+   other tool output.
 5. Write a record to `<logDir>/<specId>-<taskId>.log` (create the directory
-   if needed), even though you watched it live — it's the audit trail for
-   anyone reading this later.
+   if needed), even though you already read the result — it's the audit
+   trail for anyone reading this later.
 6. Decide the outcome:
    - **Succeeded** → flip the row to `done`, with a short note.
    - **Genuinely failed** (not quota-related) → flip to `blocked`, with a

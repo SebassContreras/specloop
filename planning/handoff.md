@@ -111,22 +111,54 @@ rules live, is simpler and was the actual original intent.
   rule. If a future edit to `skills/loop` slips into Claude-Code-specific
   phrasing, that's a regression to fix, not a clarification.
 
+## `024` closed the live-verification gap — what it actually confirmed
+
+`024-loop-skill-verification` ran live, 2026-09-12, against `test/loop-verify-fixture/`
+(and a second isolated fixture, `test/loop-verify-allhuman/`) — both gitignored,
+local-only. **Real worker CLIs, not a stub**: the original design planned a
+stub worker CLI for determinism, but the user redirected mid-run to use real
+`claude` and `opencode` (no `codex` on this machine) so we'd see what they
+actually do, not simulated output. See `024`'s `tasks.md` for the full
+observed-result table. Two real gaps were found in `skills/loop/SKILL.md` and
+fixed the same session:
+
+- Phase 3 never said *how* a briefing reaches a CLI subprocess — now explicit
+  (`<cli> <args...> "<briefing>"`, matching the deleted `worker.ts`'s
+  convention, plus a bounded timeout and no stdin).
+- Phase 3/4 said "watch the output as it happens" — doesn't hold for Claude
+  Code's own native sub-agent mechanism, which is asynchronous (dispatch,
+  then a completion notification), not a live stream. Documented, and every
+  dispatch after the fix behaved correctly under the corrected text.
+
+Confirmed live and working: spec/task eligibility including the
+lower-`Priority` tiebreak and skipping an all-`human` `todo` row even at
+lower `Priority`; the `tasks.md` grammar read/write; prompt contents (task+
+spec naming, requirements/design pointer, existing-only `contextFiles`,
+the `language` line, do-not-touch-status instruction); status rollup to
+`done` and the roadmap write; `Stage` → `looping` on first pick; the legacy
+`workerCli`/`workerArgs` config shape; harness-synergy (native sub-agent used
+for a `claude` worker under Claude Code, real subprocess for `opencode`);
+safe stop (a real native sub-agent killed mid-flight via `TaskStop`, task
+correctly marked `interrupted`, nothing else started).
+
 ## Not verified — don't claim otherwise
 
-- `skills/loop/SKILL.md`'s rewritten, fully-self-contained form has not been
-  run live yet — it was rewritten against the same rules the deleted `.ts`
-  files used to encode (cross-checked line by line while deleting them), but
-  nobody has opened a fresh chat, invoked `/specloop:loop`, and watched it
-  work a real task end-to-end since the rewrite. **New spec `024`
-  (loop-skill-verification) exists specifically to close this out** —
-  `tasks.md` is populated and ready, `todo`, not yet run.
-- `skills/loop-setup/SKILL.md`'s simplified form (no install/link step)
-  likewise unverified live — also `024`'s job (T003).
-- The harness-synergy branch (native sub-agent vs. CLI subprocess,
-  `skills/loop` Phase 3) needs a second live run under a harness whose
-  provider actually matches a configured worker — `024` explicitly scopes
-  this out as a follow-up, not a blocking part of its own acceptance
-  criteria. Still unverified either way.
+- **Genuine-failure → `blocked`** and **suspected quota/rate-limit → ask the
+  user** were confirmed once each via a stub worker, before `024`'s run
+  pivoted to real CLIs — both real workers happened to succeed at every real
+  task, so neither branch got a real-CLI confirmation. Real CLIs can't be
+  made to fail or hit a rate limit on demand, so this is expected to stay a
+  stub-only check unless it comes up naturally in a real run someday.
+- **Roadmap-level `in_progress` resume** (Phase 1: "a row already
+  `in_progress`, resume that one first") was never exercised — every fixture
+  spec either finished in one pass or was interrupted while its roadmap row
+  was still `todo`. Correct by inspection of the skill's text, not
+  live-confirmed.
+- **The harness-synergy branch's exact wording under a harness other than
+  Claude Code** — this session can only run Claude Code, so whether "your
+  own harness's native way of spawning a sub-agent" reads correctly to an
+  OpenCode or Codex CLI session is still open, same gap `022`'s own audit
+  already tracks for Cursor/Codex CLI generally.
 - `007`–`013`/`021`'s prior "todo" status meant literally nothing was ever
   designed against them — their retirement carries no implementation risk,
   but if anyone was relying on their `requirements.md` text for something

@@ -23,7 +23,8 @@ we, what's next."
 | 020 | checklist-task-format     | done        | 002, 003           | —            | 15       |
 | 022 | cross-agent-skill-compat  | done        | 001                | —            | 17       |
 | 023 | fix-log                   | done        | —                  | —            | 18       |
-| 024 | loop-skill-verification   | todo        | 002                | tasks_ready  | 8        |
+| 024 | loop-skill-verification   | done        | 002                | —            | 8        |
+| 025 | master-handoff            | todo        | 002                | requirements | —        |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`

@@ -55,9 +55,11 @@ of this is chained automatically after the scaffold trigger):
    The loop folder's *static* files already exist from step 1; this step fills in
    the rest. Nothing to install — there is no separate orchestrator package.
 10. The **loop** then runs as an interactive chat session — the session running it
-    *is* the master, working through each spec's agent-runnable tasks step by step,
-    using whichever CLI the user configured (`claude`, `codex`, `opencode`, ...) or
-    its own harness's native sub-agent tool when the provider matches, and handing
+    *is* the master, working through each spec's agent-runnable tasks step by step.
+    For each task, it **always uses its own harness's native sub-agent tool first**
+    when the provider matches the configured worker — only shelling out to that
+    worker's CLI (`claude`, `codex`, `opencode`, ...) as a subprocess when the
+    provider doesn't match or the harness has no native mechanism — and hands
     every worker the project's context files so its output respects the decisions
     made in steps 3–5.
 

@@ -58,7 +58,12 @@ Ask, one at a time, waiting for each reply:
    closed) — a CLI invoked without its non-interactive flag will hang. Ask
    explicitly for each CLI's flag rather than defaulting to `[]`: for
    `claude` suggest `-p` (print mode); for another CLI, ask the user what its
-   headless/non-interactive flag is.
+   headless/non-interactive flag is. Mention this once, plainly: if a
+   configured worker's provider ever matches the harness actually running
+   `specloop:loop`, that harness's own native sub-agent mechanism is used
+   for that task instead of this CLI — the `args` given here still matter
+   for every other case (a different provider, or a harness with no native
+   mechanism), just not always.
 2. Default `logDir` to `.specloop/logs` unless the user wants something else.
 3. **Context files** — confirm `contextFiles` lists the files a worker must
    read before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;

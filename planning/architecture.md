@@ -151,14 +151,23 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   master always holds the terminal" — corrected once it became clear "the
   master" is meant to be a chat session, not a script; the script itself was
   later retired entirely. See `002-loop-orchestrator/design.md`.
-- **A skill's own harness can stand in for a worker CLI of the same
-  provider.** `skills/loop`'s Phase 3: when the harness running the skill
-  matches a task's configured worker's provider, prefer that harness's own
-  native way of spawning a sub-agent over shelling out that provider's CLI —
-  phrased generically so it holds under any compatible harness, not
-  Claude-Code-only (matches the Container section's open-format rule). This is
-  true of the loop generally, not just this one rule: the master is any
+- **A skill's own harness takes priority over a worker CLI of the same
+  provider — always, whenever it's available.** `skills/loop`'s Phase 3: when
+  the harness running the skill matches a task's configured worker's
+  provider and offers a native way to hand off work to a sub-agent, use
+  that, before ever falling back to a CLI subprocess for that task. A CLI
+  subprocess is the fallback for a *different* provider, or a harness with
+  no native mechanism — never the default when the native path is available.
+  Phrased generically so it holds under any compatible harness, not
+  Claude-Code-only (matches the Container section's open-format rule). This
+  is true of the loop generally, not just this one rule: the master is any
   compatible harness's chat session, never Claude specifically.
+  **Live-verified under Claude Code (`024`, 2026-09-12)**: the native path
+  fired correctly for a matching-provider worker, real CLI subprocesses
+  fired correctly for a different one — see that spec's `tasks.md`. Found
+  live: the native path is asynchronous (dispatch, then a completion
+  notification), not a live stream — `skills/loop`'s Phase 3/4 account for
+  this explicitly.
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,

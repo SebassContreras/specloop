@@ -90,12 +90,12 @@ actually ready — none of them chain automatically:
    writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
    config already exists from step 1; this fills in the rest.
 5. **`/specloop:loop`** — the only way to run it: this chat session is the master.
-   It reads the roadmap and tasks itself, runs each one (your own harness's native
-   sub-agent tool when its provider matches a task's configured worker, a CLI
-   subprocess otherwise), and asks you directly if a worker looks like it hit a
-   usage/rate limit — no separate process, no script, nothing to watch elsewhere.
-   Tell it to stop and it does, marking the in-flight task `interrupted` and
-   reporting what's left.
+   It reads the roadmap and tasks itself, and runs each one **always through your
+   own harness's native sub-agent tool first when its provider matches a task's
+   configured worker** — a CLI subprocess only when it doesn't — and asks you
+   directly if a worker looks like it hit a usage/rate limit — no separate
+   process, no script, nothing to watch elsewhere. Tell it to stop and it does,
+   marking the in-flight task `interrupted` and reporting what's left.
 
 ## Docs
 

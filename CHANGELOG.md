@@ -10,6 +10,24 @@ version is actually tagged.
 
 ## Unreleased
 
+### 024 — loop-skill-verification
+
+Live-verified `skills/loop`/`skills/loop-setup` end to end against a throwaway
+fixture, using real `claude` and `opencode` workers rather than a stub, since
+there's no code left backing those skills to unit-test. Confirmed: spec/task
+eligibility (including the lower-`Priority` tiebreak and skipping an
+all-`human` `todo` row), the `tasks.md` grammar, prompt contents, status
+rollup, `Stage` writes, the legacy `workerCli`/`workerArgs` config shape,
+harness-synergy (native sub-agent for a matching-provider worker, real
+subprocess otherwise), and safe stop (a real sub-agent killed mid-flight,
+correctly marked `interrupted`). Found and fixed two real gaps in
+`skills/loop/SKILL.md`'s Phase 3: it never said how a briefing reaches a CLI
+subprocess (now explicit), and it assumed a live stream where Claude Code's
+own native sub-agent mechanism is actually asynchronous (dispatch, then a
+completion notification). See `024`'s `tasks.md` for the full table and what
+stayed unverified (genuine-failure/quota-suspicion with a real CLI, a
+roadmap-level `in_progress` resume).
+
 ### 023 — fix-log
 
 `planning/fix/` — a flat, hand-authored log for anything a developer finds wrong
