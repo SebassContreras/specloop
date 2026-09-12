@@ -8,6 +8,17 @@ X" traps) still holds and is kept below for context. Branch: `main`.
 **This file is not the source of truth and must not become one.** `planning/roadmap.md`
 owns order and status; each spec's `tasks.md` owns the work.
 
+## Next, picking this back up
+
+No `todo` spec has a populated `tasks.md` right now, so `/specloop:loop` has
+nothing to run. By `Priority`, the next candidate is **`018`
+(project-style-preferences)** — needs `/specloop:design-closing` then
+`/specloop:task-breakdown` before it's loop-runnable. `009` and `012` are
+next after it, same story (`requirements` stage, undesigned). `025`
+(deferred, unranked) sits behind all three until someone gives it a
+`Priority`. `019` (public-showcase) is `in_progress` but everything left in
+it is `[human]` (screenshot/demo capture) — not blocked on any agent work.
+
 ---
 
 ## Where this landed (read this before touching `002` again)
@@ -140,6 +151,30 @@ the `language` line, do-not-touch-status instruction); status rollup to
 for a `claude` worker under Claude Code, real subprocess for `opencode`);
 safe stop (a real native sub-agent killed mid-flight via `TaskStop`, task
 correctly marked `interrupted`, nothing else started).
+
+## Also done 2026-09-12, after `024`: priority wording + `025` deferred
+
+The harness-synergy rule (native sub-agent before a CLI subprocess, when the
+provider matches) was always meant to be unconditional, but read as a soft
+preference ("may prefer", "instructs preferring") in several places —
+tightened to explicit priority language ("always uses that first, before
+falling back") everywhere it's described: `skills/loop`'s own frontmatter,
+`skills/loop-setup`'s Q&A (now tells the user this up front), and
+`planning/architecture.md`/`002`'s `requirements.md`/`design.md`/`README.md`/
+`planning/product.md`. `002`'s `design.md` also corrected to stop calling the
+native path "watchable live" — `024` found it's asynchronous instead.
+
+Also raised, during discussion of what happens if the **master** (not a
+worker) runs low on its own usage: unlike a worker's exhaustion (the master
+watches it from outside), the master has no reliable way to notice its own
+before a call to it just fails. The mitigating fact — all loop state lives
+on disk, so any fresh session under any harness can already resume via the
+existing eligibility rules, no live handoff needed — means this is mostly an
+*announce it proactively* problem, not a new mechanism. Filed as
+**`025-master-handoff`**, requirements only, deliberately deferred (not
+designed, unranked `Priority`) — see that spec for the hard constraint that
+detection is best-effort at most, since no harness is known to expose a
+reliable self-usage signal to the model running inside it.
 
 ## Not verified — don't claim otherwise
 
