@@ -10,6 +10,37 @@ version is actually tagged.
 
 ## Unreleased
 
+> Pre-existing gap, not from this session: `016`/`017`/`022` are `done` in
+> `planning/roadmap.md` but have no entry below — left as-is rather than backfilled
+> here, since auditing/writing three unrelated historical entries is out of scope
+> for today's changes.
+
+### 009 — status-dashboard-skill (partial)
+
+`specloop:status` — read-only, works standalone (no dependency on
+`.specloop/loop.config.json`). Reports active spec(s), task counts, `blocked`/
+`interrupted` rows, next-suggested-action per spec, and `Stage`/`Status` drift
+against a spec's own files, as a chat summary — and writes a static,
+self-contained `planning/dashboard.html` (`skills/status/references/template.html`),
+regenerated fully every run, deliberately not server-backed or auto-refreshing.
+Live-verified against a 7-spec fixture covering all five drift rules. **Partial**:
+`T012` (open the generated dashboard in a real browser and confirm it renders) is
+`[human]` and still `todo` — everything `[agent]`-owned is done and the roadmap
+row is `done` (a `[human]` task doesn't hold a spec open), but this entry should
+be revisited once that check actually happens.
+
+### 018 — project-style-preferences
+
+Closed without new implementation: its three parts (styles/preferences capture,
+`planning/styles.md` + `AGENTS.md` storage, delivery via `014`'s `contextFiles`)
+turned out to already exist from `001`'s scope-restoration and `014` — nobody had
+traced the finished work back to close this spec's own roadmap row. Live-verified
+the full chain end-to-end under OpenCode instead of a fresh design/build pass,
+including a real worker producing a component that genuinely honored every style
+hard-rule it was handed. Also corrected `requirements.md`'s AC #2 (a
+no-visual-surface project still gets `planning/styles.md`, for `tone`/
+`code-conventions`/`anti-preferences` — it only skips the visual dimensions).
+
 ### 024 — loop-skill-verification
 
 Live-verified `skills/loop`/`skills/loop-setup` end to end against a throwaway

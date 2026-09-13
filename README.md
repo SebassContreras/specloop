@@ -97,6 +97,13 @@ actually ready — none of them chain automatically:
    process, no script, nothing to watch elsewhere. Tell it to stop and it does,
    marking the in-flight task `interrupted` and reporting what's left.
 
+Available any time, not part of that sequence: **`/specloop:status`** — read-only,
+reports the roadmap's state (active spec(s), task counts, anything stuck, what to
+run next, and any recorded `Stage`/`Status` that disagrees with the files on disk)
+as a chat summary, and writes a static `planning/dashboard.html` — regenerated
+fully each time you ask, never a background process. Works even before
+`/specloop:loop-setup` has run.
+
 ## Docs
 
 - [`planning/handoff.md`](planning/handoff.md) — where the work stands, what's next, and what

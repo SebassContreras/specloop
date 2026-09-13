@@ -16,7 +16,7 @@ Entry point. Everything else lives under `planning/`:
 - [`planning/fix/`](planning/fix/) — a flat, hand-authored log of post-hoc corrections.
   Not a spec, not loop-runnable — see its own `README.md`.
 
-Current state (2026-09-12): `001`–`006`, `014`–`017`, `020`, `022`–`024` are `done`.
+Current state (2026-09-13): `001`–`006`, `009`, `014`–`018`, `020`, `022`–`024` are `done`.
 `001`/`003`/`004` are working skills under `skills/`; `002` is now a single
 interactive skill, `skills/loop/SKILL.md` — the chat session running it is the
 master: reads `roadmap.md`/`tasks.md` itself, runs workers (any compatible harness,
@@ -40,8 +40,28 @@ non-Claude-Code harness) — see `planning/handoff.md`'s "Not verified" section.
 `022`'s acceptance criteria only required one
 non-Claude-Code harness verified — OpenCode passed a live audit 2026-09-08, so
 `planning/architecture.md`'s Container section names it; Cursor and Codex CLI
-audits (`022` T001/T002) remain open as optional follow-up, not blocking. Specs
-`009`, `012`, `018` are `todo`, unstarted. `019` (public-showcase) is `in_progress`,
+audits (`022` T001/T002) remain open as optional follow-up, not blocking. **`018`
+(project-style-preferences) closed 2026-09-13** — its capture/storage/delivery
+turned out to already be built (`001` T024/T025, `014`), just never traced back to
+close the spec; closed via a live verification under OpenCode against an external
+fixture instead of a fresh design/build pass. That run also surfaced and fixed two
+unrelated gaps, logged as `planning/fix/001-language-field-format` and
+`planning/fix/002-stage-not-reset-on-done`. **`009` (status-dashboard-skill) also
+closed 2026-09-13** — reformulated first to add a static, self-contained HTML
+dashboard (`planning/dashboard.html`, regenerated fresh each run, no server/watcher
+— see its `requirements.md` for why a live-updating one is deliberately out of
+scope), then built and live-verified (`skills/status/SKILL.md` +
+`skills/status/references/template.html`) against a throwaway multi-drift-scenario
+fixture (`test/status-verify-fixture/`). One task, `T012` (opening the generated
+dashboard in a real browser), is `[human]` and stays `todo` — the loop skips it,
+report it to the user each time this spec's row is touched, but it doesn't hold the
+spec's `Status` open. **`026` (dashboard-visual-enhancements) filed and
+design-closed the same day**, after actually seeing `009`'s output rendered
+against this repo's own data (a real dogfood run) — progress bars, richer
+per-task badges, a KPI strip, clickable `dependsOn` badges, a "next eligible"
+highlight, and client-side filter/search, all as edits to the same two `009`
+files, no new files. Not started. `012` is `todo`, unstarted, still
+undesigned. `019` (public-showcase) is `in_progress`,
 not unstarted — its first three tasks are `done`, but T001's `demo-loop.tape`
 demoed the now-deleted CLI and was deleted with it; T005 (screenshot capture) needs
 a fresh interactive-skill demo, not a VHS terminal recording. Check

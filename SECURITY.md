@@ -38,6 +38,13 @@ arbitrary shell commands outside of running a user-configured worker, and
 never install anything without explicit confirmation (see each skill's
 "Style rules").
 
+`skills/status` writes `planning/dashboard.html`, a static file embedding
+repo-sourced text (task text, fix-log notes) inside a `<script type="application/
+json">` tag that a browser then parses and renders. The relevant risk there is a
+crafted string breaking out of that tag — `skills/status/SKILL.md`'s substitution
+step escapes every `</script` occurrence for exactly this reason; review any
+change to that step with the same care as `skills/loop`'s Phase 3.
+
 ## Non-security bugs
 
 Use regular GitHub issues for functional problems that don't have a security

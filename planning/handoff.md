@@ -1,8 +1,72 @@
 # Handoff — 2026-09-13
 
-Supersedes 2026-09-12 on one point: **`018` (project-style-preferences) is now
-`done`.** Everything else below (2026-09-12 and 2026-09-11 history) still holds.
-Branch: `main`.
+Supersedes 2026-09-12 on three points: **`018`** and **`009`** are `done`, and
+**`026`** exists (filed and design-closed, not yet built). Everything else below
+(2026-09-12 and 2026-09-11 history) still holds. Branch: `main`.
+
+## Repo-wide alignment pass, same session
+
+Every time something shipped today, swept the rest of the repo for the same
+"reflected everywhere" gap the Fixed rules warn about, rather than assuming one
+edit was enough:
+
+- `planning/architecture.md`'s Plugin components gained the Status Skill entry
+  it was missing; `planning/product.md` gained a line for the "available any
+  time" status skill.
+- `README.md`'s Quickstart, `.github/ISSUE_TEMPLATE/bug-report.yml`'s dropdown,
+  and `SECURITY.md` (the new `dashboard.html`/`<script>`-injection attack
+  surface, and why it's escaped) all updated for `specloop:status` existing.
+- `CHANGELOG.md` gained the `009` (partial — `T012` still open) and `018`
+  entries it was missing; also found (not fixed) a pre-existing gap: `016`/
+  `017`/`022` are `done` with no entry either, predates today, left alone.
+- `CLAUDE.md`'s current-state paragraph updated three times as work landed
+  (`018` done → `009` done → `026` filed), not just once at the end.
+- `planning/roadmap.md`'s own `Status` column note still cited `loop status`
+  as a gap `009` "would" fill — now says it does.
+- Decided and recorded: `planning/dashboard.html` is committed on purpose (not
+  gitignored like `test/`/`.specloop/`) — it's this repo's live example/demo
+  material, candidate content for `019`'s README showcase work, not per-run
+  throwaway state. See `architecture.md`'s Fixed rules for the exact carve-out.
+
+## `009` closed 2026-09-13 — designed, built, and live-verified in one session
+
+Reformulated first (user request, mid-session): the original plain-text-only
+`specloop:status` gained a static, self-contained HTML dashboard
+(`planning/dashboard.html`) — deliberately **not** auto-refreshing or
+server-backed, since this project has twice already reverted a standing
+background process for a visual affordance (split-pane terminal, the standalone
+loop CLI). Went through `design-closing` (fixed template in
+`skills/status/references/template.html`, separate from `SKILL.md`, same pattern
+as `question-bank.md`) and `task-breakdown` (12 tasks) normally, then ran
+`specloop:loop` on it for real, in this repo, against its own backlog — required
+first running `specloop:loop-setup` here for the first time ever (this repo never
+had its own `.specloop/loop.config.json`, since it was never scaffolded by its own
+`specloop:start`; only `claude -p` configured, `contextFiles: ["planning/
+architecture.md"]` since `AGENTS.md`/`planning/styles.md` don't exist for this repo
+either, same underlying reason).
+
+Built `skills/status/SKILL.md` (Phase 0-5: read roadmap+tasks like `skills/loop`
+does, compute summary/next-actions, detect `Stage`/`Status` drift — including the
+exact `fix/002` scenario as one of five concrete rules, print the chat summary,
+read `planning/fix/`, substitute into the template and write the dashboard) and
+`skills/status/references/template.html` (self-contained HTML/CSS/JS, light+dark,
+status color-coding, click-to-expand roadmap/fix-log drill-downs, a
+warning-styled drift banner shown only when drift exists). Every task dispatched
+to a native Claude Code sub-agent (harness-synergy, same as `024`) and verified
+against the actual file on disk afterward, not just the worker's own report.
+
+Live-verified end-to-end against `test/status-verify-fixture/` (7 specs
+deliberately covering all 5 drift rules + one clean baseline, one fix-log entry,
+no `.specloop/loop.config.json`): ran the skill twice, second run after mutating
+the fixture, confirmed the dashboard fully regenerates with no stale data (AC3)
+and both runs succeed without any loop config existing (AC4). Browser automation
+wasn't available in this environment, so AC2 (visual distinction + drift warning)
+was verified programmatically instead — extracted and read the generated
+dashboard's actual renderer JS and CSS rather than a screenshot. **`T012`
+(open the dashboard in a real browser, confirm it actually renders/expands
+correctly) is `[human]` and still `todo`** — genuinely needs a person with a
+browser, not skipped out of laziness. Spec rolled up to `done` regardless, since a
+remaining `[human]` task doesn't hold a spec open, per `skills/loop`'s own rule.
 
 **This file is not the source of truth and must not become one.** `planning/roadmap.md`
 owns order and status; each spec's `tasks.md` owns the work.
@@ -53,15 +117,40 @@ its fixture out: a fixture nested in `specloop/test/` without its own `.git`
 lets a harness's directory walk-up read *this* repo's own `AGENTS.md`/`planning/`
 instead of the fixture's. Not committed anywhere; purely local.
 
+## `026` filed and design-closed same day — real output drove real feedback
+
+After publishing this repo's own dogfooded `dashboard.html` (see above) and
+actually looking at it, the user asked for visual/informational additions —
+progress bars (overall + per-spec, segmented by status proportion), richer
+per-task badges (ID/owner/status, plus the spec's own `Priority` shown near its
+task list), a KPI strip, clickable `dependsOn` badges, a "next eligible"
+highlight (reusing `skills/status` Phase 1.1's existing eligibility calc, not a
+second one), and client-side filter/search. Filed as its own spec, **`026`**,
+rather than reopening `009` — `009`'s own acceptance criteria are still fully
+met as shipped; this is new scope, not a fix. Went through a real (if brisk)
+`design-closing` pass: settled that `dependsOn` becomes a list and a new
+`nextEligible` boolean gets added to the existing JSON contract (extend, not a
+second data structure), and that per-spec/repo-wide task counts move
+server-side into the JSON too. `Stage: design_closed`, `Priority: 11` (ahead of
+`012`'s `13`). Not yet task-broken or built.
+
 ## Next, picking this back up
 
 No `todo` spec has a populated `tasks.md` right now, so `/specloop:loop` has
-nothing to run. By `Priority`, the next candidate is **`009`
-(status-dashboard-skill)** — `requirements` stage, undesigned — needs
-`/specloop:design-closing` then `/specloop:task-breakdown`. `012` is next after
-it, same story. `025` (deferred, unranked) sits behind both until someone gives
-it a `Priority`. `019` (public-showcase) is `in_progress` but everything left in
-it is `[human]` (screenshot/demo capture) — not blocked on any agent work.
+nothing to run. By `Priority`, the next candidate is **`026`
+(dashboard-visual-enhancements)** — design already closed, needs
+`/specloop:task-breakdown` next. `012` (spec-amend-skill) is next after it,
+`requirements` stage, still fully undesigned. `025` (deferred, unranked) sits
+behind both until someone gives it a `Priority`. `019` (public-showcase) is
+`in_progress` but everything left in it is `[human]` (screenshot/demo capture)
+— not blocked on any agent work. `009`'s own `[human]` task (`T012`, open
+`planning/dashboard.html` in a real browser) is still open too, unrelated to
+what's "next" in `Priority` order.
+
+This repo now has its own `.specloop/loop.config.json` (worker `claude -p`,
+`contextFiles: ["planning/architecture.md"]`) — written this session, since it
+never existed before. `specloop:loop` can run directly on this repo's own
+backlog from here on, same as any target repo.
 
 ---
 

@@ -38,6 +38,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - **Loop Skill** (`002`, `skills/loop/`): the only way to actually run the loop. The
   chat session running it is the master — see `002-loop-orchestrator`'s Fixed rule
   below and that spec's own files for the full contract.
+- **Status Skill** (`009`, `skills/status/`): read-only, standalone (no dependency on
+  `.specloop/loop.config.json` existing). Reports the roadmap's state — active
+  spec(s), task counts, `blocked`/`interrupted` rows, next-suggested-action per
+  spec, and any `Stage`/`Status` drift — as a chat summary, and writes a static,
+  self-contained `planning/dashboard.html` (regenerated fully each run; no
+  server/watcher, by the same no-standalone-process reasoning below).
 - **No hooks of its own yet** — defined per target repo, not shipped by the plugin.
 
 ## Fixed rules
@@ -176,6 +182,13 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   the `interview.md` ledger). Nothing committed — skills, docs, examples, or specs —
   may assume either exists on origin; references to fixture runs must say they are
   local-only.
+- **`planning/dashboard.html` is the one generated artifact that *is* committed**,
+  by deliberate exception to the rule above (decided 2026-09-13): it's this repo's
+  own real `specloop:status` output, kept as live example/demo material —
+  candidate showcase content for `019-public-showcase`'s README work — not
+  per-run throwaway state. It will go stale the moment the roadmap changes again;
+  re-running `specloop:status` regenerates it. Don't assume a *target* repo's copy
+  is committed just because this repo's is — that stays each project's own call.
 - **Any machine-read value a skill writes into a scaffolded file uses the industry-
   standard code, never a spelled-out label, and every file is UTF-8 without a BOM.**
   Found inconsistent 2026-09-13 (`018` live verification): one fixture's

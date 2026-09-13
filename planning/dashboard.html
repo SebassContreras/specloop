@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>specloop dashboard</title>
+<!--
+  This file is a fixed, self-contained template. skills/status substitutes real
+  data into it (Phase 5) by replacing the placeholder token inside the
+  <script id="dashboard-data"> tag near the end of this file with a JSON
+  string matching this exact shape:
+
+  {
+    "generatedAt": "<ISO 8601 timestamp>",
+    "specs": [
+      {
+        "id": "001", "plan": "scaffold-and-spec-skill", "status": "done",
+        "dependsOn": "—", "stage": "—", "priority": "1",
+        "tasks": [
+          {"id": "T001", "owner": "agent", "status": "done", "text": "...", "note": "..."}
+        ]
+      }
+    ],
+    "drift": [
+      {"specId": "018", "rule": "...", "message": "..."}
+    ],
+    "fixes": [
+      {"id": "001", "name": "language-field-format", "scope": "018", "date": "2026-09-13", "found": "...", "fix": "..."}
+    ]
+  }
+
+  Notes for whoever produces that JSON:
+  - "dependsOn" is a single display string, already comma-joined if there were
+    multiple dependencies (or "—" if none).
+  - "status" is one of: done / in_progress / blocked / interrupted / todo
+    (also used for each task's "status", same five values).
+  - "note", "message", "found", "fix" may be empty strings — this template
+    renders gracefully when they are (it omits the line rather than showing a
+    blank one).
+  - "specs", "drift", "fixes" may all be empty arrays — this template renders
+    an empty state for each rather than erroring or leaving a blank gap.
+  - That tag's text content must be valid JSON (already escaped for embedding
+    in a script tag) and the placeholder token must appear exactly once in
+    this file so a later substitution step can find-and-replace it
+    unambiguously.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f8;
+    --surface: #ffffff;
+    --surface-alt: #f0f1f3;
+    --border: #dcdde1;
+    --text: #1c1e21;
+    --text-muted: #5b5f66;
+    --link: #2452d9;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 8px rgba(0, 0, 0, 0.04);
+
+    --status-done-bg: #dcf5e3;
+    --status-done-fg: #146c2e;
+    --status-in_progress-bg: #dceaff;
+    --status-in_progress-fg: #17469e;
+    --status-blocked-bg: #fbdcdc;
+    --status-blocked-fg: #a12626;
+    --status-interrupted-bg: #fdead2;
+    --status-interrupted-fg: #92580a;
+    --status-todo-bg: #e6e7ea;
+    --status-todo-fg: #46494f;
+
+    --warning-bg: #fff4d6;
+    --warning-border: #e8b93a;
+    --warning-fg: #6b4c04;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171a;
+      --surface: #1e2024;
+      --surface-alt: #26282d;
+      --border: #34363c;
+      --text: #e9eaec;
+      --text-muted: #a3a7ae;
+      --link: #7ea3ff;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 10px rgba(0, 0, 0, 0.3);
+
+      --status-done-bg: #163c26;
+      --status-done-fg: #7fe6a4;
+      --status-in_progress-bg: #12305c;
+      --status-in_progress-fg: #9dc0ff;
+      --status-blocked-bg: #4a1c1c;
+      --status-blocked-fg: #ff9d9d;
+      --status-interrupted-bg: #4a3410;
+      --status-interrupted-fg: #ffc978;
+      --status-todo-bg: #2c2e33;
+      --status-todo-fg: #c3c5ca;
+
+      --warning-bg: #3d3110;
+      --warning-border: #a3811f;
+      --warning-fg: #ffd875;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 32px clamp(16px, 4vw, 48px) 64px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+  }
+
+  header.page-header {
+    max-width: 1100px;
+    margin: 0 auto 28px;
+  }
+
+  header.page-header h1 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  header.page-header .generated-at {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  section.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 20px clamp(14px, 3vw, 28px) 26px;
+  }
+
+  section.panel h2 {
+    margin: 0 0 14px;
+    font-size: 1.15rem;
+  }
+
+  #drift-section {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    color: var(--warning-fg);
+    border-radius: 12px;
+    padding: 18px clamp(14px, 3vw, 28px);
+    box-shadow: var(--shadow);
+  }
+
+  #drift-section h2 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+    color: inherit;
+  }
+
+  #drift-section ul {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+
+  #drift-section li {
+    margin: 4px 0;
+  }
+
+  #drift-section .drift-spec {
+    font-weight: 600;
+  }
+
+  #drift-section .drift-rule {
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr.spec-row,
+  tbody tr.fix-row {
+    cursor: pointer;
+  }
+
+  tbody tr.spec-row:hover,
+  tbody tr.fix-row:hover {
+    background: var(--surface-alt);
+  }
+
+  tr.detail-row td {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-panel {
+    background: var(--surface-alt);
+    padding: 14px clamp(10px, 3vw, 22px) 18px;
+  }
+
+  .toggle-caret {
+    display: inline-block;
+    width: 1em;
+    color: var(--text-muted);
+    transition: transform 0.15s ease;
+  }
+
+  tr.expanded .toggle-caret {
+    transform: rotate(90deg);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge-done { background: var(--status-done-bg); color: var(--status-done-fg); }
+  .badge-in_progress { background: var(--status-in_progress-bg); color: var(--status-in_progress-fg); }
+  .badge-blocked { background: var(--status-blocked-bg); color: var(--status-blocked-fg); }
+  .badge-interrupted { background: var(--status-interrupted-bg); color: var(--status-interrupted-fg); }
+  .badge-todo { background: var(--status-todo-bg); color: var(--status-todo-fg); }
+
+  table.task-table {
+    background: transparent;
+  }
+
+  table.task-table thead th {
+    border-bottom: 1px solid var(--border);
+  }
+
+  table.task-table tbody td {
+    border-bottom: 1px solid var(--border);
+  }
+
+  table.task-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .task-note {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 6px 2px;
+  }
+
+  .fix-detail dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 16px;
+  }
+
+  .fix-detail dt {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .fix-detail dd {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>specloop dashboard</h1>
+  <div class="generated-at" id="generated-at"></div>
+</header>
+
+<main>
+  <section id="drift-section" hidden>
+    <h2>⚠ Stage/Status drift</h2>
+    <ul id="drift-list"></ul>
+  </section>
+
+  <section class="panel" id="roadmap-section">
+    <h2>Roadmap</h2>
+    <table id="roadmap-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Plan</th>
+          <th>Status</th>
+          <th>Depends on</th>
+          <th>Stage</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody id="roadmap-body"></tbody>
+    </table>
+  </section>
+
+  <section class="panel" id="fix-log-section">
+    <h2>Fix log</h2>
+    <div id="fix-log-body"></div>
+  </section>
+</main>
+
+<script type="application/json" id="dashboard-data">{"generatedAt":"2026-09-13T19:28:24.957Z","specs":[{"id":"001","plan":"scaffold-and-spec-skill","status":"done","dependsOn":"—","stage":"—","priority":"1","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Create plugin skeleton: `.claude-plugin/plugin.json`, `skills/start/`","note":""},{"id":"T002","owner":"agent","status":"done","text":"Write `skills/start/SKILL.md` frontmatter (`context: fork`, `background: false`, `description`/`when_to_use` trigger phrasing)","note":"Reverted by T32 — `context: fork` re-forks per user reply instead of holding the loop."},{"id":"T003","owner":"agent","status":"done","text":"Implement Phase 1 (scaffold): detect existing structure, create `CLAUDE.md` + `planning/{product,architecture,roadmap}.md` skeletons when missing","note":"Implemented as skill instructions in `SKILL.md` — a Skill's \"implementation\" is its instructions, not a script."},{"id":"T004","owner":"agent","status":"done","text":"Implement Phase 2 (spec creation + requirements Q&A): next-NNN numbering, folder creation, one-question-at-a-time requirements.md fill, design.md/tasks.md stubs, roadmap.md row append","note":""},{"id":"T005","owner":"agent","status":"done","text":"Implement Phase 3 (stack Q&A): first-run detection, guided questions into `planning/architecture.md`, skip/append logic on repeat runs","note":"Removed by T16, restored and expanded by T19 — the status was stale in between, claiming a deleted implementation."},{"id":"T006","owner":"agent","status":"done","text":"Implement `tasks.md` stub generation using the fixed table contract (ID / Task / Status / Notes)","note":""},{"id":"T007","owner":"agent","status":"done","text":"Idempotency pass: safe re-entry on an already-scaffolded repo, no silent overwrite of non-stub content","note":"Covered by Phase 0's detection + confirm-before-overwrite rule."},{"id":"T008","owner":"human","status":"done","text":"Local test: `claude --plugin-dir ./specloop` against a throwaway target repo, run `/specloop:start` end-to-end, verify all files/rows","note":"Superseded by T30 (same run, new interview shape) and by T29 for the statically-checkable half. `claude plugin validate` passed (1 warning: root `CLAUDE.md` isn't loaded as plugin context — expected, it's specloop's own dogfooded docs, not shipped context). Full interactive Q&A run needs a live terminal session — can't be scripted end-to-end from here."},{"id":"T009","owner":"agent","status":"done","text":"Implement Phase 2 (vision & tooling Q&A): goal + MVP questions written into `planning/product.md`, skip logic on repeat runs","note":""},{"id":"T010","owner":"agent","status":"done","text":"Wire Phase 2's MVP answer into Phase 3's first-spec naming suggestion","note":""},{"id":"T011","owner":"agent","status":"done","text":"Implement Phase 2's skill-suggestion step: propose relevant skills/plugins from the stated goal, confirm before installing anything, manual-instructions fallback if install isn't possible","note":"Reverted by T15, restored by T20 as its own phase keyed off the stack answers rather than the goal."},{"id":"T012","owner":"agent","status":"done","text":"Re-verify Phase 0/idempotency logic and `tasks.md`/design.md phase numbering after the Phase 2 insertion","note":""},{"id":"T013","owner":"agent","status":"done","text":"Extend Phase 1 to scaffold `README.md` (stub) and `CONTRIBUTING.md` (real content)","note":"Superseded by T15 — reverted, out of scope."},{"id":"T014","owner":"agent","status":"done","text":"Extend Phase 2 with a license question (T4) and README finalization (T5)","note":"Superseded by T15 — reverted, out of scope."},{"id":"T015","owner":"agent","status":"done","text":"Revert T11/T13/T14: drop README/CONTRIBUTING/LICENSE scaffolding and the bootstrap-time skill-install side-effect — out of scope per `planning/product.md`","note":"**Partly undone by T19/T20.** The `README`/`CONTRIBUTING`/`LICENSE` half stands. The skill-recommendation half was a stated user objective and its removal was justified by citing a `planning/product.md` clause written in the same change — circular; see T18."},{"id":"T016","owner":"agent","status":"done","text":"Replace the Phase 3 stack Q&A with roadmap seeding: propose tech/architecture/skill setup as the roadmap's first specs, confirm with the user, create them as ordinary spec entries instead of writing straight into `planning/architecture.md`","note":"**Undone by T19.** Seeding was kept — it's now downstream of the restored Q&A and derives from recorded answers instead of inference — but it is not a substitute for asking."},{"id":"T017","owner":"agent","status":"done","text":"Update `planning/product.md`/`planning/architecture.md` to match the narrowed scope","note":"**Undone by T21.** This is the task that wrote the clause T15/T16 cited as their authority."},{"id":"T018","owner":"agent","status":"done","text":"Record the scope-authority rule in `planning/architecture.md`: a Declined row may not overrule a stated user objective, and may not cite a `product.md` clause edited in the same change","note":"The mechanism that produced T15–T17. Without this the same revert recurs."},{"id":"T019","owner":"agent","status":"done","text":"Restore the technologies/architecture/tools Q&A as its own phase, running after the vision Q&A and before seeding, writing a decision register into `planning/architecture.md` and the operative form into `AGENTS.md`","note":"Objective 3. Baseline recovered from `git show HEAD:skills/start/SKILL.md`, then branched per project type."},{"id":"T020","owner":"agent","status":"done","text":"Restore skill recommendation as its own phase, positioned after T19 so it keys off the user's actual selections; confirm before install, manual fallback, and route anything uninstallable to the roadmap","note":"Objective 4."},{"id":"T021","owner":"agent","status":"done","text":"Rewrite `planning/product.md`/`planning/architecture.md` to describe all six objectives, and add `AGENTS.md`, project-type branching, the interview contract, the `Plan`-cell path invariant and the single-`Status`-writer rule to the fixed rules","note":""},{"id":"T022","owner":"agent","status":"done","text":"Scaffold `AGENTS.md` as the single context source with `CLAUDE.md` as a thin `@AGENTS.md` import; add both to Phase 0's detection and to this skill's owned-file list","note":"Objective 5. Required by CLI-agnosticism: `codex`/`opencode` read `AGENTS.md`, not `CLAUDE.md`."},{"id":"T023","owner":"agent","status":"done","text":"Add the project-type classifier as the first interview question, persisted to `planning/product.md` and branched downstream","note":"Objective 2. Engine in `016`, branches in `017`."},{"id":"T024","owner":"agent","status":"done","text":"Add the styles/preferences phase and `planning/styles.md`, gated on a visual surface","note":"Objective 6. Inert until `014` ships — see that spec."},{"id":"T025","owner":"agent","status":"done","text":"Write `skills/start/references/question-bank.md` and the interview contract (ledger, follow-up triggers, skip protocol, closing sweep, no fixed question count)","note":"Objective ★. Enforcement is `016`."},{"id":"T026","owner":"agent","status":"done","text":"Scaffold the `.specloop/` loop folder's static files (`loop.config.json`, `logs/.gitkeep`, `.gitignore`) and add `.specloop/` to this skill's owned files","note":"Objective 1b. `loop-setup` keeps the payload copy + install."},{"id":"T027","owner":"agent","status":"done","text":"Add `## Acceptance criteria` to the requirements template, and the `Owner` column to the `tasks.md` template","note":"Consumed by `task-breakdown` and by `015`'s parser."},{"id":"T028","owner":"agent","status":"done","text":"Migrate this repo's own `tasks.md` files to the 5-column `Owner` layout","note":"13 files migrated; 114 rows across 18 specs now parse with 0 malformed-row warnings. Two rows (`002` T4, `003` T6) describe the pipe-delimited contract itself and exposed a parser gap — see `015` T16."},{"id":"T029","owner":"agent","status":"done","text":"Add `scripts/check-skill-consistency.mjs` — mechanical cross-reference check over the four skills and the question bank","note":"38 checks. Verified it actually fails by re-introducing the `design-closing` header bug (caught, 2 failures) and deleting the styles phase (caught). Covers the statically-checkable half of T8: template agreement, objective coverage, owned-file scope, no-phantom-writer, question-bank completeness."},{"id":"T030","owner":"human","status":"done","text":"Live interactive run of `/specloop:start` against a throwaway repo","note":"Run 2026-09-09 against `test/ops-onboarding-repo/` (local-only, gitignored; script/results in its `NOTES.md`), a scripted operations/process persona (vendor onboarding at a logistics company) with planted edge cases. **Bearability: pass** — full arc from Phase 0 through Phase 6 and one spec's Phase E, one question at a time, stopped voluntarily at a natural boundary, no fatigue point. **Sweep convergence: pass, 5/5** — every phase (A, B, C, D, spec 001's own sweep) ended after exactly two consecutive \"nothing new\" rounds, never a third, never re-asked a settled dimension. **Follow-up triggers: pass, 2/2** — both planted vague answers (\"el sistema\" in `mvp`, \"nuestro proceso de aprobación\" in `current-state`) got an immediate follow-up, resolved back into the same ledger row. **Skip protocol: pass, 2/2** — both planted declines (`stakeholders`, `access`) recorded `skipped` with the user's exact reason quoted, not dropped or argued into an answer. **Visual-surface gate: pass** — \"no\" correctly skipped `palette`/`typography`/`density-mode`/`brand-refs` entirely. **Stop-anytime + handoff (T032): pass** — asked before stopping, wrote a correct `planning/handoff.md`. **Bonus, unplanned**: the whole run was answered in Spanish; `tone`'s language field correctly propagated to `.specloop/loop.config.json`'s `language` and every doc was written in Spanish — resolves the old 2026-09-02 handoff's \"prompt is English-only, nothing consumes it\" open item. Also stands as `017`'s deferred second non-software fixture (operations/process type-keyed `architecture.md` headers — Systems/Cadence/Handoffs — held up, no software-only question leaked in). **One real defect found**, tracked as T033 below: Phase E's `dependencies` and `owner-split` dimensions were never asked for the one spec drafted — not recorded in `.specloop/interview.md`, no section in `requirements.md`, despite \"no dependencies\" being confirmed verbally in chat."},{"id":"T031","owner":"human","status":"done","text":"Decide the interview's escape hatch based on T30","note":"Resolved during the `chef` live run: the user can stop at any point in plain language; before stopping the skill asks whether to write `planning/handoff.md`. Implemented in T32."},{"id":"T032","owner":"agent","status":"done","text":"Remove `context: fork`/`background: false` from `skills/start/SKILL.md` (run inline instead — forking reloaded the whole skill fresh on every user reply, wasting tokens instead of holding the ask-wait-ask-next loop); add the stop-anytime + handoff-before-stopping rule to the interview contract, and add `planning/handoff.md` to this skill's owned files","note":"Same defect and fix applied to `loop-setup`/`task-breakdown`/`design-closing` — see `002` T19, `003` T10, `004` T12."},{"id":"T033","owner":"agent","status":"done","text":"Fix Phase E coverage: `skills/start/SKILL.md`'s per-spec requirements loop skips `dependencies` and `owner-split` (2 of the 7 `question-bank.md` Phase E dimensions) — found during T030's live run, where a spec's \"no dependencies\" was confirmed verbally but never written to `.specloop/interview.md` or `requirements.md`, and `owner-split` was never asked at all. Make sure all 7 dimensions get a ledger row every time, and add a `scripts/check-skill-consistency.mjs` check if the gap is structural (e.g. the phase's step list literally omits them) rather than a one-off skip.","note":"Confirmed structural: Phase 7 step 2's requirements template had only 5 of 7 headers, and `owner-split` wasn't asked anywhere. Fixed `skills/start/SKILL.md` Phase 7: step 1 (new-spec creation only) now records its dependency question as the `dependencies` ledger dimension too; step 2 asks `dependencies` regardless of whether step 1 ran this time (a spec Phase 6 already seeded — folder + roadmap row pre-existing — never hits step 1, so the dimension has to be askable from step 2 alone, using the roadmap's existing `Depends on` cell as context) and now also asks `owner-split`, writing `## Dependencies`/`## Owner split` sections (the latter already consumed by `task-breakdown`'s owner-assignment step, which referenced it before it existed). Updated `design-closing`'s quoted header list to match, tolerating specs written before these two sections existed. Added `scripts/check-skill-consistency.mjs` group [11]: derives the 7 Phase E dimensions from `question-bank.md` and asserts each is named in `start`'s Phase 7 section — verified it actually fails by re-introducing the `owner-split` omission (1 failure), then reverted. All 45 checks pass."}]},{"id":"002","plan":"loop-orchestrator","status":"done","dependsOn":"001, 003","stage":"—","priority":"—","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Create `framework/orchestrator/` skeleton: `package.json` (`bin.loop`), `tsconfig.json`, `bin/loop.cjs` shim","note":""},{"id":"T002","owner":"agent","status":"done","text":"Implement `src/config.ts`: load/validate `.specloop/loop.config.json` (`workerCli`, `workerArgs`, `splitMode`, `logDir`)","note":""},{"id":"T003","owner":"agent","status":"done","text":"Implement `src/roadmap.ts`: parse `planning/roadmap.md`'s table, pick next eligible spec (deps satisfied, or resume `in_progress`)","note":""},{"id":"T004","owner":"agent","status":"done","text":"Implement `src/tasks.ts`: parse/write a spec's `tasks.md` (fixed `ID | Task | Status | Notes` contract), status transitions","note":"Contract since extended with `Owner`, and the parser rewritten to split on unescaped pipes only — this very row is what exposed the gap."},{"id":"T005","owner":"agent","status":"done","text":"Implement `src/worker.ts`: spawn the configured `workerCli` as a child process for one task","note":""},{"id":"T006","owner":"agent","status":"done","text":"Implement `src/safeStop.ts`: stop-flag file, `SIGINT` handling, writes `interrupted` row + resume pointer + log","note":""},{"id":"T007","owner":"agent","status":"done","text":"Implement `src/splitPane/none.ts`: sequential/inline execution mode (always-works fallback)","note":""},{"id":"T008","owner":"agent","status":"done","text":"Implement `src/splitPane/windowsTerminal.ts` and `src/splitPane/tmux.ts`","note":""},{"id":"T009","owner":"agent","status":"done","text":"Implement `src/cli.ts`: `loop run` / `loop stop` / `loop status` dispatch","note":""},{"id":"T010","owner":"agent","status":"done","text":"Create `skills/loop-setup/SKILL.md`: guided Q&A (workerCli, splitMode), copy framework into `.specloop/orchestrator/`, write config, `pnpm install && pnpm link --global`","note":"Frontmatter (`context: fork`, `background: false`) reverted by T19."},{"id":"T011","owner":"human","status":"done","text":"Local test: `specloop:loop-setup` + `loop run` end-to-end against a target repo with a populated `tasks.md` (needs 003 to have run there first)","note":"Done as part of `006` T010's live pipeline run, 2026-09-11, against `test/architecture-absent-fixture/`. `loop run` executed spec `002`'s 6 `agent` tasks with a real `claude -p` worker across several passes (a worker occasionally left a task `in_progress` after being killed by the invoking shell's own command timeout, not the orchestrator's 30-minute one — recovered by resetting that task to `todo` and re-running); correctly stopped at the 1 `human` task (`T007`) without attempting it; wrote real artifacts to disk (`pasos-relevados.md`, `onboarding-checklist-template.md`, `gate-w9-seguro.md`, two verification docs); rolled spec `002`'s roadmap status up to `done` via `writeSpecStatus`."},{"id":"T021","owner":"agent","status":"done","text":"Recover a task stuck `in_progress` from an ungraceful external kill (not `safeStop`'s clean path) — `nextRunnableTask` currently only resumes `todo`/`interrupted`, so such a task blocks its spec forever without a manual reset","note":"Found during `006` T010's live run: the invoking shell's own command timeout (not the orchestrator's 30-min `WORKER_TIMEOUT_MS`) killed a `claude -p` call mid-task, leaving it `in_progress`; recovered by hand."},{"id":"T012","owner":"agent","status":"done","text":"Configure ESLint (typescript-eslint recommended) + Prettier (single quotes) for `framework/orchestrator/`; reformat existing source","note":"Verified: `pnpm run lint` clean, `pnpm run typecheck` clean, re-ran the `none`-mode smoke test after reformatting."},{"id":"T013","owner":"agent","status":"done","text":"Fix Sonar S8786 (ReDoS-prone regex): rewrite `roadmap.ts`/`tasks.ts` row regexes to use non-overlapping `[^|]*` cells instead of lazy quantifiers butted against `\\s*`","note":"Verified with a 50k-char adversarial line — parses in ~1ms."},{"id":"T014","owner":"agent","status":"done","text":"Scope `eslint.config.cjs`'s CommonJS-only rules/globals to `bin/**/*.cjs` + `eslint.config.cjs` (require()/module are intentional there, not in `src/`)","note":"`pnpm exec eslint .` clean; `lint`/`format` scripts widened from `src` to the whole package."},{"id":"T015","owner":"agent","status":"done","text":"Add `src/security.ts` (Sonar S4036): `assertSafePath()` refuses to spawn if `PATH` has a world-writable directory; wired into `worker.ts`, `windowsTerminal.ts`, `tmux.ts`","note":"POSIX-only — see design.md's open questions for why Windows is skipped. Re-ran the `none`-mode smoke test on Windows after adding the platform guard."},{"id":"T016","owner":"agent","status":"done","text":"Move Phase 0's refusal from scaffolding to execution: install the orchestrator regardless of backlog state, read any `loop.config.json` already written by `specloop:start`, and report what `loop run` would find instead of refusing","note":"Objective 1b. The old gate gutted a freshly-scaffolded repo — the state 1b describes. Nothing in Phase 2 runs a task, and `loop run` already exits cleanly with \"no remaining runnable tasks\"."},{"id":"T017","owner":"agent","status":"done","text":"Add the `contextFiles` config field and warn when a non-`claude` worker CLI is chosen that `AGENTS.md` is its only auto-loaded context","note":"Consumed by `014`."},{"id":"T018","owner":"agent","status":"done","text":"Replace the single `workerCli`/`workerArgs` config fields with a `workers: {cli, args}[]` array; round-robin across them by task order (`worker.ts`'s `pickWorker`); thread the picked worker's index through `dispatchTask`/`runNone`/the split-pane launchers (as an extra `_run-task` arg, since a detached pane reloads config in its own process)","note":"Surfaced by `001` T30's live interview run: the user wanted multiple worker CLIs (`claude` + `opencode`) and the config only supported one. Legacy single-CLI configs still load — normalized to a one-element array in `config.ts`. Verified: `pnpm exec tsc --noEmit` and `pnpm exec eslint src` both clean."},{"id":"T019","owner":"agent","status":"done","text":"Remove `context: fork`/`background: false` from `skills/loop-setup/SKILL.md` — same defect as `001` T32: forking reloaded the whole skill fresh on every user reply instead of holding the guided Q&A loop","note":"Also fixed in `001` (`start`), `003` (`task-breakdown`), `004` (`design-closing`)."},{"id":"T020","owner":"agent","status":"done","text":"Stop hardcoding `pnpm` in `skills/loop-setup/SKILL.md`'s install/link step: ask (or read from `planning/architecture.md`'s `toolchain` decision) which package manager to use, and never silently fall back to a *different* manager when the global-link step fails","note":"Found during `006` T010's live pipeline run: `pnpm link --global` failed (`ERR_PNPM_LINK_BAD_PARAMS` on pnpm 11) and the session fell back to `npm link` unasked — installs the orchestrator with a different manager than the one actually configured. Fixed in `SKILL.md` Phase 1 (new package-manager question) and Phase 2 step 4 (same-manager fallback only). Also updated `design.md` and `planning/architecture.md` to stop asserting a hardcoded `pnpm`."},{"id":"T022","owner":"agent","status":"done","text":"Stream a worker's stdout/stderr live to whichever terminal is running it, instead of buffering the whole run and only writing the log once it exits","note":"Found during `006` T012's live `windowsTerminal` test: the user watched the split-pane and, correctly, expected to see the agent working — instead the pane printed \"running task X\" once and went silent until the whole task finished, because `worker.ts` used `spawnSync` with piped stdio (captured into a buffer, written to the log only on exit). That defeats the entire point of a visible split-pane. Same gap existed in `splitMode: \"none\"` — the master's own terminal was equally silent mid-task."},{"id":"T023","owner":"agent","status":"done","text":"Remove the split-pane execution path entirely (`splitMode`, `windowsTerminal.ts`, `tmux.ts`, `splitPane/`, `cli.ts`'s `runTask()`/`_run-task`) — the master now always runs every task inline, sequentially, in its own process","note":"Reversed by explicit user decision after watching the confirmed-working `windowsTerminal` pane live (`006` T012): not worth the complexity for what it bought. Deleted `src/splitPane/` (`index.ts`, `none.ts`, `windowsTerminal.ts`, `tmux.ts`); `cli.ts` rewritten to a single `run()` loop with no `splitMode` branching and no `runTask`/`_run-task` entrypoint (`runOne` replaces `runNone`, called directly); `config.ts` dropped `SplitMode`/`splitMode`; `taskLock.ts`/`worker.ts`/`safeStop.ts`/`roadmap.ts` comments updated to stop describing a detached-pane case that no longer exists. `skills/loop-setup/SKILL.md` dropped the split-mode question (Phase 1) and its mentions in Phase 2's config template. `design.md`/`requirements.md` updated with a \"reversed 2026-09-11\" note pointing here instead of quietly rewriting history. `pnpm exec tsc --noEmit` / `pnpm exec eslint src` clean."},{"id":"T024","owner":"agent","status":"done","text":"Detect a worker hitting its own usage/rate limit and, before marking the task `blocked`, ask interactively which configured worker to switch to (or name a new one), then retry","note":"New user-requested scope, raised right after the split-pane reversal: with no other terminal watching a worker, a quota-exhausted worker silently blocking every subsequent task on the same CLI was the next real problem. Added `src/quota.ts`'s `looksLikeQuotaExhausted(log)` (best-effort substring heuristic over the full captured log — no shared protocol across CLIs for this, `claude`/`codex`/`opencode`'s real wording is unverified) and `cli.ts`'s `promptForWorkerSwitch()` (`node:readline/promises` against `process.stdin`/`stdout` — safe now that the master always holds the terminal). On a match: blank retries the same worker, a number switches to that `config.workers[i]` and retries, a bare word adds it as a new worker (asks its args) and retries, `\"skip\"` marks the task `blocked` and continues, `\"stop\"` marks it `interrupted` and halts the loop like a safe stop. A switch sticks for the rest of the `run()` call."},{"id":"T025","owner":"agent","status":"done","text":"Revert T024: remove `quota.ts` and `cli.ts`'s `promptForWorkerSwitch`/blocking `readline` prompt from the deterministic CLI","note":"The user clarified their actual intent right after T024 landed: they don't want a standalone script being \"the master\" at all — they open a chat and *that conversation* orchestrates. A detached/unattended `loop run` (CI, or nobody watching) was never going to have anyone to answer a `readline` prompt either way, so the interactive piece belonged somewhere else, not bolted onto the deterministic path. Deleted `src/quota.ts`; `cli.ts`'s `run()` reverted to the T023 shape (no quota retry loop, no readline import) — a failed task is plain `blocked`, exit-code only, same as any other failure. `pnpm exec tsc --noEmit` / `pnpm exec eslint .` clean."},{"id":"T026","owner":"agent","status":"done","text":"Add `skills/loop/SKILL.md`: the interactive alternative where the chat session itself is the master","note":"Where quota-exhaustion recovery actually landed. The skill instructs the agent running it to read `planning/roadmap.md`/that spec's `tasks.md` directly (same eligibility/checklist rules `roadmap.ts`/`checklist.ts` encode, referenced not reimplemented), launch each task's worker itself, judge success/failure/quota-exhaustion by actually reading the output (no regex), and ask the user directly in the conversation which worker to switch to on a suspected usage-limit hit — never guessing, never silently switching. Also documents a harness-synergy rule: prefer your own harness's native sub-agent mechanism over shelling out a CLI when the harness's provider matches the picked worker's, phrased generically (not Claude-Code-specific) per `022`. `loop-setup`'s SKILL.md updated to name both `specloop:loop` (interactive) and `loop run` (deterministic) as the two ways to actually start the loop. No new orchestrator code — the skill has none of its own by design, it reads/writes the same files `loop run` does."},{"id":"T027","owner":"agent","status":"done","text":"Retire the deterministic path entirely: delete `framework/orchestrator/` (all of `cli.ts`/`worker.ts`/`roadmap.ts`/`tasks.ts`/`checklist.ts`/`mdTable.ts`/`config.ts`/`safeStop.ts`/`taskLock.ts`/`security.ts` and its `package.json`/lockfile), and drop `skills/loop-setup`'s copy/install/link step","note":"2026-09-12, explicit user decision: T026's \"two ways to run the loop\" framing was itself wrong — the deterministic CLI was never meant to coexist with the interactive skill long-term, and having both meant every rule (eligibility, `tasks.md` grammar, status rollup, worker prompt shape) had to stay in sync between code and skill text. `skills/loop/SKILL.md` rewritten to be fully self-contained (inlines the eligibility rule, checklist grammar, rollup rule, and worker-prompt shape `roadmap.ts`/`checklist.ts`/`worker.ts` used to encode — there is no code left to defer to). `skills/loop-setup/SKILL.md` now only runs the config Q&A and writes `.specloop/loop.config.json`; nothing to copy, install, or link. Six dependent specs that existed only for the deleted CLI (`007`, `008`, `010`, `011`, `013`, `021`) retired the same day, never past `requirements.md` — see `planning/roadmap.md`. Clarified explicitly by the user: the master is not Claude-specific — any compatible harness qualifies, matching `022`'s open-format rule."}]},{"id":"003","plan":"task-breakdown-skill","status":"done","dependsOn":"001, 004","stage":"—","priority":"—","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Create `skills/task-breakdown/` skeleton","note":""},{"id":"T002","owner":"agent","status":"done","text":"Write `SKILL.md` frontmatter (`context: fork`, `background: false`, `description`/`when_to_use` trigger phrasing)","note":"Reverted by T10 — see `001` T32."},{"id":"T003","owner":"agent","status":"done","text":"Implement Phase 0: spec resolution/listing, refusal check on stub `design.md`","note":"Implemented as skill instructions in `SKILL.md`."},{"id":"T004","owner":"agent","status":"done","text":"Implement Phase 1: draft task list from requirements/design using the single-action + verifiable granularity rule","note":""},{"id":"T005","owner":"agent","status":"done","text":"Implement Phase 2: present draft, confirm/edit loop with the user before writing anything","note":""},{"id":"T006","owner":"agent","status":"done","text":"Implement Phase 3: write `tasks.md` using the fixed `ID | Task | Status | Notes` contract, all rows `todo`","note":"Column contract since extended with `Owner` — see T8."},{"id":"T007","owner":"human","status":"done","text":"Local test: run against a spec with a closed `design.md` and verify refusal on a spec with a stub `design.md`","note":"Done 2026-09-11 as part of `006` T010's live run under OpenCode, against `test/architecture-absent-fixture/`. Ran successfully against spec `002` (closed `design.md`), drafting and writing a real `tasks.md` (6 `agent` + 1 `human`). Refusal confirmed separately against spec `001` (design.md still the `TBD` stub) — correctly refused, named the design questions still open, and did not invent tasks."},{"id":"T008","owner":"agent","status":"done","text":"Add the `Owner` column (`agent`/`human`) to the drafted list and the written table, and ask the user to correct any owner before writing","note":"Keeps the loop from attempting work needing a credential, approval or live session. Parser side in `015`."},{"id":"T009","owner":"agent","status":"done","text":"Restate the single-action rule in delivery-neutral terms and turn each acceptance criterion into a final verification task","note":"`017`."},{"id":"T010","owner":"agent","status":"done","text":"Remove `context: fork`/`background: false` from `SKILL.md` — same defect as `001` T32: forking reloaded the whole skill fresh on every user reply instead of holding the propose/confirm loop","note":"Also fixed in `001`, `002`, `004`."}]},{"id":"004","plan":"design-closing-skill","status":"done","dependsOn":"001","stage":"—","priority":"—","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Create `skills/design-closing/` skeleton","note":""},{"id":"T002","owner":"agent","status":"done","text":"Write `SKILL.md` frontmatter (`context: fork`, `background: false`, `description`/`when_to_use` trigger phrasing)","note":"Reverted by T12 — see `001` T32."},{"id":"T003","owner":"agent","status":"done","text":"Implement Phase 0: spec resolution/listing from `planning/roadmap.md`, refusal check on empty/stub `requirements.md`","note":"Implemented as skill instructions in `SKILL.md` — a Skill's \"implementation\" is its instructions, not a script."},{"id":"T004","owner":"agent","status":"done","text":"Implement Phase 1: one-question-at-a-time design Q&A (approach, components/files, sequencing, risks), write-as-you-go into `design.md`","note":""},{"id":"T005","owner":"agent","status":"done","text":"Implement output shape: `Approach` / `Components / files touched` / optional `Open questions / deferred` sections","note":""},{"id":"T006","owner":"agent","status":"done","text":"Implement Phase 2: stop after closing design, tell user 003 can run next, no auto-chaining","note":""},{"id":"T007","owner":"human","status":"done","text":"Local test: run against a spec with real requirements and verify refusal on a spec with no requirements","note":"Done 2026-09-11 as part of `006` T010's live run under OpenCode, against `test/architecture-absent-fixture/` (the `test/sample-new-repo` fixture this originally named no longer exists — same test, current fixture). Ran successfully against spec `002` (real, 7/7-dimension requirements), closing its design end to end including the closing sweep and, mid-run, gracefully creating `planning/architecture.md` from scratch when it needed to record a settled decision (see `017` T009). Refusal confirmed separately against spec `003`, whose `requirements.md` doesn't exist at all — correctly refused, named `planning/roadmap.md`'s `003 depends on 001` as the reason design would otherwise have to guess, and did not invent content."},{"id":"T008","owner":"agent","status":"done","text":"Fix the Phase 0 readiness gate: accept both the current 5-header requirements template and the older single `## Requirements` heading","note":"Bug introduced 2026-09-02 — the gate keyed only on `## What's being built`, which 0 of this repo's 15 requirements files use (all 15 use `## Requirements`), so the skill refused on every spec in its own reference repo."},{"id":"T009","owner":"agent","status":"done","text":"Generalize question 2 to \"what does this create or change\" with type-appropriate phrasing, and rename the output section to `## Deliverables`","note":"`017`. Software gets files/modules; marketing gets assets/pages."},{"id":"T010","owner":"agent","status":"done","text":"Add the Phase 2 coverage gate (refuse to close a design that leaves a requirement bullet or acceptance criterion unaddressed) and the closing sweep","note":"`016`."},{"id":"T011","owner":"agent","status":"done","text":"Append settled stack/convention decisions to `planning/architecture.md` and `AGENTS.md` on close","note":"This is the writer `skills/start` already promised existed and nothing delivered — `architecture.md` was otherwise a permanent TBD stub."},{"id":"T012","owner":"agent","status":"done","text":"Remove `context: fork`/`background: false` from `SKILL.md` — same defect as `001` T32: forking reloaded the whole skill fresh on every user reply instead of holding the guided Q&A loop","note":"Also fixed in `001`, `002`, `003`."},{"id":"T013","owner":"agent","status":"done","text":"When Phase 2 needs to append a decision but `planning/architecture.md` doesn't exist yet, create it using the type-keyed header template `skills/start/SKILL.md` Phase 1 defines (software/marketing/operations/research/other), not generic ad-hoc headers","note":"Found during `017` T009's live absent-`architecture.md` fixture run: `design-closing` correctly tolerated the file's absence and created it rather than refusing, but used improvised headers (`Stack & systems`, `Conventions`) instead of the operations/process template (`Systems`/`Cadence`/`Handoffs`) — because `design-closing`'s `SKILL.md` has no instruction to reuse `start`'s template. Non-blocking (the file still works), but leaves `planning/architecture.md`'s shape dependent on which skill happens to create it first."}]},{"id":"005","plan":"open-source-release","status":"done","dependsOn":"001","stage":"—","priority":"—","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Secret/credential scan across tracked files","note":"Clean — no matches for API keys, tokens, passwords, private keys."},{"id":"T002","owner":"agent","status":"done","text":"Verify commit history has no Claude/AI attribution","note":"Only commit (`Initial commit...`) already had its `Co-Authored-By: Claude` trailer amended out earlier this session."},{"id":"T003","owner":"agent","status":"done","text":"Add root `LICENSE` (MIT)","note":""},{"id":"T004","owner":"agent","status":"done","text":"Add root `README.md` (public-facing: what/install/quickstart/license, links to `planning/`)","note":""},{"id":"T005","owner":"agent","status":"done","text":"Add `license`/`repository` fields to `.claude-plugin/plugin.json`","note":""},{"id":"T006","owner":"agent","status":"done","text":"Re-run `claude plugin validate .` after the manifest edit","note":"Passed with the same pre-existing warning (root `CLAUDE.md` not loaded as plugin context — expected)."},{"id":"T007","owner":"human","status":"done","text":"Flip GitHub repo visibility to public","note":"Done 2026-09-03 via `gh repo edit --visibility public`. Sole collaborator (`SebassContreras`), no branch protection on `main` — irrelevant while no one else has write access."},{"id":"T008","owner":"agent","status":"done","text":"Add root `CONTRIBUTING.md` (workflow pointer, local dev commands, status line)","note":"Reversed from this spec's original out-of-scope call — added on direct request."}]},{"id":"006","plan":"e2e-smoke-testing","status":"done","dependsOn":"001, 002, 003, 004","stage":"—","priority":"7","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Scaffold the fixture: run `specloop:start` end-to-end against a fresh `test/sample-new-repo/`, producing its first spec's `requirements.md`","note":"Ran Phases 1-4 (scaffold, vision/tooling Q&A, first spec `001-hello-cli` + requirements.md, stack Q&A). First pass hit the bug fixed in T6 (requirements.md header mismatch); fixture rebuilt from scratch after the fix per the no-partial-patch rule. Goal/MVP/spec-name/stack answered live with the user; skill suggestions and license defaulted per user direction (\"continue, don't ask\"). **Stale, and the fixture directory is already empty.** It first went stale on `001`'s scope revert (T15/T16), and the 2026-09-02 restoration (T19–T27) changed the interview again — it now runs 8 phases including a project-type classifier, a branched tech Q&A, skill recommendation, styles, and `AGENTS.md`/`.specloop/` scaffolding. Notably, the stack Q&A this run *did* exercise is back, so the original run was closer to current behavior than the revert left it. Per this spec's no-partial-patch rule, restart from `specloop:start` on the next 006 pass — and add a non-software fixture alongside the CLI one (`017`), since the generality claim is otherwise untested."},{"id":"T002","owner":"agent","status":"done","text":"Close the fixture's first spec design: run `specloop:design-closing` on it","note":"Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T003","owner":"agent","status":"done","text":"Break the fixture's first spec into tasks: run `specloop:task-breakdown` on it","note":"Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T004","owner":"agent","status":"done","text":"Wire up the orchestrator: run `specloop:loop-setup` against the fixture repo","note":"Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T005","owner":"agent","status":"done","text":"Execute the loop: run `loop run`, confirm it completes at least one task including the docs it produces","note":"Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T006","owner":"agent","status":"done","text":"Fix-forward any bugs found in T1-T5 into the owning skill/orchestrator file(s), deleting and restarting the fixture from T1 after each fix","note":"Fix 1: `design-closing`'s Phase 0 refusal check hardcoded a `## Requirements` header `start` never produced/specified — `start` had no requirements.md template at all. Added the template to `start/SKILL.md`, made `design-closing/SKILL.md`'s check reference the same real headers. Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T007","owner":"agent","status":"done","text":"Flip 001 T8, 002 T11, 003 T7, 004 T7 to `done`, each noting this run","note":"Superseded by T10, which consolidates the whole live pipeline into one run. The fixture these referred to no longer exists."},{"id":"T008","owner":"agent","status":"done","text":"Orchestrator end-to-end run against a fixture repo with a stub worker CLI","note":"Owned by `014` T9 — see that spec for the 17 behaviours verified (prompt contents, context filtering, human-task skip, status roll-up, chain advance, failing worker, safe stop, resume, log naming, `loop status`). Two real bugs found and fixed: unprefixed logs colliding across specs, and an undiagnosable config parse error."},{"id":"T009","owner":"agent","status":"done","text":"Skill cross-reference check (`scripts/check-skill-consistency.mjs`)","note":"Owned by `001` T29. Replaces the statically-checkable part of the four `interrupted` local-test tasks."},{"id":"T010","owner":"human","status":"done","text":"Live interactive pipeline run: `/specloop:start` -> `design-closing` -> `task-breakdown` -> `loop-setup` -> `loop run` with a real worker CLI","note":"The remaining gap, and genuinely human-only: the interview elicits the user's answers, and a real worker CLI *honoring* the prompt is not something a stub can establish. `014` T9 proves the briefing is delivered and correct; this proves a model acts on it. Supersedes `001` T8, `002` T11, `003` T7, `004` T7 — flip those once it runs."},{"id":"T011","owner":"agent","status":"done","text":"Add a non-software fixture alongside the CLI one","note":"`017`. Ran a local-only `test/sample-marketing-repo/` fixture (untracked — `test/` is gitignored: a fictional marketing/content persona, \"Loopwell\") through `specloop:start` → `design-closing` → `task-breakdown`, plus `examples/marketing-content-spec/` as the paired hand-authored reference. Confirms the `B-marketing-content` branch never surfaces a software dimension, `planning/architecture.md` scaffolds with the marketing header set, and `task-breakdown` assigns `human` correctly for contractor/Legal/publish steps. Does **not** prove interview bearability for a real user — every answer was agent-authored for an invented persona; see that fixture's local `NOTES.md`. That gap stays `001` T30 / `006` T10's, unchanged."},{"id":"T012","owner":"human","status":"done","text":"Split-pane backends (`windowsTerminal`/`tmux`) end-to-end","note":"They detach, so the master cannot observe the outcome; needs a real interactive terminal on each OS."}]},{"id":"009","plan":"status-dashboard-skill","status":"done","dependsOn":"001","stage":"—","priority":"10","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Scaffold `skills/status/SKILL.md` — frontmatter (`name: status`, `description`, `when_to_use`), a read-only status/dashboard skill","note":"Frontmatter + `# specloop: status` heading written, matching `loop-setup`'s style. Verified on disk."},{"id":"T002","owner":"agent","status":"done","text":"Phase 0: read `planning/roadmap.md` and every listed spec's `tasks.md`, reusing `skills/loop`'s exact parsing contract (positional columns, checkbox/status grammar) — no new grammar invented","note":"Read-only statement + Phase 0 section added, reusing skills/loop's contract verbatim. Verified on disk."},{"id":"T003","owner":"agent","status":"done","text":"Phase 1: compute active spec(s), task counts by status, `blocked`/`interrupted` rows, and the next-suggested-action derived from `Stage` per the fixed pipeline order","note":"Adds a Stage→next-skill lookup table. Verified on disk."},{"id":"T004","owner":"agent","status":"done","text":"Phase 2: `Stage`/`Status` drift detection rule (e.g. `tasks_ready` with `tasks.md` still the stub; `done` with `Stage` not `—`)","note":"5 concrete rules, incl. the exact `fix/002` bug. Verified on disk."},{"id":"T005","owner":"agent","status":"done","text":"Phase 3: print the chat/terminal summary from T003/T004's data","note":"Fixed 5-part order; prints every run regardless of the HTML dashboard. Verified on disk."},{"id":"T006","owner":"agent","status":"done","text":"Create `skills/status/references/template.html` — fixed, self-contained (inline CSS, no build, no CDN) template with placeholders for the roadmap table, per-spec drill-down, and fix-log panel","note":"Single-occurrence `__DASHBOARD_DATA_JSON__` placeholder, JSON contract documented inline. Verified."},{"id":"T007","owner":"agent","status":"done","text":"Phase 4: read every `planning/fix/NNN-name/report.md` if the folder exists (title/`Scope`/`Date` + `Found`/`Fix` for drill-down); empty/omitted panel if the folder doesn't exist, never an error","note":"Output field names confirmed matching T006's template.html fixes[] shape. Verified on disk."},{"id":"T008","owner":"agent","status":"done","text":"Phase 5: substitute the gathered data into `template.html` and write/overwrite `planning/dashboard.html` in the target repo; must succeed without `.specloop/loop.config.json` existing (never reads that file)","note":"Full overwrite every run, <\/script-escaped substitution. Verified on disk."},{"id":"T009","owner":"agent","status":"done","text":"Verify AC1+AC3: run `specloop:status` twice against a throwaway multi-spec fixture; confirm both runs produce the chat summary + dashboard, and the second run carries no stale content from the first","note":"`test/status-verify-fixture/`, 7 specs. Both hold. Independently re-verified the JSON myself."},{"id":"T010","owner":"agent","status":"done","text":"Verify AC2: confirm the dashboard visually distinguishes every status and that a deliberately-introduced `Stage`/`Status` drift produces a visible dashboard warning","note":"Browser unavailable in this environment; verified programmatically (CSS + renderer logic) instead. See note in the design if a visual/browser pass is still wanted later."},{"id":"T011","owner":"agent","status":"done","text":"Verify AC4: run `specloop:status` against a fixture with no `.specloop/loop.config.json`; confirm it still succeeds","note":"Covered by T009's run — `status-verify-fixture/` never had `.specloop/loop.config.json`; both runs succeeded identically."},{"id":"T012","owner":"human","status":"todo","text":"Open the generated `planning/dashboard.html` in a real browser from a `file://` path; confirm it renders correctly and the drill-down interactions actually work","note":""}]},{"id":"012","plan":"spec-amend-skill","status":"todo","dependsOn":"001, 003, 004","stage":"requirements","priority":"13","tasks":[]},{"id":"014","plan":"worker-context-injection","status":"done","dependsOn":"002","stage":"—","priority":"2","tasks":[]},{"id":"015","plan":"roadmap-status-writer","status":"done","dependsOn":"002","stage":"—","priority":"3","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Add `src/mdTable.ts` with `splitRow`, `isHeaderOrSeparator`, `sanitizeCell`, `withCells`","note":"Split-based, so extending the table no longer breaks the parse — and no backtracking hazard."},{"id":"T002","owner":"agent","status":"done","text":"Convert `roadmap.ts` to the positional parser, ignoring trailing columns","note":"Verified against a 5-column roadmap."},{"id":"T003","owner":"agent","status":"done","text":"Add `roadmap.writeSpecStatus`","note":"The column had no writer at all before this."},{"id":"T004","owner":"agent","status":"done","text":"Convert `tasks.ts` to `mdTable`, add the `Owner` column, keep 4-column tables parsing","note":"Layout detected by cell-2 content, not cell count."},{"id":"T005","owner":"agent","status":"done","text":"Make `nextRunnableTask` skip `human` tasks; add `pendingHumanTasks`/`allTasksSettled`","note":""},{"id":"T006","owner":"agent","status":"done","text":"Make `writeTaskStatus` preserve the `Owner` cell and sanitize notes","note":"A note containing `|` or a newline silently corrupted the table before."},{"id":"T007","owner":"agent","status":"done","text":"Add `rollUpStatus` to `cli.ts` and write the roadmap row when a spec's runnable tasks are exhausted","note":"This is the deadlock fix."},{"id":"T008","owner":"agent","status":"done","text":"Report pending `human` tasks on task exhaustion","note":""},{"id":"T009","owner":"agent","status":"done","text":"Make `loop status` derive from `tasks.md` and flag disagreement with the roadmap cell","note":"It previously echoed a hand-maintained cell as truth."},{"id":"T010","owner":"agent","status":"done","text":"Add `contextFiles` to `LoopConfig`","note":"Inert until `014`."},{"id":"T011","owner":"agent","status":"done","text":"Verify: `tsc --noEmit` and `eslint src` clean; round-trip both table layouts, a 5-column roadmap, a piped note, and dependency-eligibility after a status flip","note":"16/16 checks passed against a scratch fixture. Not yet a committed test suite — that's T14."},{"id":"T012","owner":"agent","status":"done","text":"Add the `Priority` column to the scaffolded roadmap template","note":"`skills/start/SKILL.md` Phase 1's roadmap template gains a trailing `Priority` column (parser-safe, ignored positionally); Phase 6 asks whether to record the confirmed seeding order into it. Also backfilled this repo's own `planning/roadmap.md` from the values `## Priority: N` used to carry, with a note that it's historical, not authoritative — the Build order list still governs."},{"id":"T013","owner":"agent","status":"done","text":"Retire the `## Priority: N` requirements-header convention in favour of the column","note":"Removed the header from all 17 specs that had one (`006`–`023` minus `005`/`019` which never had it). The current Phase 7 requirements template never included this header, so nothing in the skill itself needed changing — this was pure cleanup of stale content predating the template."},{"id":"T015","owner":"human","status":"done","text":"Decide whether `Stage` belongs here or in `009`","note":"Decided 2026-09-12: here, in `roadmap.md`. `009` derives it live instead of"},{"id":"T016","owner":"agent","status":"done","text":"Split rows on unescaped pipes only; unescape each cell; make `sanitizeCell` escape (idempotently) rather than substitute","note":"**Found by `001` T28's migration.** `002` T4 and `003` T6 describe the `ID | Task | Status | Notes` contract in their own text; the naive splitter shredded both. Reverses a decision recorded in this spec's design."},{"id":"T017","owner":"agent","status":"done","text":"Reject rows whose status cell isn't a real `TaskStatus`; warn when a rejected row still looks like a task","note":"Previously such a row was returned with a garbage status — neither `done` nor runnable, so the loop skipped the task while the spec could never roll up to `done`. Silent, and permanent."},{"id":"T018","owner":"agent","status":"done","text":"Verify: escaped-pipe round trip, idempotent sanitize, malformed-row rejection, piped note survives a write","note":"11/11 passed. Plus the full repo: 114 rows across 18 specs, 0 malformed-row warnings."},{"id":"T019","owner":"agent","status":"done","text":"Make the loop prefer the lower `Priority` number among multiple eligible `todo` rows","note":"`skills/loop` breaks ties on `Priority` itself (2026-09-12). Originally scoped as a gap only in the deterministic `loop run` CLI path (which took the first eligible row in file order, ignoring `Priority`) — that path was retired 2026-09-12, so this is now honored everywhere the loop runs."},{"id":"T020","owner":"agent","status":"done","text":"Write `Stage` when a spec moves `todo` → `in_progress`","note":"`skills/loop` writes this directly (2026-09-12) since it edits `roadmap.md` itself. Originally scoped as a gap in the deterministic `loop run` CLI path specifically — that path was retired 2026-09-12, so this is now honored everywhere the loop runs. `T014` (moving T11's checks into `007-orchestrator-unit-tests`) dropped the same day: `007` was retired, never designed."}]},{"id":"016","plan":"interview-engine","status":"done","dependsOn":"001","stage":"—","priority":"4","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Confirm the pre-existing engine (ledger, question-bank coverage, follow-up triggers, closing sweep, termination contract, skip protocol, downstream coverage gates, answer fan-out) is implemented and working","note":"Evidenced by two live runs: `001` T030 and `001` T033's regression run."},{"id":"T002","owner":"agent","status":"done","text":"Add the \"help me decide\" rule to `skills/start/SKILL.md`'s interview contract, applying to every phase rather than being special-cased per phase","note":""},{"id":"T003","owner":"agent","status":"done","text":"Document the help-me-decide protocol in `skills/start/references/question-bank.md`, with researchable vs. non-researchable dimension examples","note":""},{"id":"T004","owner":"agent","status":"done","text":"Record the help-me-decide summary, and the general \"align every file when changing a cross-cutting mechanism\" rule, in `planning/architecture.md`'s Fixed rules","note":""},{"id":"T005","owner":"agent","status":"done","text":"Add `scripts/check-skill-consistency.mjs` group [12] verifying the protocol is documented consistently across `start`, `question-bank.md` and `architecture.md`","note":""},{"id":"T006","owner":"human","status":"done","text":"Live verification: a \"no sé\" answer on a researchable dimension produces 3–5 reasoned options; the same on a non-researchable dimension produces a narrower follow-up instead of a fabricated list — needs an interactive session, same as `001` T033's regression run","note":"Verified 2026-09-11 under a live OpenCode session against a fresh throwaway fixture (`test/choice-protocol-fixture/`, software project type). **Non-researchable**: answered \"no sé\" on `audience` — the skill correctly said a web search wouldn't help (a project fact, not a technical choice) and asked a narrower follow-up (\"solo vos, o multi-usuario desde el día 1?\") instead of fabricating options; never inferred a choice. **Researchable**: answered \"no sé\" on `runtime` — the skill ran a real web search (Exa), then presented 4 ranked options (Tauri, Electron, Deno, Go+Wails) each with a one-line reason tied to what was already answered (MVP: CRUD + search + sync, single-user), explicitly said it had researched them, and asked the user to pick rather than assuming one. Both branches match the design exactly."}]},{"id":"017","plan":"project-type-genericity","status":"done","dependsOn":"001, 016","stage":"—","priority":"5","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Add concrete per-type `planning/architecture.md` header templates to `skills/start/SKILL.md` Phase 1, and fix the stale \"Phase 4 fills it\" reference","note":""},{"id":"T002","owner":"agent","status":"done","text":"Add the all-`human`-backlog check to `skills/loop-setup/SKILL.md` Phase 0, before the worker-CLI question","note":""},{"id":"T003","owner":"agent","status":"done","text":"Add `examples/marketing-content-spec/` (requirements/design/tasks), and list it in `examples/README.md`","note":""},{"id":"T004","owner":"agent","status":"done","text":"Run the local-only `test/sample-marketing-repo/` fixture (untracked — `test/` is gitignored): scaffold + Phase 2/3 Q&A + roadmap seeding + first-spec requirements against a declared fictional marketing persona","note":""},{"id":"T005","owner":"agent","status":"done","text":"Close that fixture's first spec design (`specloop:design-closing`) and break it into tasks (`specloop:task-breakdown`)","note":""},{"id":"T006","owner":"agent","status":"done","text":"Write the fixture's local `NOTES.md` stating the persona and what this run does/doesn't prove","note":""},{"id":"T007","owner":"agent","status":"done","text":"Flip `006` T011 to `done`, pointing at this fixture","note":""},{"id":"T008","owner":"agent","status":"done","text":"Verify acceptance criteria: no software dimension appears anywhere in the fixture's `.specloop/interview.md`; `planning/architecture.md` headers match the marketing template","note":"The \"runs with `planning/architecture.md` absent\" criterion is verified by code reading only, not a live fixture run against a literally-absent file: `design-closing`/`task-breakdown` Phase 0 already gate on \"if they have real content\" (conditional, not required) rather than refusing on absence. The local fixture itself has a populated `architecture.md`, so it doesn't exercise the absent case directly. Flagged rather than silently claimed — a real absent-file fixture pass is one line item, not done here."},{"id":"T009","owner":"human","status":"done","text":"Live fixture run against a literally-absent `planning/architecture.md`","note":"Verified 2026-09-11 under a live OpenCode session against `test/architecture-absent-fixture/` (copy of `test/ops-onboarding-repo/` with `planning/architecture.md` deleted entirely, operations/process type). Ran `specloop:design-closing` on spec `002` end to end (Approach → Deliverables → Sequencing → Decisions settled → Open questions → 2 clean closing-sweep rounds) — never refused or got stuck on the file's absence; when the \"decisions settled\" answer needed recording, it created `planning/architecture.md` from scratch rather than crashing. Then deleted the file again and ran `specloop:task-breakdown` on the same spec — also ran to completion without touching or requiring the file, `tasks.md` populated correctly (6 `agent` tasks + 1 `human` final-approval task). Both halves of the acceptance criterion confirmed."}]},{"id":"018","plan":"project-style-preferences","status":"done","dependsOn":"014, 016","stage":"—","priority":"6","tasks":[{"id":"T001","owner":"human","status":"done","text":"Live-verify capture → storage → delivery end to end under a real, non-Claude-Code harness, against a throwaway fixture with a visual surface","note":"Run 2026-09-13, OpenCode, `style-verify-fixture/` (own `.git`, outside this repo, `.agents/skills/` copy — same pattern as `022` T003's audit). Phase 5 Q&A: all 10 dimensions ended `covered`/`skipped` (`brand-refs` skipped with reason), two-consecutive-clean-sweep closing confirmed, `help-me-decide` (`016`) fired correctly for `palette`/`typography` with real web search and 3-4 ranked options each, `preference-strength` asked and recorded (`hard rule` for everything). `planning/styles.md` + `AGENTS.md`'s Style section verified on disk (not just the transcript — ruled out a PowerShell console-encoding scare as display-only, real files were correct UTF-8). Delivery: ran `specloop:loop` on a one-task spec (`001-sample-widget`); native OpenCode sub-agent picked up `contextFiles` including `planning/styles.md`, and the produced `src/Badge.tsx` genuinely honored every hard rule (exact hex tokens, Geist font stack + fallback, 6px radius, computed contrast ratios ≥4.5:1, aria-label, no excess animation). Roadmap rolled up to `done` correctly."}]},{"id":"019","plan":"public-showcase","status":"in_progress","dependsOn":"001, 005","stage":"looping","priority":"—","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Write `.github/assets/demo-loop.tape` (VHS script for `loop status` + `loop run`)","note":"**Retired 2026-09-12**: the deterministic `loop run`/`loop status` CLI this tape demoed was deleted (see `002-loop-orchestrator`, `planning/handoff.md`). The tape file itself was deleted with it. `README.md`'s `## Demo` section no longer references it or its output images."},{"id":"T002","owner":"agent","status":"done","text":"Add the Mermaid flow diagram to `README.md`'s new `## Demo` section","note":"Updated 2026-09-12 to end at `/specloop:loop` instead of naming the retired `loop run`."},{"id":"T003","owner":"agent","status":"done","text":"Add the badges row and the `## Demo` section skeleton (image tags pointing at the not-yet-captured files) to `README.md`","note":"The `demo-loop.gif`/`demo-loop-status.png`/`demo-loop-run.png` tags were removed 2026-09-12 along with the CLI they'd have shown — never captured (T005 was still `todo`), so nothing shipped had to be walked back."},{"id":"T004","owner":"human","status":"in_progress","text":"Capture `demo-interview.gif`/`demo-interview.png` from a real `/specloop:start` session in a throwaway repo (ScreenToGif)","note":"Can't be scripted — the interview's content varies run to run. Same reasoning as `001` T30. Decided 2026-09-08: capture from the live `opecode-test` OpenCode session (already in progress for `022` T003 / `001` T30 / `006` T010) instead of a separate Claude Code run — reinforces the now-verified cross-CLI claim. `README.md`'s caption and intro paragraph updated accordingly so it doesn't read as contradicting the \"Built for Claude Code\" badge."},{"id":"T005","owner":"human","status":"todo","text":"Capture a demo of `/specloop:loop` actually working a task (chat transcript or screen recording — not a VHS terminal tape, there's no CLI left to script) and add it to `README.md`'s `## Demo` section","note":"Replaces the old VHS-based T005 (`vhs demo-loop.tape`), moot since the CLI it drove no longer exists. Not yet designed how to capture a chat session legibly (full transcript screenshot? an annotated excerpt?) — whoever picks this up decides the format."},{"id":"T006","owner":"human","status":"todo","text":"Copy the captured interview files (and T005's new loop demo, once decided) into `.github/assets/` and verify `README.md` renders correctly","note":"Visual check — confirm the images actually show what they claim to."}]},{"id":"020","plan":"checklist-task-format","status":"done","dependsOn":"002, 003","stage":"—","priority":"15","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Add `src/checklist.ts`: `parseChecklistLine`, `renderTaskLine`, `renderNoteLine`, `sanitizeNote`","note":""},{"id":"T002","owner":"agent","status":"done","text":"Rewrite `src/tasks.ts` onto the checklist grammar, keeping `TaskRow`'s external shape and every other exported function's signature unchanged","note":""},{"id":"T003","owner":"agent","status":"done","text":"Write a migration script with per-row owner detection (mirroring the old `toRow`'s `cells.length >= 5 && isOwner(cells[2])`), and run it over every `planning/specs/*/tasks.md` and `examples/hello-cli-spec/tasks.md`","note":"Caught and fixed one pre-existing 4-column legacy row (`002` T13) that a naive uniform-column assumption would have misread."},{"id":"T004","owner":"agent","status":"done","text":"Verify: round-trip every migrated file through the new `parseTasks` (132 rows, 0 malformed-row warnings), verify `writeTaskStatus`'s surgical rewrite leaves untouched rows and untouched parts of the touched line byte-for-byte identical, `pnpm run typecheck` and `pnpm run lint` clean","note":""},{"id":"T005","owner":"agent","status":"done","text":"Update `skills/task-breakdown/SKILL.md`'s Phase 3 authoring template and `skills/start/SKILL.md`'s stub template to the new grammar","note":""},{"id":"T006","owner":"agent","status":"done","text":"Update `examples/hello-cli-spec/tasks.md`, `examples/README.md`, and `planning/handoff.md`'s stale pipe-table trap/grep command","note":""},{"id":"T007","owner":"agent","status":"done","text":"Add the Fixed rule + two Declined rows to `planning/architecture.md`, and this spec's `requirements.md`/`design.md`","note":""},{"id":"T008","owner":"agent","status":"done","text":"Add the `020`/`021` rows + build-order note to `planning/roadmap.md`, and create `021-harness-worker-backend`'s `requirements.md` (design/tasks stay `TBD` stubs — not designed yet)","note":""},{"id":"T009","owner":"agent","status":"done","text":"Update `README.md` (the new `tasks.md` format, and pointers to `020`/`021`) and add a `CHANGELOG.md` entry","note":""}]},{"id":"022","plan":"cross-agent-skill-compat","status":"done","dependsOn":"001","stage":"—","priority":"17","tasks":[{"id":"T001","owner":"human","status":"todo","text":"Cursor: install specloop's skills, confirm discovery of `skills/<name>/SKILL.md`, confirm auto-trigger from a natural-language request matching a skill's `description` (unmodified frontmatter), confirm the harness tolerates the `when_to_use` key, and run `/specloop:start` far enough to confirm the one-question-at-a-time write-as-you-go loop survives a full phase. Record pass/fail per `design.md`'s audit matrix.","note":""},{"id":"T002","owner":"human","status":"todo","text":"Same four checks as T001, for Codex CLI.","note":""},{"id":"T003","owner":"human","status":"done","text":"OpenCode audit (fixture: standalone `opecode-test/`, own git boundary, `.agents/skills/` copy). Discovery/auto-trigger: pass — `start` triggered unprompted from \"I need to set up a new project and get it organized from scratch,\" no skill/specloop named. `when_to_use` tolerance: pass — no errors/warnings, skill loaded and ran normally. Write-as-you-go: pass — each answer read-then-edited into `AGENTS.md`/`planning/product.md`/`.specloop/interview.md` before the next question, confirmed through at least 5 questions of Phase A without turns collapsing or batching. Scaffolding (Phase 0 detect-state → Phase 1 base files) matched `start`'s documented phases exactly. First attempt at `specloop/test/opencode-audit/` was discarded — no separate `.git`, so OpenCode's walk-up read specloop's own real `AGENTS.md`/`planning/*` instead of the target's; moved fixture outside the repo entirely to fix.","note":""},{"id":"T004","owner":"agent","status":"done","text":"OpenCode: `when_to_use` tolerance confirmed pass (T003) — no trim needed. Cursor/Codex CLI results still open (T001/T002) but don't block this task per `requirements.md`'s acceptance criteria, which only requires one harness's result.","note":""},{"id":"T005","owner":"agent","status":"done","text":"Document the install path for a harness that doesn't read `.claude-plugin/plugin.json`: point it at (or copy `skills/` into) its own skills-scan directory — `.agents/skills/` as the vendor-neutral default, `.opencode/skills/` and `.claude/skills/` named as equivalent aliases. Add to `README.md`'s `## Install` section.","note":""},{"id":"T006","owner":"agent","status":"done","text":"Generalize the skill-recommendation step off \"Claude Code skills/plugins\": `skills/start/SKILL.md` Phase 4 step 1, `skills/start/references/question-bank.md`'s Phase C `helper-skills` row, and `README.md`'s Quickstart line 62 phrasing.","note":""},{"id":"T007","owner":"agent","status":"done","text":"Extend `scripts/check-skill-consistency.mjs` with a check that `skills/start/SKILL.md`'s helper-skills step no longer hardcodes \"Claude Code\" (the `.claude-plugin/plugin.json` / `claude --plugin-dir` distribution mentions elsewhere in the file are fine and excluded).","note":""},{"id":"T008","owner":"agent","status":"done","text":"Updated `planning/architecture.md`'s Container section to name OpenCode as verified (and how), Cursor/Codex CLI as not yet audited. All three acceptance criteria in `requirements.md` are now met (one harness verified, install path documented, Container section updated) — `planning/roadmap.md`'s `022` row flipped to `done`. T001/T002 (Cursor, Codex CLI) left `todo` below as optional follow-up for broader confidence, not blocking closure.","note":""}]},{"id":"023","plan":"fix-log","status":"done","dependsOn":"—","stage":"—","priority":"18","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Create `planning/fix/README.md`: the convention, the `report.md` template, and the independent numbering rule","note":""},{"id":"T002","owner":"agent","status":"done","text":"Document the convention and its deliberate disconnection from the loop/roadmap in `planning/architecture.md`'s Resolved section","note":""},{"id":"T003","owner":"agent","status":"done","text":"Add this spec to `planning/roadmap.md` and `CHANGELOG.md`","note":""}]},{"id":"024","plan":"loop-skill-verification","status":"done","dependsOn":"002","stage":"—","priority":"8","tasks":[{"id":"T001","owner":"agent","status":"done","text":"Build the fixture repo skeleton under `test/` (gitignored): `AGENTS.md`, `planning/architecture.md`, `planning/styles.md`, `planning/roadmap.md` with at least one spec mixing `[agent]`/`[human]` tasks, one all-`[human]` spec, and two eligible `todo` rows with different `Priority` numbers","note":"`test/loop-verify-fixture/`: 001 (all-human, priority 1), 002 (mixed, priority 2), 003 (agent-only, priority 3), later 004 (stop-test, priority 4). `planning/styles.md` deliberately not created. Separate isolated fixture `test/loop-verify-allhuman/` for the all-human-backlog check."},{"id":"T002","owner":"agent","status":"done","text":"Write the stub worker script: appends received argv + full prompt to a file, then exits success, exits non-zero with a plain error, or exits non-zero with usage-limit-shaped wording, selected by an env var/arg","note":"`test/loop-verify-fixture/stub-worker.cjs`. Used to verify prompt contents (success + quota-suspicion branches) before the run pivoted to real worker CLIs per user direction — see T004's note on scope actually covered."},{"id":"T003","owner":"human","status":"done","text":"Live run: `specloop:loop-setup` against the fixture","note":"Q&A walked through for real: worker CLI question answered with the stub first, then the run was reconfigured to real `claude`/`opencode` workers per user direction. `.specloop/loop.config.json` and `.specloop/.gitignore` written correctly both times. All-human-backlog check verified separately in the isolated `test/loop-verify-allhuman/` fixture (single all-`[human]` eligible spec) — condition correctly identified by Phase 0's own text; not additionally interrupted the user with a synthetic Q&A for a fixture-only decision. Legacy `workerCli`/`workerArgs` shape verified live: wrote a config in that shape, read it as `workers[0]` per `skills/loop`'s Phase 0 text, dispatched a real `opencode` call from it — worked identically to the array form."},{"id":"T004","owner":"human","status":"done","text":"Live run: `specloop:loop` against the fixture, cycling the stub through all three exit modes across several tasks, then telling it to stop mid-task","note":"**Scope actually covered, per explicit user direction mid-run**: dropped the stub-based quota-suspicion live cycle (already covered once via the stub before the pivot — see T002's note) and re-ran the real work with genuine `claude` and `opencode` workers instead, on the user's instruction to \"test with the real operators, and see what they respond, nothing weird with scripts.\" Full observed-result table below. Also added `004-stop-test` mid-run specifically to live-verify Phase 4 (not in the original fixture design) — dispatched a real native sub-agent, killed it mid-flight with `TaskStop`, confirmed the task was marked `interrupted` (not `blocked`/`done`) and nothing else started."},{"id":"T005","owner":"human","status":"done","text":"Write the full observed-result table (see `design.md`'s template) as a note here, and fix forward in `skills/loop`/`skills/loop-setup` anything that didn't match the skill's own stated rule","note":"See table below. Two real gaps found and fixed in `skills/loop/SKILL.md`'s Phase 3: (1) it never said *how* a briefing reaches a CLI subprocess — now explicit (`<cli> <args...> \"<briefing>\"`, args first, briefing last as one argument, plus a bounded timeout and no stdin, matching the deleted `worker.ts`'s convention); (2) it said \"watch the output as it happens,\" which doesn't hold for Claude Code's own native sub-agent mechanism — that path is asynchronous (dispatch, then a completion notification), not a live stream. Both fixes were exercised correctly by every live task dispatched after they landed."},{"id":"T006","owner":"human","status":"done","text":"Re-run just the affected step(s) for anything fixed in T005 to confirm the fix; flip this spec `done` once every bullet has a matching observed result","note":"Both `T005` fixes were live-exercised by the real runs that followed them in the same session (see table) — no separate re-run needed. One behavior intentionally left unverified: the harness-synergy branch's exact wording under a harness other than Claude Code (this session can only run Claude Code) — noted in `planning/handoff.md`, not blocking."}]},{"id":"025","plan":"master-handoff","status":"todo","dependsOn":"002","stage":"requirements","priority":"—","tasks":[]}],"drift":[],"fixes":[{"id":"001","name":"language-field-format","scope":"018","found":"`skills/start/SKILL.md`'s Phase 6 never specified a format for `.specloop/loop.config.json`'s\n`language` field — just \"the working language from the tone dimension.\" Two live-verified\nfixtures picked different formats for the same dimension: `test/architecture-absent-fixture`\nwrote `\"language\": \"Spanish\"` (spelled-out, English name of the language), while\n`style-verify-fixture` (018's live verification, 2026-09-13) wrote `\"language\": \"es\"`\n(a two-letter code). Both satisfy `skills/loop`'s Phase 3 consumption of the field (it's\njust interpolated into a sentence), so neither was ever caught as wrong — they'd just\nread differently to a human or another tool comparing two projects' configs.","fix":"Researched the industry standard before picking one (not guessed): BCP 47 is the\nmodern standard for language tags in software (what `Intl`/most JS tooling reads),\nbuilt on ISO 639-1 two-letter codes for the plain-language case with no region/script\nsubtag needed. Encoding: RFC 8259 requires JSON to be UTF-8 and says a BOM MUST NOT be\nadded, which we extend as a general rule to every scaffolded file, not just JSON.\n\nChanged `skills/start/SKILL.md`'s Phase 6 `loop.config.json` template and prose to\nrequire the lowercase BCP 47 / ISO 639-1 code (`\"es\"`, not `\"Spanish\"`), and added a\n`planning/architecture.md` Fixed rule generalizing this to any future coded field a\nskill writes (not just `language`) plus the UTF-8-no-BOM rule for every scaffolded\nfile. Existing fixtures under `test/` were left as-is (gitignored, local-only,\ndisposable) — the fix is in the skill text new runs read, not a retroactive edit of\nold fixture output.","date":"2026-09-13"},{"id":"002","name":"stage-not-reset-on-done","scope":"002","found":"Live-verified during `018`'s delivery check (2026-09-13, `style-verify-fixture` under\nOpenCode): `skills/loop/SKILL.md`'s Phase 2 roll-up step rolled a spec's `Status` up to\n`done` correctly, but left its `Stage` cell at `looping` — `planning/roadmap.md` ended\nup with `done | — | looping | 1` for the completed spec. `planning/architecture.md`'s\nown `Stage` column definition says `—` once `done`, but the roll-up step's instructions\nonly ever said \"write that status into the matching row,\" with no mention of `Stage` at\nall — a real gap, not a one-off mistake by the harness running it (OpenCode followed the\nskill text exactly as written).","fix":"`skills/loop/SKILL.md` Phase 2: when the status being written is `done`, also write `—`\ninto that row's `Stage` cell in the same edit; every other status leaves `Stage`\nuntouched. `planning/architecture.md`'s `Stage` bullet updated to name `specloop:loop`\nas the writer of this transition too, alongside its existing `looping` transition.","date":"2026-09-13"}]}</script>
+<script>
+(function () {
+  "use strict";
+
+  var STATUS_LABELS = {
+    done: "done",
+    in_progress: "in_progress",
+    blocked: "blocked",
+    interrupted: "interrupted",
+    todo: "todo"
+  };
+
+  function statusBadge(status) {
+    var key = STATUS_LABELS.hasOwnProperty(status) ? status : "todo";
+    var span = document.createElement("span");
+    span.className = "badge badge-" + key;
+    span.textContent = status || "todo";
+    return span;
+  }
+
+  function text(tag, content, className) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    el.textContent = content == null ? "" : content;
+    return el;
+  }
+
+  function cell(content) {
+    var td = document.createElement("td");
+    if (content instanceof Node) {
+      td.appendChild(content);
+    } else {
+      td.textContent = content == null ? "" : content;
+    }
+    return td;
+  }
+
+  function toggleRow(mainRow, detailRow) {
+    var isHidden = detailRow.hidden;
+    detailRow.hidden = !isHidden;
+    mainRow.classList.toggle("expanded", isHidden);
+  }
+
+  function buildTaskTable(tasks) {
+    var wrap = document.createElement("div");
+    if (!tasks || tasks.length === 0) {
+      wrap.appendChild(text("div", "No tasks recorded for this spec.", "empty-state"));
+      return wrap;
+    }
+
+    var table = document.createElement("table");
+    table.className = "task-table";
+
+    var thead = document.createElement("thead");
+    var headRow = document.createElement("tr");
+    ["ID", "Owner", "Status", "Text"].forEach(function (h) {
+      headRow.appendChild(text("th", h));
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    tasks.forEach(function (task) {
+      var row = document.createElement("tr");
+      row.appendChild(cell(task.id || ""));
+      row.appendChild(cell(task.owner || ""));
+      row.appendChild(cell(statusBadge(task.status)));
+
+      var textCell = document.createElement("td");
+      textCell.appendChild(text("span", task.text || ""));
+      if (task.note) {
+        textCell.appendChild(text("span", task.note, "task-note"));
+      }
+      row.appendChild(textCell);
+
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+    return wrap;
+  }
+
+  function renderRoadmap(specs) {
+    var tbody = document.getElementById("roadmap-body");
+    tbody.innerHTML = "";
+
+    if (!specs || specs.length === 0) {
+      var row = document.createElement("tr");
+      var td = document.createElement("td");
+      td.colSpan = 7;
+      td.appendChild(text("div", "No specs found in planning/roadmap.md.", "empty-state"));
+      row.appendChild(td);
+      tbody.appendChild(row);
+      return;
+    }
+
+    specs.forEach(function (spec) {
+      var mainRow = document.createElement("tr");
+      mainRow.className = "spec-row";
+
+      var caretCell = document.createElement("td");
+      caretCell.appendChild(text("span", "▸", "toggle-caret"));
+      mainRow.appendChild(caretCell);
+
+      mainRow.appendChild(cell(spec.id || ""));
+      mainRow.appendChild(cell(spec.plan || ""));
+      mainRow.appendChild(cell(statusBadge(spec.status)));
+      mainRow.appendChild(cell(spec.dependsOn || "—"));
+      mainRow.appendChild(cell(spec.stage || "—"));
+      mainRow.appendChild(cell(spec.priority || "—"));
+
+      var detailRow = document.createElement("tr");
+      detailRow.className = "detail-row";
+      detailRow.hidden = true;
+      var detailCell = document.createElement("td");
+      detailCell.colSpan = 7;
+      var panel = document.createElement("div");
+      panel.className = "detail-panel";
+      panel.appendChild(buildTaskTable(spec.tasks));
+      detailCell.appendChild(panel);
+      detailRow.appendChild(detailCell);
+
+      mainRow.addEventListener("click", function () {
+        toggleRow(mainRow, detailRow);
+      });
+
+      tbody.appendChild(mainRow);
+      tbody.appendChild(detailRow);
+    });
+  }
+
+  function renderDrift(drift) {
+    var section = document.getElementById("drift-section");
+    var list = document.getElementById("drift-list");
+    list.innerHTML = "";
+
+    if (!drift || drift.length === 0) {
+      section.hidden = true;
+      return;
+    }
+
+    section.hidden = false;
+    drift.forEach(function (entry) {
+      var li = document.createElement("li");
+      li.appendChild(text("span", (entry.specId || "?") + ": ", "drift-spec"));
+      if (entry.rule) {
+        li.appendChild(text("span", entry.rule + " — ", "drift-rule"));
+      }
+      li.appendChild(document.createTextNode(entry.message || ""));
+      list.appendChild(li);
+    });
+  }
+
+  function buildFixDetail(fix) {
+    var wrap = document.createElement("div");
+    wrap.className = "fix-detail";
+    var dl = document.createElement("dl");
+
+    if (fix.found) {
+      dl.appendChild(text("dt", "Found"));
+      dl.appendChild(text("dd", fix.found));
+    }
+    if (fix.fix) {
+      dl.appendChild(text("dt", "Fix"));
+      dl.appendChild(text("dd", fix.fix));
+    }
+
+    if (!dl.children.length) {
+      wrap.appendChild(text("div", "No Found/Fix detail recorded.", "empty-state"));
+      return wrap;
+    }
+
+    wrap.appendChild(dl);
+    return wrap;
+  }
+
+  function renderFixLog(fixes) {
+    var container = document.getElementById("fix-log-body");
+    container.innerHTML = "";
+
+    if (!fixes || fixes.length === 0) {
+      container.appendChild(text("div", "No fix-log entries.", "empty-state"));
+      return;
+    }
+
+    var table = document.createElement("table");
+    var thead = document.createElement("thead");
+    var headRow = document.createElement("tr");
+    ["", "ID", "Name", "Scope", "Date"].forEach(function (h) {
+      headRow.appendChild(text("th", h));
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+
+    fixes.forEach(function (fix) {
+      var mainRow = document.createElement("tr");
+      mainRow.className = "fix-row";
+
+      var caretCell = document.createElement("td");
+      caretCell.appendChild(text("span", "▸", "toggle-caret"));
+      mainRow.appendChild(caretCell);
+
+      mainRow.appendChild(cell(fix.id || ""));
+      mainRow.appendChild(cell(fix.name || ""));
+      mainRow.appendChild(cell(fix.scope || "—"));
+      mainRow.appendChild(cell(fix.date || "—"));
+
+      var detailRow = document.createElement("tr");
+      detailRow.className = "detail-row";
+      detailRow.hidden = true;
+      var detailCell = document.createElement("td");
+      detailCell.colSpan = 5;
+      var panel = document.createElement("div");
+      panel.className = "detail-panel";
+      panel.appendChild(buildFixDetail(fix));
+      detailCell.appendChild(panel);
+      detailRow.appendChild(detailCell);
+
+      mainRow.addEventListener("click", function () {
+        toggleRow(mainRow, detailRow);
+      });
+
+      tbody.appendChild(mainRow);
+      tbody.appendChild(detailRow);
+    });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+
+  function renderGeneratedAt(iso) {
+    var el = document.getElementById("generated-at");
+    if (!iso) {
+      el.textContent = "";
+      return;
+    }
+    el.textContent = "Generated " + iso;
+  }
+
+  function main() {
+    var dataEl = document.getElementById("dashboard-data");
+    var raw = dataEl ? dataEl.textContent : "";
+    var data;
+    try {
+      data = JSON.parse(raw);
+    } catch (err) {
+      data = { generatedAt: "", specs: [], drift: [], fixes: [] };
+    }
+
+    renderGeneratedAt(data.generatedAt);
+    renderDrift(data.drift);
+    renderRoadmap(data.specs);
+    renderFixLog(data.fixes);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", main);
+  } else {
+    main();
+  }
+})();
+</script>
+</body>
+</html>

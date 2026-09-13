@@ -20,6 +20,7 @@ body:
         - specloop:task-breakdown
         - specloop:loop-setup
         - specloop:loop
+        - specloop:status
         - docs / plugin manifest
         - Other
     validations:

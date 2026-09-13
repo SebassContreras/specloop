@@ -63,6 +63,12 @@ of this is chained automatically after the scaffold trigger):
     every worker the project's context files so its output respects the decisions
     made in steps 3–5.
 
+**Available any time, not part of the sequence above**: a read-only status skill
+reports the roadmap's current state (active spec(s), task counts, anything stuck,
+what to run next, any recorded state that disagrees with the files on disk) as a
+chat summary, and writes a static `planning/dashboard.html` snapshot — regenerated
+fresh each time it's asked, never a standing process.
+
 ## Who uses it
 
 Personal use by the author (scontreras) to avoid manually repeating the same setup

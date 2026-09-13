@@ -12,7 +12,7 @@ we, what's next."
 | 004 | design-closing-skill      | done        | 001                | —            | —        |
 | 005 | open-source-release       | done        | 001                | —            | —        |
 | 006 | e2e-smoke-testing         | done        | 001, 002, 003, 004 | —            | 7        |
-| 009 | status-dashboard-skill    | todo        | 001                | requirements | 10       |
+| 009 | status-dashboard-skill    | done        | 001                | —            | 10       |
 | 012 | spec-amend-skill          | todo        | 001, 003, 004      | requirements | 13       |
 | 014 | worker-context-injection  | done        | 002                | —            | 2        |
 | 015 | roadmap-status-writer     | done        | 002                | —            | 3        |
@@ -25,6 +25,7 @@ we, what's next."
 | 023 | fix-log                   | done        | —                  | —            | 18       |
 | 024 | loop-skill-verification   | done        | 002                | —            | 8        |
 | 025 | master-handoff            | todo        | 002                | requirements | —        |
+| 026 | dashboard-visual-enhancements | todo    | 009                | design_closed | 11      |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`
@@ -36,9 +37,8 @@ session — as the only way to run the loop. See `planning/handoff.md` and
 
 `Status`: `todo` · `in_progress` · `blocked` · `interrupted` · `done`. Written only by
 `skills/loop` (rolled up from each spec's own `tasks.md` — see its Phase 2) — never
-hand-edit it. There's no standalone read-only check for a stale cell today (that was
-`loop status`'s job before the deterministic CLI was retired); `009` would give
-that back once built.
+hand-edit it. `specloop:status` (`009`) gives back the standalone read-only check
+`loop status` used to be, plus a `Stage`/`Status` drift check nothing had before.
 
 `Stage`: `requirements` · `design_closed` · `tasks_ready` · `looping` — which skill a
 spec needs next, so nobody has to open its files to find out. `—` once `done`, or for
