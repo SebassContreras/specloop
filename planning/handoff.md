@@ -1,22 +1,66 @@
-# Handoff — 2026-09-12
+# Handoff — 2026-09-13
 
-Supersedes the 2026-09-11 handoff below on the one point that changed: **the
-deterministic `loop run` CLI is gone.** Everything else in that handoff (the
-split-pane history, the quota-exhaustion history, the general "don't resurrect
-X" traps) still holds and is kept below for context. Branch: `main`.
+Supersedes 2026-09-12 on one point: **`018` (project-style-preferences) is now
+`done`.** Everything else below (2026-09-12 and 2026-09-11 history) still holds.
+Branch: `main`.
 
 **This file is not the source of truth and must not become one.** `planning/roadmap.md`
 owns order and status; each spec's `tasks.md` owns the work.
 
+## `018` closed 2026-09-13 — turned out to be already built, just unverified
+
+Opening `018`'s design-closing session surfaced that its three parts (capture,
+storage, delivery of style preferences) were **already fully implemented** —
+`001` T024/T025 wrote the Phase D question-bank + `skills/start`'s Phase 5 styles
+Q&A, and `014` already delivers any `contextFiles` entry (including
+`planning/styles.md`) into a worker's prompt. Nobody had traced the finished work
+back to close `018`'s own roadmap row. Given that, skipped `design-closing`'s
+normal Q&A/`task-breakdown` and instead **live-verified the existing chain
+end-to-end under a real non-Claude-Code harness** (OpenCode) — see `018`'s own
+`tasks.md` T001 for the full run. Confirmed genuinely working: the Phase 5
+interview (all 10 dimensions, `help-me-decide` with real web search for
+`palette`/`typography`, `preference-strength` asked and recorded), `planning/
+styles.md` + `AGENTS.md`'s Style section written correctly, and — the part `018`
+existed to prove — a real worker (OpenCode's native sub-agent) received
+`planning/styles.md` in its prompt and produced a component that genuinely
+honored every hard rule in it (exact color tokens, correct fonts/fallback,
+computed contrast ratios, accessible markup).
+
+Two real, unrelated gaps surfaced along the way and were fixed the same session
+(not this spec's own bugs, but found by its verification — same pattern as `024`):
+
+- **`planning/fix/001-language-field-format`**: `.specloop/loop.config.json`'s
+  `language` field had no specified format — one fixture wrote `"Spanish"`,
+  another wrote `"es"`. Researched the actual industry standard (BCP 47 / ISO
+  639-1 lowercase codes) rather than guessing, fixed `skills/start/SKILL.md`'s
+  Phase 6, and added a general `planning/architecture.md` Fixed rule: any future
+  coded field a skill writes uses its standard body's format, not a spelled-out
+  label, and every scaffolded file is UTF-8 without a BOM.
+- **`planning/fix/002-stage-not-reset-on-done`**: `skills/loop`'s Phase 2 roll-up
+  wrote `Status: done` but left `Stage` at `looping` — contradicts
+  `architecture.md`'s own "`—` once `done`" rule. Fixed: the roll-up step now
+  resets `Stage` to `—` in the same edit whenever it writes `done`.
+
+Also corrected `018`'s own `requirements.md` AC #2, which was wrong as written:
+a no-visual-surface project still gets `planning/styles.md` (for `tone`/
+`code-conventions`/`anti-preferences`), it just skips the *visual* dimensions —
+confirmed against a real prior fixture (`test/architecture-absent-fixture`)
+rather than guessed.
+
+The verification fixture (`style-verify-fixture/`) lives **outside** this repo
+entirely, with its own `.git` — same reason `022` T003's OpenCode audit moved
+its fixture out: a fixture nested in `specloop/test/` without its own `.git`
+lets a harness's directory walk-up read *this* repo's own `AGENTS.md`/`planning/`
+instead of the fixture's. Not committed anywhere; purely local.
+
 ## Next, picking this back up
 
 No `todo` spec has a populated `tasks.md` right now, so `/specloop:loop` has
-nothing to run. By `Priority`, the next candidate is **`018`
-(project-style-preferences)** — needs `/specloop:design-closing` then
-`/specloop:task-breakdown` before it's loop-runnable. `009` and `012` are
-next after it, same story (`requirements` stage, undesigned). `025`
-(deferred, unranked) sits behind all three until someone gives it a
-`Priority`. `019` (public-showcase) is `in_progress` but everything left in
+nothing to run. By `Priority`, the next candidate is **`009`
+(status-dashboard-skill)** — `requirements` stage, undesigned — needs
+`/specloop:design-closing` then `/specloop:task-breakdown`. `012` is next after
+it, same story. `025` (deferred, unranked) sits behind both until someone gives
+it a `Priority`. `019` (public-showcase) is `in_progress` but everything left in
 it is `[human]` (screenshot/demo capture) — not blocked on any agent work.
 
 ---

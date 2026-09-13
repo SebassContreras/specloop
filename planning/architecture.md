@@ -94,7 +94,9 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   transition, and never touches another spec's row — `specloop:start` on writing a
   real `requirements.md`, `specloop:design-closing` on closing design,
   `specloop:task-breakdown` on producing real tasks, `specloop:loop` on starting
-  execution.
+  execution **and again on rolling a spec's `Status` up to `done`, in the same edit,
+  resetting `Stage` to `—`** (found stuck at `looping` after a `done` roll-up during
+  `018`'s live verification, 2026-09-13 — see `planning/fix/002-stage-not-reset-on-done`).
 - **`Priority`** is a live, human-edited ordering number — lower runs before higher
   among specs `Depends on` doesn't already order. Edited directly to reorder; no
   separate "build order" text to keep in sync. `—` means the spec predates the
@@ -174,6 +176,19 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   the `interview.md` ledger). Nothing committed — skills, docs, examples, or specs —
   may assume either exists on origin; references to fixture runs must say they are
   local-only.
+- **Any machine-read value a skill writes into a scaffolded file uses the industry-
+  standard code, never a spelled-out label, and every file is UTF-8 without a BOM.**
+  Found inconsistent 2026-09-13 (`018` live verification): one fixture's
+  `loop.config.json` wrote `"language": "Spanish"`, another wrote `"es"` for the same
+  dimension — both pass today because no format was ever specified. Resolved: BCP 47
+  (in practice its ISO 639-1 two-letter subtag for a plain language, e.g. `"es"`,
+  `"pt"` — no region/script subtag unless the project actually needs one), lowercase,
+  matching how `Intl`/most JS tooling already reads a language tag. UTF-8 without BOM
+  follows RFC 8259 (JSON MUST be UTF-8; a leading BOM MUST NOT be added) and applies
+  by extension to every other scaffolded file, not just `.json` ones. See
+  `planning/fix/001-language-field-format`. Applies the next time a skill introduces
+  a new coded field, not just to `language` — a country, currency, or similar code
+  gets its own standard body's format, not a name.
 
 ## Resolved
 

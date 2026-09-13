@@ -251,14 +251,16 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
   ],
   "logDir": ".specloop/logs",
   "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
-  "language": "<working language from the tone dimension, omit the field entirely if English>"
+  "language": "<BCP 47 / ISO 639-1 two-letter code from the tone dimension, e.g. \"es\", \"pt\" — omit the field entirely if English>"
 }
 ```
 One entry per worker CLI the user named — more than one round-robins across them by
 task order. `language` comes from Phase 5's `tone` dimension ("what tone... and in
 which language?") — write it here too, not just into `AGENTS.md`'s "Style" section, so
 `skills/loop` can put it directly in every task's prompt (`014` T10). Omit the field
-(don't write `"English"`) when the project is English-only.
+(don't write `"en"`) when the project is English-only. **Always the lowercase two-letter
+code, never the language's own name** (`"es"`, not `"Spanish"`/`"español"`) — see
+`planning/architecture.md`'s Fixed rules and `planning/fix/001-language-field-format`.
 
 Use `"TBD"` for anything the user defers. `specloop:loop-setup` asks the rest of the
 loop's Q&A later and will re-ask anything left `TBD`.

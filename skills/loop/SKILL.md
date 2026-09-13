@@ -79,8 +79,13 @@ line is identified only by starting at column 0.
   (`[human]` tasks don't hold a spec open — a spec whose only remaining work
   is the user's counts as done from the loop's side and is reported
   separately.) Write that status into `planning/roadmap.md`'s matching row.
-  Report any still-open `[human]` tasks by name. Then either stop, or go back
-  to Phase 1 for the next eligible spec if the user wants to keep going.
+  **If the status you're writing is `done`, also write `—` into that same
+  row's `Stage` cell** in the same edit — `Stage` tracks which skill a spec
+  still needs, and a `done` spec needs none. Leave `Stage` untouched for every
+  other status (`blocked`/`interrupted`/`in_progress` all still need `loop`
+  again). Report any still-open `[human]` tasks by name. Then either stop, or
+  go back to Phase 1 for the next eligible spec if the user wants to keep
+  going.
 
 ## Phase 3 — Run one task
 

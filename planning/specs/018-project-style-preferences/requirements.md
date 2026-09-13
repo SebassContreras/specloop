@@ -45,8 +45,13 @@ anything is rendered.
 - A project declaring a visual surface ends with a `planning/styles.md` containing only
   values the user actually chose, and an `AGENTS.md` "Style" section summarising them
   with their strength.
-- A project with no visual surface gets no `planning/styles.md` and is never asked about
-  colors, but is still asked about code conventions and anti-preferences.
+- A project with no visual surface is never asked about colors, typography, density
+  mode or brand references, but is still asked about code conventions, tone and
+  anti-preferences — `planning/styles.md` still gets created to hold those (confirmed
+  live in `test/architecture-absent-fixture`, an operations/process project with no
+  visual surface: its `planning/styles.md` records tone/format-conventions/
+  anti-preferences and notes the visual dimensions don't apply, rather than the file
+  being absent).
 - Declining a style dimension records it as `skipped`, not as an invented default.
 - With `014` in place, a worker prompt on a styled project names `planning/styles.md`.
 
