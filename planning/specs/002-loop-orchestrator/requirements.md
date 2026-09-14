@@ -25,21 +25,26 @@ the same day, never past `requirements.md`: `007` (orchestrator-unit-tests),
 
 - **CLI-agnostic**: the loop must be able to invoke any installed CLI as a
   worker — `claude`, `codex`, `opencode`, etc. — configurable per repo/run,
-  not hardcoded to one. And, whenever the harness running `specloop:loop` is
-  itself the same provider as a task's configured worker and offers a native
-  way to spawn a sub-agent, it **always uses that first** — a CLI subprocess
-  is the fallback for a different provider or a harness with no native
-  mechanism, never the default when the native path is available.
+  not hardcoded to one. It always picks whichever configured entry's
+  provider matches the harness actually running `specloop:loop` (never
+  round-robins across the rest — corrected 2026-09-14), and, when that
+  harness offers a native way to spawn a sub-agent, **always uses that
+  first** — a CLI subprocess is the fallback for a harness with no native
+  mechanism, or an explicit user-directed exception, never the default.
 - **One process, no visual terminals**: the chat session itself is the
-  master — it runs every task sequentially, one at a time, in the same
-  conversation. No detached windows, no split panes, nothing else opened for
-  the user to watch. (An earlier design spawned a live terminal split per
+  master — it runs each batch of independent tasks as its own concurrent
+  sub-agents, in the same conversation (narrowed from "sequentially, one at
+  a time" 2026-09-14 once parallel batching landed — see `design.md`'s
+  "Parallel batching" section). No detached windows, no split panes, nothing
+  else opened for the user to watch. (An earlier design spawned a live
+  terminal split per
   sub-agent — Windows Terminal / tmux — live-tested end-to-end in `006` T012,
   then dropped by explicit user decision; see `design.md`'s history.)
 - **Safe stop**: the user can just say so, in the same conversation —
   - Stop — do not start any new task.
-  - Mark the task in progress as `interrupted` in its corresponding `tasks.md` (not
-    `done` nor `todo`).
+  - Mark whichever task(s) are in progress as `interrupted` in the
+    corresponding `tasks.md` (not `done` nor `todo`) — more than one when a
+    batch was running in parallel.
   - Report what's left undone, so it can be resumed later.
 - **Quota-exhaustion recovery is judgement, not a regex.** The agent running
   `specloop:loop` reads a worker's output itself and decides success,
@@ -64,7 +69,12 @@ the same day, never past `requirements.md`: `007` (orchestrator-unit-tests),
 ## Out of scope
 
 - Claude Code's native `Workflow` tool (doesn't cover non-Claude CLIs).
-- Multi-spec parallelism — the loop works one spec at a time.
+- Multi-spec parallelism **on the master's own provider** — the loop still
+  works one spec at a time there. Narrowed 2026-09-14: explicit
+  user-directed dispatch of a *different* spec/task to a *different*
+  configured provider, running alongside the master's own work, is now in
+  scope — see `design.md`'s "Cross-provider dispatch" section. What's still
+  out of scope is two specs running concurrently on the *same* provider.
 - A standalone script or CLI of any kind for running the loop — this was
   tried, shipped, and deliberately retired (2026-09-12). See
   `planning/architecture.md`'s Declined table before re-proposing it.

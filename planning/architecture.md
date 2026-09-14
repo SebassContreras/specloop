@@ -138,35 +138,64 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   silently gives non-Claude workers no knowledge of the project's stack, conventions or
   styles. Implemented in `skills/loop/SKILL.md`'s Phase 3 (`014`).
 - **No visual terminals, no standalone process at all.** The loop runs entirely
-  inside the chat session running `skills/loop` — every task runs inline,
-  sequentially, in that same conversation. No detached windows, no split panes, no
-  separate script or CLI. Reversed twice (split panes, then the standalone CLI that
-  briefly replaced them) after each was actually built and confirmed working — see
-  `002-loop-orchestrator/design.md`'s own history section for both reversals.
-- **Safe stop**: the user says so, in the same conversation — stop, do not start a
-  new task, mark the task in progress as `interrupted` in its `tasks.md`, report
-  where it stopped. No stop-flag file or PID registry needed: there's no detached
-  process to signal, the conversation itself is what would need to keep going.
+  inside the chat session running `skills/loop` — every batch of independent
+  tasks runs as its own concurrent sub-agents, inline, in that same conversation
+  (batching added 2026-09-14; before that, strictly one task at a time). No
+  detached windows, no split panes, no separate script or CLI. Reversed twice
+  (split panes, then the standalone CLI that briefly replaced them) after each
+  was actually built and confirmed working — see `002-loop-orchestrator/
+  design.md`'s own history section for both reversals.
+- **Safe stop**: the user says so, in the same conversation — stop, do not start
+  new work, mark whichever task(s) are in progress as `interrupted` in their
+  `tasks.md` (more than one, if a batch was running), report where it stopped.
+  No stop-flag file or PID registry needed: there's no detached process to
+  signal, the conversation itself is what would need to keep going.
 - **Quota-exhaustion handling is judgement, not a regex.** `skills/loop/SKILL.md`
   is the chat session that *is* the master: it reads a worker's output itself,
   judges success/failure/quota-exhaustion with real judgement (no regex), and asks
   the user directly which configured worker to switch to on a suspected
   usage/rate-limit hit. See `002-loop-orchestrator/design.md`'s own history section
   for the regex-in-a-script attempt this replaced.
-- **A skill's own harness takes priority over a worker CLI of the same
-  provider — always, whenever it's available.** `skills/loop`'s Phase 3: when
-  the harness running the skill matches a task's configured worker's
-  provider and offers a native way to hand off work to a sub-agent, use
-  that, before ever falling back to a CLI subprocess for that task. A CLI
-  subprocess is the fallback for a *different* provider, or a harness with
-  no native mechanism — never the default when the native path is available.
-  Phrased generically so it holds under any compatible harness, not
+- **The loop always runs under its own master's provider — never round-robins
+  across the other configured workers.** `skills/loop`'s Phase 3 picks, once
+  per batch, whichever `config.workers` entry's `cli` matches the harness
+  actually running the skill, and prefers that harness's own native
+  sub-agent mechanism over a CLI subprocess whenever one's available. A CLI
+  subprocess is the fallback for a harness with no native mechanism, or an
+  explicit user-directed exception (e.g. on a suspected usage limit) — never
+  the default, and never a way to split load across several configured
+  providers within one run. The rest of `config.workers` exists for
+  portability (a different session, under a different harness, finds its
+  own matching entry in the same file), corrected 2026-09-14 — an earlier
+  version of this rule round-robinned across every configured worker by task
+  order regardless of which harness was running, which wasted the native
+  path on every task that didn't happen to round-robin onto the matching
+  entry. Phrased generically so it holds under any compatible harness, not
   Claude-Code-only (matches the Container section's open-format rule); the
   master is any compatible harness's chat session, never Claude specifically.
   Live-verified under Claude Code (`024`) — including the finding that the native
   path is asynchronous (dispatch, then a completion notification), not a live
   stream, which `skills/loop`'s Phase 3/4 account for. See `024`'s `tasks.md` for
   the full observed-result table.
+- **Independent tasks within a batch run as parallel sub-agents; tasks that
+  share a file/section, or whose independence is unclear, run one at a
+  time.** `skills/loop`'s Phase 2 builds a batch from consecutive runnable
+  tasks only while each new one is free of both a `design.md`-stated
+  ordering and any file/section overlap with the rest of the batch — added
+  2026-09-14, never guessed when unclear. Across specs, the loop keeps
+  picking the next eligible spec automatically once one resolves, rather
+  than stopping after each — unless the user named one specific spec, in
+  which case it stops there and reports instead of moving on.
+- **Cross-provider dispatch to a different spec is always explicit, never
+  inferred.** The master only ever runs its own assigned work through its
+  own matched provider — but the user can separately, explicitly name a
+  *different* spec/task **and** a *different* configured provider to run
+  alongside it (e.g. "do `007` yourself, send `008` to `codex`") — added
+  2026-09-14. The master dispatches that as a background subprocess and
+  keeps working its own pick in the meantime; this is genuine cross-spec
+  parallelism across providers, not the quota-suspicion fallback (which
+  stays reactive and still asks first) and not a way to offload the
+  master's *own* work faster without being asked.
 - **`test/` is local-only and never committed** (gitignored) — it holds throwaway
   repos used to exercise the interview and the skills end-to-end. Nothing
   committed — skills, docs, examples, or specs — may assume it exists on origin;
@@ -216,8 +245,9 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   Node.js/TypeScript CLI, run via `tsx` and linked onto PATH by `loop-setup`,
   existed and was retired 2026-09-12 — see `002-loop-orchestrator`'s history.)
 - Per-target-repo config file: `.specloop/loop.config.json` (`workers` — an array of
-  `{cli, args}`, round-robined by task order when there's more than one, and also
-  where a quota-exhaustion worker switch can land — plus `logDir`, `contextFiles`) —
+  `{cli, args}`; the loop always picks whichever entry matches its own running
+  session, never round-robin, with the rest there for portability and as where a
+  quota-exhaustion worker switch can land — plus `logDir`, `contextFiles`) —
   written by `skills/start`'s and `skills/loop-setup`'s guided Q&A, never
   hand-authored or hardcoded. A file still in the legacy single
   `workerCli`/`workerArgs` shape is read by `skills/loop` as equivalent to a

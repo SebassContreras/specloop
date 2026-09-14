@@ -90,12 +90,19 @@ actually ready — none of them chain automatically:
    writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
    config already exists from step 1; this fills in the rest.
 5. **`/specloop:loop`** — the only way to run it: this chat session is the master.
-   It reads the roadmap and tasks itself, and runs each one **always through your
-   own harness's native sub-agent tool first when its provider matches a task's
-   configured worker** — a CLI subprocess only when it doesn't — and asks you
-   directly if a worker looks like it hit a usage/rate limit — no separate
-   process, no script, nothing to watch elsewhere. Tell it to stop and it does,
-   marking the in-flight task `interrupted` and reporting what's left.
+   It reads the roadmap and tasks itself, works every eligible spec in turn
+   (or just one, if you name it), and runs tasks **always through your own
+   harness's own native sub-agent tool** — never splitting work across the
+   other configured providers, those are for portability if a different
+   session ever runs this repo's loop. Independent tasks in a batch run as
+   parallel sub-agents; anything sharing a file, or whose independence isn't
+   clear, runs one at a time. Asks you directly if it looks like it hit a
+   usage/rate limit — no separate process, no script, nothing to watch
+   elsewhere. Tell it to stop and it does, marking the in-flight task(s)
+   `interrupted` and reporting what's left. You can also explicitly send a
+   different spec to a different configured provider to run alongside it
+   (e.g. "do `007` yourself, send `008` to `codex`") — real cross-provider
+   parallelism, only when you ask for it.
 
 Available any time, not part of that sequence: **`/specloop:status`** — read-only,
 reports the roadmap's state (active spec(s), task counts, anything stuck, what to

@@ -48,11 +48,16 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
 }
 ```
 
-- `workers` — one or more `{cli, args}` entries; which installed CLI(s) to spawn per
-  task (`claude`, `codex`, `opencode`, or any other command on PATH). Configurable
-  per repo/run, never hardcoded. With more than one entry, `skills/loop` round-robins
-  across them by task order, and is also what its interactive worker-switch prompt
-  reads and appends to. A config on disk with the legacy single
+- `workers` — one or more `{cli, args}` entries; which installed CLI(s) might ever
+  run this loop (`claude`, `codex`, `opencode`, or any other command on PATH).
+  Configurable per repo/run, never hardcoded. `skills/loop` always picks whichever
+  entry's `cli` matches the harness actually running it — **never round-robins
+  across the rest within one run** (corrected 2026-09-14; an earlier version did,
+  which wasted the native-sub-agent path on every task that didn't happen to land
+  on the matching entry). More than one entry exists for portability across
+  whichever harness ends up running the loop, and is also what its interactive
+  worker-switch prompt reads and appends to for an explicit fallback. A config on
+  disk with the legacy single
   `workerCli`/`workerArgs` shape is read as equivalent to a one-element `workers`
   array — `skills/loop`'s Phase 0 says so directly, since there's no load-time
   normalization code left to do it silently. `skills/loop-setup` writes the
@@ -106,8 +111,60 @@ sub-agent finishes), unlike a CLI subprocess's live-streamed stdout/stderr.
 outcome; only the *how* differs. See `024`'s `tasks.md` for the full
 observed-result table.
 
+**Corrected 2026-09-14 — worker selection was never meant to be per-task
+round-robin.** The original wording above ("a task whose configured worker
+is the same provider...") assumed each task got assigned a worker by
+round-robin first, then checked for a harness match — so with more than one
+`workers` entry configured, only a fraction of tasks ever actually hit the
+native path, even when the master's own provider was configured and
+available for every task. Found live, dogfooding this repo's own loop run
+against `026` (a `claude`/`codex`/`opencode` config, master = Claude Code):
+task 2 round-robinned onto `codex` and shelled out to a subprocess for no
+reason, when the native path could have run it in-process the whole time.
+The rule is now: pick the master-matching `workers` entry **once per run**
+(or per batch — see the Parallel batching section below), never round-robin
+across the rest — those exist for portability to a different master, or as
+an explicit, user-directed fallback, not for load-splitting within one run.
+
+## Parallel batching (`skills/loop`'s Phase 2) — added 2026-09-14
+
+Serial one-task-at-a-time execution left real concurrency on the table:
+Claude Code's own native sub-agent mechanism (and a CLI subprocess, for that
+matter) supports dispatching several independent tasks at once. `skills/loop`'s
+Phase 2 now builds a batch of consecutive runnable tasks, stopping the batch
+at the first task that either the spec's `design.md` orders after an earlier
+one in the batch, or that touches a file/section another batch member
+already touches — two tasks editing the same file are not safe to run
+concurrently even with no stated logical dependency, since one can silently
+overwrite the other's edit. When independence is genuinely unclear, the rule
+is to not guess: treat it as dependent and start a new batch. In practice,
+many specs' tasks cluster around one or two shared files (`026`'s own
+`tasks.md` is a real example — most of its tasks touch `skills/status/
+references/template.html`), so batches of one remain common; that's the
+correct, conservative outcome, not a failure to parallelize. No new field
+was added to `tasks.md`'s grammar for this — dependency signal comes from
+`design.md`'s existing Sequencing prose plus each task's own stated scope,
+not a formal per-task dependency list, to avoid a second, driftable source
+of truth alongside `design.md`.
+
+## Cross-provider dispatch — resolved 2026-09-14
+
+The "multi-spec parallelism" question below is now partly resolved: the user
+can explicitly send a different spec/task to a **different configured
+provider**, running as a background subprocess alongside the master's own
+Phase 1-4 work on its own pick — e.g. "do `007` yourself, send `008` to
+`codex`." Always explicit (both the spec/task and the provider named by the
+user), never inferred, and never a way for the master to offload its *own*
+assigned work faster without being asked — that stays Phase 3 step 5's
+reactive, ask-first territory. Genuinely useful because it's cross-*provider*:
+the dispatched stream doesn't compete with the master's own native-sub-agent
+capacity at all, it runs as an entirely separate subprocess.
+
 ## Open questions / deferred
 
-- Multi-spec parallelism (running two independent, dependency-satisfied specs at
-  once) — `skills/loop` works one spec at a time; nothing structurally prevents
-  a future version working more than one.
+- Multi-spec parallelism **on the master's own provider** (running two
+  independent, dependency-satisfied specs at once, both via the master's own
+  native sub-agent mechanism rather than a different configured provider) —
+  still not designed. Cross-provider dispatch (above) covers the case where a
+  second provider is available and named; this is the harder case of the
+  master managing two concurrent spec-tracks itself.

@@ -216,16 +216,22 @@ bearable, whether the closing sweep converges or nags. See `001` T30/T31 and `00
   the fixed `ID | Task | Status | Notes` contract.
 - **002 — loop-orchestrator**: `skills/loop/SKILL.md` — the loop runs as a chat
   session, which *is* the master: reads `planning/roadmap.md`/a spec's
-  `tasks.md` directly, launches each task's worker itself (a subprocess CLI,
-  or its own harness's native sub-agent tool when the provider matches), and
-  asks the user which worker to switch to on a suspected usage-limit hit —
-  no fixed pattern-match, real judgement. `skills/loop-setup/SKILL.md` is the
+  `tasks.md` directly and works through every eligible spec in turn (or just
+  one, if named), always launching tasks through its own matched provider —
+  never round-robinning across other configured ones — preferring its own
+  harness's native sub-agent tool when available. Independent tasks in a
+  batch run as parallel sub-agents; anything sharing a file, or unclear, runs
+  one at a time. The user can also explicitly send a different spec/task to a
+  different configured provider to run alongside the master's own work. Asks
+  the user which provider to fall back to on a suspected usage-limit hit — no
+  fixed pattern-match, real judgement. `skills/loop-setup/SKILL.md` is the
   one-time Q&A that writes `.specloop/loop.config.json`. Safe stop is just
-  telling the session to stop, in the same conversation. (An earlier
-  deterministic Node/TypeScript CLI, `loop run`/`loop stop`/`loop status`, and
-  before that a `windowsTerminal`/`tmux` split-pane mode, were both built,
-  confirmed working, and deliberately removed — never shipped in a tagged
-  release, not listed here.)
+  telling the session to stop, in the same conversation — flips every
+  in-progress task to `interrupted`. (An earlier deterministic Node/TypeScript
+  CLI, `loop run`/`loop stop`/`loop status`, and before that a
+  `windowsTerminal`/`tmux` split-pane mode, were both built, confirmed
+  working, and deliberately removed — never shipped in a tagged release, not
+  listed here.)
 - **001 — scaffold-and-spec-skill**: `specloop:start` — scaffolds `AGENTS.md` +
   `CLAUDE.md` + `planning/{product,architecture,roadmap}.md` + `.specloop/`; the full
   interview (project type → vision → technologies/architecture/tools → skill
