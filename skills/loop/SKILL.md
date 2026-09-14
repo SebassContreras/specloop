@@ -2,12 +2,15 @@
 name: loop
 description: >
   Loop orchestration: this chat session becomes the master. Reads
-  planning/roadmap.md and the next eligible spec's tasks.md, runs each
-  agent-owned task with a configured worker — always this session's own
-  native sub-agent tool first when its provider matches the worker's, a
-  subprocess CLI only otherwise — and asks the user directly, in this
-  conversation, when a worker looks like it hit a usage/rate limit. This is
-  the only way to run the loop — there is no separate script or CLI.
+  planning/roadmap.md and works through eligible specs' tasks.md files,
+  always via this session's own harness/provider (never round-robinning to a
+  different configured CLI), dispatching independent tasks as parallel
+  sub-agents when their scopes don't overlap, and asks the user directly, in
+  this conversation, when it looks like it hit a usage/rate limit. Runs every
+  eligible spec in turn unless the user names one. The user can also
+  explicitly direct a different spec/task to a different configured provider
+  to run alongside the master's own work. This is the only way to run the
+  loop — there is no separate script or CLI.
 when_to_use: >
   Use when the user wants to actually work the backlog now, in this chat —
   phrasing like "let's run the loop", "start working through the backlog",
@@ -42,18 +45,52 @@ on | Stage | Priority |`, positional — the first four cells are `ID`/`Plan`/
 `Status`/`Depends on`; `Stage` and `Priority` follow them in that order, used
 below. Ignore any further trailing cell you don't recognize.
 
-Eligibility: a row already `in_progress` (resume that one first), else the
-lowest-`Priority` `todo` row whose every `Depends on` entry is itself `done`
-**and** that has at least one runnable task (see Phase 2) — a `todo` spec
-with an empty or all-`human` `tasks.md` isn't eligible yet, so it can't block
-a later spec that actually has work. `—` in `Priority` sorts last. If none is
-eligible, say so plainly and stop.
+**If the user named a specific spec, work only that one** — run Phases 2-4 on
+it, then stop and report, never moving on to a different spec on your own.
+
+**Otherwise, eligibility:** a row already `in_progress` (resume that one
+first), else the lowest-`Priority` `todo` row whose every `Depends on` entry
+is itself `done` **and** that has at least one runnable task (see Phase 2) —
+a `todo` spec with an empty or all-`human` `tasks.md` isn't eligible yet, so
+it can't block a later spec that actually has work. `—` in `Priority` sorts
+last. Once a spec resolves (Phase 2's roll-up reaches `done`, `blocked`, or
+`interrupted`, or its only remaining work is `[human]`), **come back to this
+phase automatically and pick the next eligible spec** — keep going until
+none is eligible, rather than stopping after one. This is the default; the
+user can still tell you to stop at any point (Phase 4). If none is eligible
+when you reach this phase, say so plainly and stop.
 
 The first time you pick a `todo` row this session, write `looping` into its
 `Stage` cell (leave an `in_progress` resume's `Stage` alone — it's already
 `looping`).
 
-## Phase 2 — Pick the next task
+## Cross-provider dispatch (optional, only when the user explicitly asks)
+
+Everything above is your own work, always through your own matched provider
+(Phase 3) — never a different configured one. Separately, **the user can
+explicitly direct a different spec or task to a different configured
+provider, to run alongside your own work** — e.g. "do `007` yourself, send
+`008` to `codex`." When they do:
+
+1. Confirm that provider has a matching entry in `config.workers`; if not,
+   ask before doing anything — never invent one.
+2. Launch it as a subprocess for that spec/task using that entry's `cli`/
+   `args` (same briefing-building and subprocess rules as Phase 3 step 2),
+   as a background process — it runs concurrently with your own Phase 1-4
+   work, not instead of it, and doesn't block it either way.
+3. Keep working your own assigned spec via Phase 1-4 in the meantime.
+4. When the dispatched work completes, apply Phase 3's same result-handling
+   (verify against disk, log, decide outcome, write status) before reporting
+   it, whenever that happens to be relative to your own progress.
+
+This is always explicit and user-initiated — a named spec/task **and** a
+named provider, both from the user. Never start a second stream on your own
+initiative, and never use this to offload your *own* assigned work onto
+another provider just to go faster — that's not what it's for; a suspected
+usage-limit hit on your own work is still Phase 3 step 5's territory (ask
+first, same as always).
+
+## Phase 2 — Pick the next batch of tasks
 
 Read that spec's `planning/specs/<id>-<name>/tasks.md`. Grammar (fixed, never
 reformat a line you're not changing):
@@ -68,8 +105,8 @@ states (`todo` · `in_progress` · `blocked` · `interrupted` · `done`). A task
 line is identified only by starting at column 0.
 
 - Never touch a `[human]` row — report it, skip it, move on.
-- Take the first `[agent]` row whose status is `todo` or `interrupted` —
-  never re-run a `done` row.
+- Consider `[agent]` rows whose status is `todo` or `interrupted` — never
+  re-run a `done` row.
 - If none remain: roll this spec's status up —
   - any `[agent]` task `blocked` → `blocked`
   - else any `[agent]` task `interrupted` → `interrupted`
@@ -83,38 +120,60 @@ line is identified only by starting at column 0.
   row's `Stage` cell** in the same edit — `Stage` tracks which skill a spec
   still needs, and a `done` spec needs none. Leave `Stage` untouched for every
   other status (`blocked`/`interrupted`/`in_progress` all still need `loop`
-  again). Report any still-open `[human]` tasks by name. Then either stop, or
-  go back to Phase 1 for the next eligible spec if the user wants to keep
-  going.
+  again). Report any still-open `[human]` tasks by name, then go back to
+  Phase 1 (it decides whether to continue to another spec or stop).
 
-## Phase 3 — Run one task
+**Otherwise, build a batch to run together**, starting from the first
+runnable row: add the next runnable row to the batch only while it's
+genuinely independent of every task already in the batch — no ordering the
+spec's own `design.md` (its Sequencing section, if it has one) implies
+between them, **and no overlap in the file(s)/section(s) each one's task text
+says it touches** (two tasks editing the same file are not safe to
+parallelize even with no stated logical dependency — they can overwrite each
+other). Stop extending the batch at the first row that fails either check;
+run that row in the next batch instead. **When independence is genuinely
+unclear, don't guess — treat it as not independent** and give it its own
+batch. A batch of one is the normal, expected outcome whenever a spec's
+tasks mostly touch shared files — not a failure to parallelize.
 
-1. Flip the task's row to `in_progress` (edit only the checkbox/status tag,
-   leave the rest of the line untouched).
-2. Pick a worker from `config.workers` — round-robin by task order, unless
-   the user already told you to prefer a specific one this run.
-3. **If your own harness offers a native way to hand off work to a sub-agent
-   and its provider matches the picked worker's, use that — always, before
-   falling back to a CLI subprocess.** This takes priority over shelling out
-   whenever it's available for the matching provider; only fall back to a
-   subprocess when it isn't (a different provider, or a harness with no
-   native mechanism). It runs in-process and gives you a structured result
-   instead of an opaque subprocess. **Live-verified under Claude Code
-   (`024`, 2026-09-12): this mechanism is asynchronous** — you dispatch it
-   and get a completion notification later with the result, not a live
-   stream. That's still "watching it happen" in Phase 3.4's sense (you get
-   and read the real result before deciding the outcome) — just not
-   synchronously. Don't wait for real-time output from a native sub-agent
-   the way you would from a subprocess; wait for its completion signal
-   instead. For any other provider, launch that CLI as a
-   subprocess: `<cli> <args...> "<briefing>"` — the configured `args` first,
-   the whole briefing text last, as one argument (same convention the
-   deleted `worker.ts` used, so an existing `args` entry like `["-p"]` still
-   means what whoever configured it expects). Give the subprocess a bounded
-   timeout (~30 minutes is what the deleted code used) and never feed it
-   anything on stdin — a CLI not told it's headless (missing its
+## Phase 3 — Run the batch
+
+**Pick the worker once per batch, not per task: the `config.workers` entry
+whose `cli` matches this session's own harness/provider** (e.g. `claude`
+under Claude Code, `opencode` under OpenCode, `codex` under Codex CLI) —
+**never round-robin across the other configured entries.** The rest of
+`config.workers` exists for portability (a different session, under a
+different harness, finds its own matching entry in the same file) and for
+the explicit exception in step 5, not for splitting load within one run. If
+no entry matches this session's own provider, say so plainly and ask the
+user how to proceed (add a matching entry, or use an existing one as a
+subprocess anyway) — never silently pick one.
+
+1. Flip every task's row in the batch to `in_progress` (edit only the
+   checkbox/status tag on each line, leave the rest untouched).
+2. **If your own harness offers a native way to hand off work to a sub-agent,
+   use that for every task in the batch, dispatched together so independent
+   ones actually run concurrently** — this is the default and expected path
+   whenever the matched worker is this session's own provider. It runs
+   in-process and gives you a structured result instead of an opaque
+   subprocess. **Live-verified under Claude Code (`024`, 2026-09-12): this
+   mechanism is asynchronous** — you dispatch it and get a completion
+   notification later with the result, not a live stream. That's still
+   "watching it happen" in step 4's sense (you get and read the real result
+   before deciding the outcome) — just not synchronously, and not
+   simultaneously across a batch either: read and act on each completion as
+   its own notification arrives. Don't wait for real-time output the way you
+   would from a subprocess. If this harness has no native sub-agent
+   mechanism at all, launch the matched worker's `cli` as a subprocess
+   instead — still the same provider as the master's own, launched once per
+   task in the batch (background processes, not one at a time) so
+   independent tasks still run concurrently: `<cli> <args...> "<briefing>"`,
+   configured `args` first, the whole briefing text last as one argument
+   (same convention the deleted `worker.ts` used). Give each subprocess a
+   bounded timeout (~30 minutes is what the deleted code used) and never
+   feed it anything on stdin — a CLI not told it's headless (missing its
    non-interactive flag in `args`) will otherwise hang waiting for input
-   until that timeout kills it. Either way, build the same briefing:
+   until that timeout kills it. Either way, build each task's own briefing:
    - Name the repo's working directory and the task: `Task <id> of spec
      <specId>-<specName>: <task text>`.
    - Tell it to read `planning/specs/<specId>-<specName>/requirements.md` and
@@ -125,35 +184,42 @@ line is identified only by starting at column 0.
      read a file that isn't there.
    - If `config.language` is set, tell it to write all user-facing text,
      comments, and commit/PR messages in that language.
-   - Tell it to do only this task, not start the next one, and not to touch
+   - Tell it to do only this one task, not start any other, and not to touch
      the `[owner]`/`[status:...]` tags in `tasks.md` itself — you own those.
-4. Read the result — live, streamed output for a CLI subprocess; a
-   completion notification for a native sub-agent (see step 3). Decide **with
-   your own judgement** whether it succeeded, genuinely failed, or looks like
-   it hit a usage/rate limit — there is no fixed pattern-match for this on
-   purpose. Read what the worker actually said, the same way you'd read any
-   other tool output.
-5. Write a record to `<logDir>/<specId>-<taskId>.log` (create the directory
-   if needed), even though you already read the result — it's the audit
-   trail for anyone reading this later.
-6. Decide the outcome:
-   - **Succeeded** → flip the row to `done`, with a short note.
+3. For each task's result as it arrives — live, streamed output for a CLI
+   subprocess; a completion notification for a native sub-agent (see step
+   2) — decide **with your own judgement** whether it succeeded, genuinely
+   failed, or looks like it hit a usage/rate limit — there is no fixed
+   pattern-match for this on purpose. Read what the worker actually said,
+   the same way you'd read any other tool output, and **verify the actual
+   change against the file(s) on disk before trusting the worker's own
+   report of what it did.**
+4. Write a record to `<logDir>/<specId>-<taskId>.log` per task (create the
+   directory if needed), even though you already read the result — it's the
+   audit trail for anyone reading this later.
+5. Decide each task's outcome independently — one task's outcome never
+   blocks writing another's:
+   - **Succeeded** → flip that row to `done`, with a short note.
    - **Genuinely failed** (not quota-related) → flip to `blocked`, with a
      note naming what actually went wrong.
    - **Looks like a usage/rate limit** → **stop and ask the user, in this
-     chat**, which configured worker to retry with, or whether to add a new
-     one. Never guess, never silently retry the same exhausted worker, never
-     switch providers on your own initiative. Once told, retry this task with
-     the chosen worker, and keep using it for subsequent tasks too until told
-     otherwise.
-7. Go back to Phase 2 for the next task.
+     chat**, what to do — retry, wait, or (only if the user explicitly
+     directs it) run this one task through a different configured provider's
+     CLI as a one-off exception. Never guess, never silently retry the same
+     exhausted worker, and never switch away from the master's own provider
+     on your own initiative even here. Once told, follow that instruction for
+     this task and say whether it applies going forward too.
+6. Once every task in the batch has resolved, go back to Phase 2 for the
+   next batch.
 
 ## Phase 4 — Stopping
 
 The user can just tell you to stop mid-run — a plain message in this same
 conversation, no separate stop-flag file needed, you're not a detached
-process. When you stop, report what's left undone (in progress, blocked, or
-still todo) so nothing is silently dropped.
+process. Flip every task still `in_progress` at that moment to `interrupted`
+in its `tasks.md` — with batching, that can be more than one task at once,
+not just a single in-flight row. Report what's left undone (interrupted,
+blocked, or still todo) so nothing is silently dropped.
 
 ## Style rules
 

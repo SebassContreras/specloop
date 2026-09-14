@@ -258,8 +258,10 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
   "language": "<BCP 47 / ISO 639-1 two-letter code from the tone dimension, e.g. \"es\", \"pt\" — omit the field entirely if English>"
 }
 ```
-One entry per worker CLI the user named — more than one round-robins across them by
-task order. `language` comes from Phase 5's `tone` dimension ("what tone... and in
+One entry per worker CLI the user named — more than one is for portability across
+whichever harness ends up running `specloop:loop` (it always picks the entry
+matching its own session, never splits work across the rest). `language` comes
+from Phase 5's `tone` dimension ("what tone... and in
 which language?") — write it here too, not just into `AGENTS.md`'s "Style" section, so
 `skills/loop` can put it directly in every task's prompt (`014` T10). Omit the field
 (don't write `"en"`) when the project is English-only. **Always the lowercase two-letter

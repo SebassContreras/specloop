@@ -49,22 +49,27 @@ whose answer won't be exercised yet.
 
 Ask, one at a time, waiting for each reply:
 
-1. **Worker CLI** — "Which CLI should sub-agents run as? (`claude`, `codex`,
-   `opencode`, or another command on PATH — one, or several to split work
-   across)" → `workers`, an array of `{ "cli": "...", "args": [...] }`. With
-   more than one, the loop round-robins across them by task order, and can
-   ask the user, mid-run, to switch to a different one if one looks like it
-   hit a usage/rate limit. The worker always runs headlessly (no TTY, stdin
+1. **Worker CLI** — "Which CLI(s) might ever run this loop — `claude`,
+   `codex`, `opencode`, or another command on PATH? List every one you might
+   use, even from a different machine or harness later — the loop always
+   picks whichever entry matches the session actually running it, never
+   splits work across the others." → `workers`, an array of `{ "cli": "...",
+   "args": [...] }`. More than one entry is for portability (a different
+   session, under a different harness, finds its own matching entry) and as
+   an explicit fallback list the loop can ask the user, mid-run, to switch
+   into if the matched one looks like it hit a usage/rate limit — never a
+   round-robin split within one run. The worker always runs headlessly (no
+   TTY, stdin
    closed) — a CLI invoked without its non-interactive flag will hang. **Never
    ask the user for a known CLI's headless flag — it's a fixed fact of that
    CLI, not a preference.** Use this map: `claude` → `-p`, `codex` → `exec`,
    `opencode` → `run`. Only ask "what's its headless/non-interactive flag?"
-   for a CLI not in that map. Mention this once, plainly: if a configured
-   worker's provider ever matches the harness actually running
-   `specloop:loop`, that harness's own native sub-agent mechanism is used
-   for that task instead of this CLI — the `args` given here still matter
-   for every other case (a different provider, or a harness with no native
-   mechanism), just not always.
+   for a CLI not in that map. Mention this once, plainly: `specloop:loop`
+   always uses whichever entry's provider matches the session running it,
+   and prefers that harness's own native sub-agent mechanism over this CLI
+   when one's available — the `args` given here matter when the harness has
+   no native mechanism, or when the user explicitly asks to fall back to a
+   different configured provider (e.g. on a suspected usage limit).
 2. Default `logDir` to `.specloop/logs` unless the user wants something else.
 3. **Context files** — confirm `contextFiles` lists the files a worker must
    read before working (default `["AGENTS.md", "planning/architecture.md", "planning/styles.md"]`;
