@@ -4,29 +4,29 @@ Index of every spec — status, dependencies, pipeline stage, and priority. Read
 table first; nothing else in this repo should be needed to get oriented on "where are
 we, what's next."
 
-| ID  | Plan                      | Status      | Depends on         | Stage        | Priority |
-| --- | ------------------------- | ----------- | ------------------ | ------------ | -------- |
-| 001 | scaffold-and-spec-skill   | done        | —                  | —            | 1        |
-| 002 | loop-orchestrator         | done        | 001, 003           | —            | —        |
-| 003 | task-breakdown-skill      | done        | 001, 004           | —            | —        |
-| 004 | design-closing-skill      | done        | 001                | —            | —        |
-| 005 | open-source-release       | done        | 001                | —            | —        |
-| 006 | e2e-smoke-testing         | done        | 001, 002, 003, 004 | —            | 7        |
-| 009 | status-dashboard-skill    | done        | 001                | —            | 10       |
-| 012 | spec-amend-skill          | todo        | 001, 003, 004      | requirements | 13       |
-| 014 | worker-context-injection  | done        | 002                | —            | 2        |
-| 015 | roadmap-status-writer     | done        | 002                | —            | 3        |
-| 016 | interview-engine          | done        | 001                | —            | 4        |
-| 017 | project-type-genericity   | done        | 001, 016           | —            | 5        |
-| 018 | project-style-preferences | done        | 014, 016           | —            | 6        |
-| 019 | public-showcase           | done        | 001, 005           | —            | —        |
-| 020 | checklist-task-format     | done        | 002, 003           | —            | 15       |
-| 022 | cross-agent-skill-compat  | done        | 001                | —            | 17       |
-| 023 | fix-log                   | done        | —                  | —            | 18       |
-| 024 | loop-skill-verification   | done        | 002                | —            | 8        |
-| 025 | master-handoff            | todo        | 002                | requirements | —        |
-| 026 | dashboard-visual-enhancements | done    | 009                | —       | 11            |
-| 027 | fix-log-skill-and-status  | done        | 023, 009           | —            | 19       |
+| ID  | Plan                          | Status      | Depends on         | Stage        | Priority |
+| --- | ----------------------------- | ----------- | ------------------ | ------------ | -------- |
+| 001 | scaffold-and-spec-skill       | done        | —                  | —            | 1        |
+| 002 | loop-orchestrator             | done        | 001, 003           | —            | —        |
+| 003 | task-breakdown-skill          | done        | 001, 004           | —            | —        |
+| 004 | design-closing-skill          | done        | 001                | —            | —        |
+| 005 | open-source-release           | done        | 001                | —            | —        |
+| 006 | e2e-smoke-testing             | done        | 001, 002, 003, 004 | —            | 7        |
+| 009 | status-dashboard-skill        | done        | 001                | —            | 10       |
+| 012 | spec-amend-skill              | todo        | 001, 003, 004      | requirements | 13       |
+| 014 | worker-context-injection      | done        | 002                | —            | 2        |
+| 015 | roadmap-status-writer         | done        | 002                | —            | 3        |
+| 016 | interview-engine              | done        | 001                | —            | 4        |
+| 017 | project-type-genericity       | done        | 001, 016           | —            | 5        |
+| 018 | project-style-preferences     | done        | 014, 016           | —            | 6        |
+| 019 | public-showcase               | in_progress | 001, 005           | —            | —        |
+| 020 | checklist-task-format         | done        | 002, 003           | —            | 15       |
+| 022 | cross-agent-skill-compat      | done        | 001                | —            | 17       |
+| 023 | fix-log                       | done        | —                  | —            | 18       |
+| 024 | loop-skill-verification       | done        | 002                | —            | 8        |
+| 025 | master-handoff                | todo        | 002                | requirements | —        |
+| 026 | dashboard-visual-enhancements | done        | 009                | —            | 11       |
+| 027 | fix-log-skill-and-status      | done        | 023, 009           | —            | 19       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`
