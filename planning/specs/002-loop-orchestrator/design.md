@@ -62,7 +62,11 @@ Written by `specloop:loop-setup`'s guided Q&A, not hand-authored:
   array — `skills/loop`'s Phase 0 says so directly, since there's no load-time
   normalization code left to do it silently. `skills/loop-setup` writes the
   `workers` array form going forward.
-- `logDir` — where `skills/loop` writes its per-task log records.
+- `logDir` — where `skills/loop` writes its log records: one file per spec
+  (`<logDir>/<specId>.log`), one section per task appended as it resolves,
+  always written by the master itself — never per-task files (narrowed
+  2026-09-14, after a real session found N files per spec harder to read as
+  one narrative than one file with N sections).
 
 ## Quota exhaustion: judgement, not a regex — history
 

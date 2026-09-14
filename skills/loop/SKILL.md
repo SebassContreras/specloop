@@ -194,9 +194,15 @@ subprocess anyway) — never silently pick one.
    the same way you'd read any other tool output, and **verify the actual
    change against the file(s) on disk before trusting the worker's own
    report of what it did.**
-4. Write a record to `<logDir>/<specId>-<taskId>.log` per task (create the
-   directory if needed), even though you already read the result — it's the
-   audit trail for anyone reading this later.
+4. Append a record for each task to `<logDir>/<specId>.log` — **one log file
+   per spec, not per task** (create the directory, and the file if it
+   doesn't exist yet, adding a header line naming the spec). Each task gets
+   its own dated section within that file, in the order it resolved. Always
+   written by you, the master — never delegate this to a sub-agent, even
+   when a batch ran concurrently, so two tasks finishing near-simultaneously
+   never race on the same append. This is the audit trail for anyone reading
+   later, letting them read one spec's whole run in order rather than
+   piecing it together from separate per-task files.
 5. Decide each task's outcome independently — one task's outcome never
    blocks writing another's:
    - **Succeeded** → flip that row to `done`, with a short note.
