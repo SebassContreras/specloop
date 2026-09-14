@@ -27,6 +27,9 @@ we, what's next."
 | 025 | master-handoff                | todo        | 002                | requirements | —        |
 | 026 | dashboard-visual-enhancements | done        | 009                | —            | 11       |
 | 027 | fix-log-skill-and-status      | done        | 023, 009           | —            | 19       |
+| 028 | clickable-roadmap-ids         | todo        | 001                | requirements | 14       |
+| 029 | spec-worktree-isolation       | todo        | 002                | requirements | —        |
+| 030 | dashboard-build-script        | todo        | 009, 026           | requirements | 16       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`
