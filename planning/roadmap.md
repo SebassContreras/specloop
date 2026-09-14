@@ -25,7 +25,7 @@ we, what's next."
 | 023 | fix-log                   | done        | —                  | —            | 18       |
 | 024 | loop-skill-verification   | done        | 002                | —            | 8        |
 | 025 | master-handoff            | todo        | 002                | requirements | —        |
-| 026 | dashboard-visual-enhancements | todo    | 009                | design_closed | 11      |
+| 026 | dashboard-visual-enhancements | todo    | 009                | tasks_ready | 11        |
 | 027 | fix-log-skill-and-status  | done        | 023, 009           | —            | 19       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
