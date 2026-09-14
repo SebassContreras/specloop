@@ -1,7 +1,24 @@
 {
-  "_comment": "Illustrative only — see examples/README.md. specloop:loop-setup writes the real file to .specloop/loop.config.json in your target repo, from its guided Q&A answers, never hand-authored.",
+  "_comment": "Illustrative only — see examples/README.md. specloop:loop-setup writes the real file to .specloop/loop.config.json in your target repo, from its guided Q&A answers, never hand-authored. Each worker's flag comes from the known-flags map (skills/start/references/question-bank.md's worker-cli row: claude -> -p, codex -> exec, opencode -> run) — never asked for a known CLI, only for one outside that map.",
   "workers": [
-    { "cli": "claude", "args": ["--print"] }
+    {
+      "cli": "claude",
+      "args": [
+        "-p"
+      ]
+    },
+    {
+      "cli": "codex",
+      "args": [
+        "exec"
+      ]
+    },
+    {
+      "cli": "opencode",
+      "args": [
+        "run"
+      ]
+    }
   ],
   "logDir": ".specloop/logs"
 }

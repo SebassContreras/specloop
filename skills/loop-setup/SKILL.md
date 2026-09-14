@@ -55,11 +55,12 @@ Ask, one at a time, waiting for each reply:
    more than one, the loop round-robins across them by task order, and can
    ask the user, mid-run, to switch to a different one if one looks like it
    hit a usage/rate limit. The worker always runs headlessly (no TTY, stdin
-   closed) — a CLI invoked without its non-interactive flag will hang. Ask
-   explicitly for each CLI's flag rather than defaulting to `[]`: for
-   `claude` suggest `-p` (print mode); for another CLI, ask the user what its
-   headless/non-interactive flag is. Mention this once, plainly: if a
-   configured worker's provider ever matches the harness actually running
+   closed) — a CLI invoked without its non-interactive flag will hang. **Never
+   ask the user for a known CLI's headless flag — it's a fixed fact of that
+   CLI, not a preference.** Use this map: `claude` → `-p`, `codex` → `exec`,
+   `opencode` → `run`. Only ask "what's its headless/non-interactive flag?"
+   for a CLI not in that map. Mention this once, plainly: if a configured
+   worker's provider ever matches the harness actually running
    `specloop:loop`, that harness's own native sub-agent mechanism is used
    for that task instead of this CLI — the `args` given here still matter
    for every other case (a different provider, or a harness with no native
@@ -89,8 +90,10 @@ Ask, one at a time, waiting for each reply:
    shape, but write the `workers` array form here going forward. **Never drop an
    existing `"language"` field** when rewriting this file — this skill doesn't ask
    about it (that's `specloop:start`'s Phase 5), it only must not silently erase it.
-2. Verify `.specloop/.gitignore` exists and ignores `logs/` (`specloop:start`
-   writes it) — create it if the repo was scaffolded before that existed.
+2. Verify `.specloop/.gitignore` exists and reads `logs/*` + `!logs/.gitkeep`
+   (`specloop:start` writes it) — create it if the repo was scaffolded before
+   that existed, or fix it if it's the older bare `logs/` line (which also
+   ignores `logs/.gitkeep` itself, defeating it — `planning/fix/006`).
 3. Tell the user setup is done: `specloop:loop`, run in a chat session, is the
    way to actually work the backlog whenever they choose to.
 

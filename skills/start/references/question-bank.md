@@ -93,7 +93,7 @@ an unanticipated project type is interviewed properly rather than forced into B-
 | Dimension | Questions |
 |---|---|
 | `helper-skills` | Given the Phase B answers, name the skills/plugins available in this session (other than specloop) that would help the loop's worker agents here. Ask which, if any, to install. **Never install without explicit confirmation.** If no install mechanism resolves, print manual instructions instead of guessing a command. |
-| `worker-cli` | "Which CLI should the loop's workers run as — `claude`, `codex`, `opencode`, or something else? One, or several to split work across? And what's each one's headless/non-interactive flag?" |
+| `worker-cli` | "Which provider(s) should the loop's workers run as — `claude`, `codex`, `opencode`, or something else? One, or several to split work across?" **Never ask for the headless/non-interactive flag of a known CLI — it's a fixed fact of that CLI, not a preference.** Use this known-flags map and only fall back to asking when the CLI isn't in it: `claude` → `-p`, `codex` → `exec`, `opencode` → `run`. For an unrecognized CLI, ask "what's its headless/non-interactive flag?" Mention plainly: whenever a configured provider matches the harness actually running `specloop:loop`, that harness's own native sub-agent mechanism is used for that task — never a CLI subprocess — so the flag only drives the fallback case (a different provider, or a harness with no native mechanism). |
 | `agent-rules` | "Any rule you want every agent working in this repo to follow, or anything you want them never to do?" |
 
 ## Phase D — Styles & preferences
