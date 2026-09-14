@@ -55,7 +55,8 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - The folder structure scaffolded in the target repo is the same one documented by
   `planning/roadmap.md` in this repo (dogfooding): `CLAUDE.md`, `AGENTS.md`,
   `planning/product.md`, `planning/architecture.md`, `planning/roadmap.md`,
-  `planning/specs/NNN-name/{requirements,design,tasks}.md`.
+  `planning/specs/NNN-name/{requirements,design,tasks}.md`, `planning/styles.md`,
+  and `.specloop/` (`loop.config.json`, `logs/`, `interview.md`).
 - **`AGENTS.md` is the single source of project context; `CLAUDE.md` is a thin
   `@AGENTS.md` import.** They must never carry diverging copies of the same facts.
   This is required by CLI-agnosticism, not a preference: `claude` auto-loads
@@ -166,12 +167,20 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   path is asynchronous (dispatch, then a completion notification), not a live
   stream, which `skills/loop`'s Phase 3/4 account for. See `024`'s `tasks.md` for
   the full observed-result table.
-- **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
-  `test/` holds throwaway repos used to exercise the interview and the skills
-  end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
-  the `interview.md` ledger). Nothing committed — skills, docs, examples, or specs —
-  may assume either exists on origin; references to fixture runs must say they are
-  local-only.
+- **`test/` is local-only and never committed** (gitignored) — it holds throwaway
+  repos used to exercise the interview and the skills end-to-end. Nothing
+  committed — skills, docs, examples, or specs — may assume it exists on origin;
+  references to fixture runs must say they are local-only.
+- **`.specloop/` is committed, except its `logs/` subdirectory.** `loop.config.json`
+  (`workers`/`logDir`/`contextFiles`/`language`) is the project's tracked loop
+  default — a real starting point anyone can see and override locally, not
+  something reinvented per session — and `interview.md` is the resumable
+  interview ledger, both written by `skills/start`. Only `.specloop/logs/`
+  (per-run worker logs) stays untracked, via `.specloop/.gitignore` (written by
+  `skills/start`, not the repo root's). Corrected 2026-09-14: this rule
+  previously claimed the whole folder was gitignored, which never matched what
+  `skills/start` Phase 1 actually scaffolds (`.specloop/.gitignore` containing
+  only `logs/`) — see `planning/handoff.md`.
 - **`planning/dashboard.html` is the one generated artifact that *is* committed**,
   by deliberate exception to the rule above (decided 2026-09-13): it's this repo's
   own real `specloop:status` output, kept as live example/demo material —

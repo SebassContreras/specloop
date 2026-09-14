@@ -172,9 +172,13 @@ Create, only if missing:
 - **`planning/specs/.gitkeep`** — so the directory survives a commit before the first spec.
 - **`.specloop/logs/.gitkeep`** and **`.specloop/.gitignore`**:
   ```gitignore
-  logs/
+  logs/*
+  !logs/.gitkeep
   ```
   Written here rather than in the repo root `.gitignore`, which this skill doesn't own.
+  The `!logs/.gitkeep` exception matters: a bare `logs/` line ignores the
+  `.gitkeep` too, defeating its whole purpose of keeping the empty directory
+  tracked (`planning/fix/006`).
 
 ## Phase 2 — Type & vision Q&A (first run only)
 
