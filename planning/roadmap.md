@@ -13,7 +13,7 @@ we, what's next."
 | 005 | open-source-release           | done        | 001                | —            | —        |
 | 006 | e2e-smoke-testing             | done        | 001, 002, 003, 004 | —            | 7        |
 | 009 | status-dashboard-skill        | done        | 001                | —            | 10       |
-| 012 | spec-amend-skill              | todo        | 001, 003, 004      | requirements | 13       |
+| 012 | spec-amend-skill              | done        | 001, 003, 004      | —            | 13       |
 | 014 | worker-context-injection      | done        | 002                | —            | 2        |
 | 015 | roadmap-status-writer         | done        | 002                | —            | 3        |
 | 016 | interview-engine              | done        | 001                | —            | 4        |

@@ -15,6 +15,29 @@ version is actually tagged.
 > here, since auditing/writing three unrelated historical entries is out of scope
 > for today's changes.
 
+### 012 — spec-amend-skill
+
+`specloop:amend` (`skills/amend/SKILL.md`) — the first supported way to revise a
+spec's `requirements.md` or reopen its closed `design.md` after `task-breakdown`
+has already run. Refuses outright if any task in the spec's `tasks.md` is
+`[status:in_progress]` (points at safe-stop instead), and requires an explicit
+confirm before touching anything — a higher bar than the forward-only skills,
+which only ever write into a stub. A requirements revision re-asks only the
+dimensions the user names, reusing `specloop:start`'s Phase 7 question text by
+reference and rewriting only that section; a design reopen reuses
+`specloop:design-closing`'s Phase 1 five questions the same way and writes
+`requirements` into the spec's roadmap `Stage` cell (only that cell) so
+`design-closing` re-closes it before `task-breakdown`/`loop` touch the spec
+again. Either change flags an already-populated `tasks.md` as possibly stale
+and offers `specloop:task-breakdown` — never auto-triggered. Never auto-invoked
+by another skill or the loop. Live-verified against a throwaway two-spec
+fixture (`test/amend-verify-fixture/`): in_progress refusal, confirm-step
+decline (nothing written), a single-dimension requirements revision (only
+`## Hard constraints` changed, every other section byte-identical), a design
+reopen (`## Sequencing` changed, `Stage` written), and the resulting staleness
+flag on a populated `tasks.md`. No gaps found in `skills/amend/SKILL.md` during
+verification — no fix-forward needed.
+
 ### 026 — dashboard-visual-enhancements
 
 Extends `009`'s dashboard (`skills/status/SKILL.md` + `references/template.html`,

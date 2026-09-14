@@ -31,6 +31,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - **Task-breakdown Skill** (`003`, `skills/task-breakdown/`): run separately per spec
   once its `design.md` is closed, drafts + confirms + writes `tasks.md`, marking each
   task agent-runnable or human-only.
+- **Amend Skill** (`012`, `skills/amend/`): revises an existing spec's
+  `requirements.md` and/or reopens its closed `design.md`, refusing outright if any
+  task is `[status:in_progress]` and requiring an explicit confirm before touching
+  closed content. Reuses `start`'s and `design-closing`'s own Q&A by reference rather
+  than duplicating it, and flags (never auto-fixes) a `tasks.md` gone stale from the
+  change. Deliberately invoked only, never chained from another skill or the loop.
 - **Loop-setup Skill** (`002`, `skills/loop-setup/`): one-time, deliberately-invoked
   Q&A that asks which worker CLI(s) to use and writes `.specloop/loop.config.json`.
   The loop folder's static config already exists from `start`; this step fills in
