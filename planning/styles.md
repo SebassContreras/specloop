@@ -75,6 +75,23 @@ Researched via web search 2026-09-14, not invented (see `.specloop/interview.md`
   imperative subjects with no type prefix.
 - **Scripts**: ESM (`.mjs`), no build step — matches
   `scripts/check-skill-consistency.mjs`, the only script in the repo today.
+- **Markdown headings**: sentence case (capitalize only the first word and
+  proper nouns) — `## Who/what it serves`, not `## Who/What It Serves`.
+  Already this repo's de facto practice; now explicit.
+- **A canonical header, once defined, is never paraphrased.** Downstream
+  tooling (`design-closing`, `task-breakdown`, the parsers in `skills/loop`/
+  `skills/status`) matches literal header text — `## Out of scope`, never
+  `## Scope`/`## Non-goals`. See `planning/architecture.md`'s Fixed rules
+  for the collected canonical header sets.
+- **Each section is one complete, independently retrievable idea** — a
+  reader (human or agent) pulling just that section, without the ones
+  around it, should never be missing context it needed. Researched
+  2026-09-14 (the `llms.txt`/`AGENTS.md` conventions, LLM-context chunking
+  practice): the same shape this repo's canonical requirements/design/tasks
+  templates already follow.
+- **Don't restate what another file already owns.** `planning/roadmap.md`
+  owns `Status`/`Stage`/`Priority`; a spec's own files reference it, never
+  re-derive or duplicate its values in prose.
 
 ## Tone
 

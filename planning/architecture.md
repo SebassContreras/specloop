@@ -222,6 +222,19 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   per-run throwaway state. It will go stale the moment the roadmap changes again;
   re-running `specloop:status` regenerates it. Don't assume a *target* repo's copy
   is committed just because this repo's is — that stays each project's own call.
+- **Every scaffolded file type has exactly one canonical header set**,
+  collected here so it's not only implicit in whichever skill writes it:
+  `requirements.md` → `## What's being built` / `## Who/what it serves` /
+  `## Hard constraints` / `## Acceptance criteria` / `## Out of scope` /
+  `## Dependencies` / `## Owner split` (`skills/start` Phase 7); `design.md`
+  → `## Approach` / `## Deliverables` / `## Sequencing` / `## Open questions
+  / deferred` (`skills/design-closing`); `tasks.md` → the checkbox grammar
+  above (`020`); `planning/fix/NNN-*.md` → `## Scope` / `## Found` /
+  `## Status` / `## Fix` / `## Date` (`skills/fix`). Each skill's own text
+  stays the source of truth for *writing* its file type — this is a lookup
+  index, not a duplicate. See `planning/styles.md`'s Code conventions for
+  the heading-style rules (sentence case, never paraphrase a canonical
+  header, one complete idea per section).
 - **Any machine-read value a skill writes into a scaffolded file uses the
   industry-standard code, never a spelled-out label** (BCP 47 / lowercase ISO
   639-1 for language, e.g. `"es"` not `"Spanish"` — the same standard-body-format
