@@ -196,9 +196,13 @@ in `skills/status/references/template.html`'s header comment:
 - `generatedAt` — the current timestamp, ISO 8601.
 - `specs` — one entry per row read in Phase 0, every spec in
   `planning/roadmap.md`, not just the active one: `id`/`plan`/`status`/
-  `dependsOn`/`stage`/`priority` from that roadmap row, plus `tasks`: every
-  task already parsed from that spec's `tasks.md` in Phase 0, each as
-  `{"id", "owner", "status", "text", "note"}`.
+  `stage`/`priority` from that roadmap row, plus `tasks`: every task already
+  parsed from that spec's `tasks.md` in Phase 0, each as `{"id", "owner",
+  "status", "text", "note"}`.
+- `dependsOn` — that row's `Depends on` cell, parsed into a list of spec ID
+  strings rather than passed through as display text: split on commas, trim
+  each piece, drop anything empty. An empty cell or `—` becomes `[]`. E.g.
+  `"001, 003"` -> `["001", "003"]`; `"—"` -> `[]`.
 - `drift` — Phase 2's flagged list, each as `{"specId", "rule", "message"}`.
 - `fixes` — Phase 4's list, already in the right shape; `[]` if
   `planning/fix/` doesn't exist.

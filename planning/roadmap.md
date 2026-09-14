@@ -19,13 +19,13 @@ we, what's next."
 | 016 | interview-engine          | done        | 001                | —            | 4        |
 | 017 | project-type-genericity   | done        | 001, 016           | —            | 5        |
 | 018 | project-style-preferences | done        | 014, 016           | —            | 6        |
-| 019 | public-showcase           | in_progress | 001, 005           | looping      | —        |
+| 019 | public-showcase           | done        | 001, 005           | —            | —        |
 | 020 | checklist-task-format     | done        | 002, 003           | —            | 15       |
 | 022 | cross-agent-skill-compat  | done        | 001                | —            | 17       |
 | 023 | fix-log                   | done        | —                  | —            | 18       |
 | 024 | loop-skill-verification   | done        | 002                | —            | 8        |
 | 025 | master-handoff            | todo        | 002                | requirements | —        |
-| 026 | dashboard-visual-enhancements | todo    | 009                | tasks_ready | 11        |
+| 026 | dashboard-visual-enhancements | todo    | 009                | looping | 11            |
 | 027 | fix-log-skill-and-status  | done        | 023, 009           | —            | 19       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),

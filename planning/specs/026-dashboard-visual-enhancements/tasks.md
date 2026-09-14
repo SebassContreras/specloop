@@ -3,8 +3,9 @@
 Status legend: `todo` · `in_progress` · `blocked` · `interrupted` · `done`
 Owner: `agent` (loop-runnable) · `human` (skipped by the loop)
 
-- [ ] T001 [agent] [status:todo] `skills/status/SKILL.md` Phase 5.1: change `dependsOn` from a display string to a list of spec IDs (`["001", "003"]`, `[]` if none)
-- [ ] T002 [agent] [status:todo] `skills/status/SKILL.md` Phase 5.1: add `nextEligible` (a boolean per spec), computed using the exact same eligibility rule Phase 1.1 already applies — no separate, possibly-diverging logic
+- [x] T001 [agent] [status:done] `skills/status/SKILL.md` Phase 5.1: change `dependsOn` from a display string to a list of spec IDs (`["001", "003"]`, `[]` if none)
+      └─ dependsOn now parsed from the roadmap's Depends on cell (comma-split, trimmed, empty/— -> []) instead of passed through as display text.
+- [ ] T002 [agent] [status:in_progress] `skills/status/SKILL.md` Phase 5.1: add `nextEligible` (a boolean per spec), computed using the exact same eligibility rule Phase 1.1 already applies — no separate, possibly-diverging logic
 - [ ] T003 [agent] [status:todo] `skills/status/SKILL.md` Phase 5.1: add `counts` per spec (`{todo, in_progress, blocked, interrupted, done}`) and one repo-wide `totals` object
 - [ ] T004 [agent] [status:todo] `skills/status/references/template.html`: update the header comment documenting the JSON shape (`dependsOn` as a list, `nextEligible`, `counts`, `totals`)
 - [ ] T005 [agent] [status:todo] `template.html`: add the KPI strip above the roadmap table (specs by status count, overall % tasks done, drift count)
