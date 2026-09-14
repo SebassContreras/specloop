@@ -44,6 +44,10 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   spec, and any `Stage`/`Status` drift — as a chat summary, and writes a static,
   self-contained `planning/dashboard.html` (regenerated fully each run; no
   server/watcher, by the same no-standalone-process reasoning below).
+- **Fix Skill** (`027`, `skills/fix/`): the only supported way to author a new
+  `planning/fix/` entry — quick-capture, not a guided interview — computes the next
+  `NNN`, asks scope/found/status/fix, writes one `planning/fix/NNN-name.md` entry.
+  Deliberately invoked, never chained from another skill or the loop.
 - **No hooks of its own yet** — defined per target repo, not shipped by the plugin.
 
 ## Fixed rules
@@ -79,10 +83,9 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   documented or checked, not just the file most directly touched.** The interview
   contract, the checklist grammar and similar mechanisms are each described in
   several places at once — a skill's `SKILL.md` instructions, `question-bank.md`,
-  this file's own summary, and a `scripts/check-skill-consistency.mjs` guard. Editing
-  one without the others is exactly how `001`'s Phase E gap (`T033`) happened. When a
+  this file's own summary, and a `scripts/check-skill-consistency.mjs` guard. When a
   spec adds or changes one of these, update every place that names it in the same
-  change.
+  change (`001` T033 is why this rule exists).
 - `roadmap.md` is always an index table (ID | Plan | Status | Depends on | Stage |
   Priority) and **carries no other content** — no prose history, no separate ordering
   list. Without this, an agent dropped into the repo has no idea what's next, and
@@ -92,17 +95,17 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   and `Priority` exist only as those trailing, code-ignored cells. Any rationale
   behind a row's dependencies or ordering belongs in that spec's own
   `requirements.md`/`design.md`, or `planning/handoff.md` for a point-in-time note —
-  never duplicated into the index, which is exactly what went stale before (`015`
-  T015/T019/T020, 2026-09-12).
+  never duplicated into the index. See `015` T015/T019/T020 for what went stale
+  before this rule.
 - **`Stage`** (`requirements` · `design_closed` · `tasks_ready` · `looping`, `—` once
   `done` or never tracked) records which skill a spec needs next. Unlike `Status`, it
   has no single writer: each pipeline skill sets it exactly once, at its own
-  transition, and never touches another spec's row — `specloop:start` on writing a
-  real `requirements.md`, `specloop:design-closing` on closing design,
-  `specloop:task-breakdown` on producing real tasks, `specloop:loop` on starting
-  execution **and again on rolling a spec's `Status` up to `done`, in the same edit,
-  resetting `Stage` to `—`** (found stuck at `looping` after a `done` roll-up during
-  `018`'s live verification, 2026-09-13 — see `planning/fix/002-stage-not-reset-on-done`).
+  transition, and never touches another spec's row — `specloop:start` → `requirements`,
+  `specloop:design-closing` → `design_closed`, `specloop:task-breakdown` →
+  `tasks_ready`, `specloop:loop` → `looping` on starting execution, **and again → `—`
+  when it rolls a spec's `Status` up to `done`, in the same edit**. See
+  `planning/fix/002-stage-not-reset-on-done` for why that last transition is called
+  out explicitly.
 - **`Priority`** is a live, human-edited ordering number — lower runs before higher
   among specs `Depends on` doesn't already order. Edited directly to reorder; no
   separate "build order" text to keep in sync. `—` means the spec predates the
@@ -112,14 +115,13 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   `- [ ] T001 [agent] [status:todo] <task>`, with an optional indented note line
   directly below (`      └─ <note>`) replacing the old `Notes` cell. The checkbox
   reflects `done` vs. not; `[status:...]` carries the other 4 states. A task line is
-  identified only by starting at column 0 — never by counting delimiters across the
-  line, which is what made the old pipe table breakable by an unescaped `|` in a
-  task's own text. `skills/loop/SKILL.md` holds the grammar (no code backs it — the
+  identified only by starting at column 0, never by counting delimiters across the
+  line — see `020`'s requirements for why the old pipe table couldn't make that
+  guarantee. `skills/loop/SKILL.md` holds the grammar (no code backs it — the
   skill's own text is authoritative); a write touches only the checkbox/status/note
-  substrings, leaving the owner tag and description untouched. IDs are
-  zero-padded (`T001`), matching GitHub spec-kit's own convention — chosen
-  deliberately so the format reads as industry-familiar, not a specloop invention,
-  while keeping the owner/status distinction spec-kit has no equivalent for.
+  substrings, leaving the owner tag and description untouched. IDs are zero-padded
+  (`T001`), matching GitHub spec-kit's own convention — industry-familiar, not a
+  specloop invention, while keeping the owner/status distinction spec-kit lacks.
 - **The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment** —
   it's how `skills/loop` builds a spec's directory path (`planning/specs/<id>-<name>/`).
 - **The roadmap's `Status` column has exactly one writer**: `skills/loop`, which
@@ -135,30 +137,21 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   silently gives non-Claude workers no knowledge of the project's stack, conventions or
   styles. Implemented in `skills/loop/SKILL.md`'s Phase 3 (`014`).
 - **No visual terminals, no standalone process at all.** The loop runs entirely
-  inside the chat session running `skills/loop` — it runs every task inline,
-  sequentially, in that same conversation. No detached windows, no split panes,
-  nothing else opened for the user to watch, and no separate script or CLI either.
-  **Reversed 2026-09-11 (split panes) and 2026-09-12 (the standalone CLI
-  itself)**: an earlier design spawned a detached child per task in a live split
-  pane (`windowsTerminal`/`tmux`), confirmed working end-to-end (`006` T012), then
-  dropped by explicit user decision after watching it live. A separate
-  deterministic Node CLI (`framework/orchestrator/`) shipped alongside the
-  interactive skill after that, then was itself retired once the user clarified
-  the loop should only ever run as a chat session — see
-  `002-loop-orchestrator/design.md` and `requirements.md`'s history.
+  inside the chat session running `skills/loop` — every task runs inline,
+  sequentially, in that same conversation. No detached windows, no split panes, no
+  separate script or CLI. Reversed twice (split panes, then the standalone CLI that
+  briefly replaced them) after each was actually built and confirmed working — see
+  `002-loop-orchestrator/design.md`'s own history section for both reversals.
 - **Safe stop**: the user says so, in the same conversation — stop, do not start a
   new task, mark the task in progress as `interrupted` in its `tasks.md`, report
   where it stopped. No stop-flag file or PID registry needed: there's no detached
   process to signal, the conversation itself is what would need to keep going.
 - **Quota-exhaustion handling is judgement, not a regex.** `skills/loop/SKILL.md`
   is the chat session that *is* the master: it reads a worker's output itself,
-  judges success/failure/quota-exhaustion with real judgement (no regex), and
-  asks the user directly in the conversation which configured worker to
-  switch to on a suspected usage/rate-limit hit. A first attempt put a regex
-  heuristic and a blocking prompt into a standalone script, reasoning "the
-  master always holds the terminal" — corrected once it became clear "the
-  master" is meant to be a chat session, not a script; the script itself was
-  later retired entirely. See `002-loop-orchestrator/design.md`.
+  judges success/failure/quota-exhaustion with real judgement (no regex), and asks
+  the user directly which configured worker to switch to on a suspected
+  usage/rate-limit hit. See `002-loop-orchestrator/design.md`'s own history section
+  for the regex-in-a-script attempt this replaced.
 - **A skill's own harness takes priority over a worker CLI of the same
   provider — always, whenever it's available.** `skills/loop`'s Phase 3: when
   the harness running the skill matches a task's configured worker's
@@ -167,15 +160,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   subprocess is the fallback for a *different* provider, or a harness with
   no native mechanism — never the default when the native path is available.
   Phrased generically so it holds under any compatible harness, not
-  Claude-Code-only (matches the Container section's open-format rule). This
-  is true of the loop generally, not just this one rule: the master is any
-  compatible harness's chat session, never Claude specifically.
-  **Live-verified under Claude Code (`024`, 2026-09-12)**: the native path
-  fired correctly for a matching-provider worker, real CLI subprocesses
-  fired correctly for a different one — see that spec's `tasks.md`. Found
-  live: the native path is asynchronous (dispatch, then a completion
-  notification), not a live stream — `skills/loop`'s Phase 3/4 account for
-  this explicitly.
+  Claude-Code-only (matches the Container section's open-format rule); the
+  master is any compatible harness's chat session, never Claude specifically.
+  Live-verified under Claude Code (`024`) — including the finding that the native
+  path is asynchronous (dispatch, then a completion notification), not a live
+  stream, which `skills/loop`'s Phase 3/4 account for. See `024`'s `tasks.md` for
+  the full observed-result table.
 - **`test/` and `.specloop/` are local-only and never committed** (both gitignored).
   `test/` holds throwaway repos used to exercise the interview and the skills
   end-to-end; `.specloop/` holds per-run loop state (`loop.config.json`, `logs/`,
@@ -189,19 +179,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   per-run throwaway state. It will go stale the moment the roadmap changes again;
   re-running `specloop:status` regenerates it. Don't assume a *target* repo's copy
   is committed just because this repo's is — that stays each project's own call.
-- **Any machine-read value a skill writes into a scaffolded file uses the industry-
-  standard code, never a spelled-out label, and every file is UTF-8 without a BOM.**
-  Found inconsistent 2026-09-13 (`018` live verification): one fixture's
-  `loop.config.json` wrote `"language": "Spanish"`, another wrote `"es"` for the same
-  dimension — both pass today because no format was ever specified. Resolved: BCP 47
-  (in practice its ISO 639-1 two-letter subtag for a plain language, e.g. `"es"`,
-  `"pt"` — no region/script subtag unless the project actually needs one), lowercase,
-  matching how `Intl`/most JS tooling already reads a language tag. UTF-8 without BOM
-  follows RFC 8259 (JSON MUST be UTF-8; a leading BOM MUST NOT be added) and applies
-  by extension to every other scaffolded file, not just `.json` ones. See
-  `planning/fix/001-language-field-format`. Applies the next time a skill introduces
-  a new coded field, not just to `language` — a country, currency, or similar code
-  gets its own standard body's format, not a name.
+- **Any machine-read value a skill writes into a scaffolded file uses the
+  industry-standard code, never a spelled-out label** (BCP 47 / lowercase ISO
+  639-1 for language, e.g. `"es"` not `"Spanish"` — the same standard-body-format
+  rule applies to the next coded field a skill introduces, country/currency
+  included), **and every file is UTF-8 without a BOM** (RFC 8259). See
+  `planning/fix/001-language-field-format` for the inconsistency this closed.
 
 ## Resolved
 
@@ -213,11 +196,12 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   `metadata`); whether every target harness tolerates an unrecognized frontmatter key
   is exactly what `022-cross-agent-skill-compat`'s audit needs to confirm, not assumed
   here.
-- **`planning/fix/`** (`023-fix-log`) — a flat, hand-authored log for anything a
-  developer finds wrong after the fact, parallel in spirit to `planning/specs/` but
-  not in shape: one `report.md` per numbered entry (`planning/fix/NNN-name/report.md`),
-  naming the `Scope` (which spec caused it) and what changed — no requirements/design/
-  tasks pipeline, and nothing in the loop/roadmap reads it. See `023`'s design for why.
+- **`planning/fix/`** (`023-fix-log`, entry authoring moved to `specloop:fix` per
+  `027`) — a flat log for anything a developer finds wrong after the fact, parallel
+  in spirit to `planning/specs/` but not in shape: one flat file per numbered entry
+  (`planning/fix/NNN-name.md`), naming the `Scope` (which spec caused it), a
+  `Status` and what changed — no requirements/design/tasks pipeline, and nothing in
+  the loop/roadmap reads it. See `023`'s design for why.
 - The loop has no console command and nothing to install — `specloop:loop` is the
   entire runtime, run inside whichever chat session invokes it. (An earlier
   Node.js/TypeScript CLI, run via `tsx` and linked onto PATH by `loop-setup`,
@@ -263,6 +247,8 @@ Declining something the user asked for requires a dated decision from the user.
 | Formal governance docs beyond `CONTRIBUTING.md`/`SECURITY.md` (code of conduct, CODEOWNERS) | Still a personal project with no active external contributors; revisit only if that changes. |
 | A cross-agent HTTP-based update-notifier embedded in the plugin (checking a remote manifest, prompting on stale installs) | Proportional to a widely-distributed, unknown-install-base product. specloop is installed by one person via `git pull`/`--plugin-dir` — that already *is* the update mechanism. `CHANGELOG.md` covers "what shipped"; nothing more is needed at this scale. |
 | `skills/start` scaffolding `README.md`, `CONTRIBUTING.md`, `LICENSE` or CI config into the target repo | These are project deliverables, not roadmap/loop infrastructure: if a target project needs one, the roadmap decides it as a spec like any other. Note this does **not** extend to `CLAUDE.md`, `AGENTS.md`, `planning/styles.md` or `.specloop/` — those are the context channel the loop's own workers read, so the plugin owns them. |
+| A live visual terminal (split-pane) so the user can watch a sub-agent work in its own window | 2026-09-11. Built (`windowsTerminal.ts`/`tmux.ts`), confirmed working end-to-end (`006` T012), then rejected by the user after watching it live — not worth the complexity for what it bought. See `002-loop-orchestrator/design.md`'s "No split panes" section. |
+| A regex heuristic (over captured CLI output) to detect quota/rate-limit exhaustion, run from a standalone script | 2026-09-11. Reasoned "the master always holds the terminal now" — a hole, since "the master" was never meant to be a plain script. Replaced by a chat session reading a worker's output itself and judging with real judgement. See `002-loop-orchestrator/design.md`'s "Quota exhaustion" section. |
 | A standalone script or CLI (in any language/runtime) as a way to run the loop, deterministic or otherwise | 2026-09-12. Tried as `framework/orchestrator/`'s `loop run`/`loop stop`/`loop status` (Node/TypeScript), shipped alongside `skills/loop`, then retired: the user's actual intent was never "a script is the master," it's "I open a chat, and that chat is the master" — a plain script has no chat to ask a quota-exhaustion question in, and an unattended run has nobody to answer it regardless. `skills/loop` is the only way to run the loop now, under any compatible harness. See `002-loop-orchestrator`. |
 | Adopting GitHub spec-kit's `tasks.md` wholesale (checkbox-only, grouped by user-story phase, no owner concept) | 2026-09-05. Spec-kit has no agent/human distinction and no 5-state status — everything is assumed agent-executable. Adopting it as-is would drop `nextRunnableTask`/`pendingHumanTasks`, the exact mechanism that makes the loop safe to leave unattended. `020-checklist-task-format` borrows the checkbox *convention* (industry-familiar, GitHub-rendered) but keeps the owner/status tags spec-kit doesn't have. |
 | Automatic bidirectional spec-kit `spec.md`/`plan.md` <-> `requirements.md`/`design.md` conversion | 2026-09-05. spec-kit's `spec.md` is organized by P1/P2/P3 user story with no equivalent of specloop's flat requirements + acceptance criteria shape, and spec-kit has no central roadmap/index to map `roadmap.md` onto. A one-off manual translation remains possible if ever needed; no permanent dual-format reader is planned. |

@@ -347,41 +347,11 @@ reliable self-usage signal to the model running inside it.
   changes the substance of the 2026-09-12 retirement, just where it wasn't
   fully carried through yet.
 
----
-
-# Handoff — 2026-09-11 (kept for the split-pane/quota history)
-
-The first ended with `windowsTerminal` confirmed live; the second reverted
-all of that and added a regex-based quota-exhaustion prompt straight into the
-Node CLI. That pass reverted its own regex+prompt and put the interactive
-piece in a new skill instead. All of that history — why three passes, same
-day — is preserved here since it explains traps that still apply.
-
-**Why it took three passes to get to `skills/loop` existing at all**, in
-order, same day (2026-09-11):
-- Pass 1 added `splitMode`/`windowsTerminal.ts`/`tmux.ts` — confirmed working
-  live, then reverted anyway (`002` T023) because the user watched it and
-  didn't want a visual terminal at all, at any cost.
-- Pass 2 (`002` T024) added `quota.ts` (regex heuristic) + a blocking
-  `readline` prompt straight in `cli.ts`, reasoning "the master always holds
-  the terminal now." **That reasoning had a hole**: the user's actual intent
-  was never "a Node script is the master" — it's "I open a chat, and that
-  chat is the master." A plain script has no chat to ask questions in, and an
-  unattended `loop run` (CI) has nobody to answer a prompt regardless of
-  where it's blocking.
-- Pass 3 (`002` T025/T026) reverted T024's regex+readline entirely, and put
-  the interactive piece where it actually belongs — `skills/loop/SKILL.md`.
-  At the time this was framed as "two ways to run the loop, both legitimate."
-  The 2026-09-12 session above corrected that framing: there was only ever
-  supposed to be one.
-
-## Also done 2026-09-11, minor
-
-A general alignment pass after the above: `CLAUDE.md`'s "current state" paragraph
-was stale from *before* that whole session (still said `001` `in_progress`,
-`016`/`017`/`006` unstarted) — rewritten against the actual roadmap. `CHANGELOG.md`'s
-`002` entry still claimed `windowsTerminal`/`tmux` backends ship — corrected in
-place. Fixed one real pre-existing bug unrelated to that day's pivot:
-`loop-setup` still said "the configured `workerCli`" (singular) after the config
-moved to a `workers[]` array a while ago. `scripts/check-skill-consistency.mjs`
-now also loads `skills/loop/SKILL.md` so its own file references get validated.
+The 2026-09-11 history that used to be kept here in full (three passes in one
+day to get to `skills/loop` existing: a live split-pane terminal built,
+confirmed working, then rejected on sight; a regex-based quota heuristic that
+followed, then itself reverted once "the master" was correctly understood as a
+chat session, not a script) is preserved in exactly one place now:
+`002-loop-orchestrator/design.md`'s `## No split panes` and `## Quota
+exhaustion` sections. See `planning/architecture.md`'s Declined table for the
+one-line index entry.
