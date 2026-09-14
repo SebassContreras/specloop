@@ -15,6 +15,24 @@ version is actually tagged.
 > here, since auditing/writing three unrelated historical entries is out of scope
 > for today's changes.
 
+### 026 — dashboard-visual-enhancements
+
+Extends `009`'s dashboard (`skills/status/SKILL.md` + `references/template.html`,
+no new files): overall and per-spec segmented progress bars, richer per-task
+badges (ID/owner/status) plus a per-spec Priority badge, a KPI strip
+(specs-by-status, overall % done, drift count), clickable `dependsOn` badges
+that jump to/highlight the referenced spec's row, a persistent "next eligible"
+row highlight, and client-side text/status filter/search — all self-contained,
+no new dependency. The JSON contract grew accordingly: `dependsOn` is now a
+parsed list of spec-ID strings (was a display string), plus new `nextEligible`
+(boolean) and per-spec/repo-wide `counts`/`totals` fields. Live-verified by
+regenerating `planning/dashboard.html` against this repo's own real data (21
+specs, 213 tasks, 6 fix entries) — all 7 items confirmed present/wired, `009`'s
+original behavior (roadmap table, drill-down, drift banner, fix-log panel,
+theming) unbroken. One style-hard-rule violation was caught, reverted, and
+redone during the build (a worker invented a new color-token family for the
+"next eligible" highlight instead of reusing `--link`).
+
 ### 009 — status-dashboard-skill (partial)
 
 `specloop:status` — read-only, works standalone (no dependency on

@@ -15,12 +15,15 @@
     "specs": [
       {
         "id": "001", "plan": "scaffold-and-spec-skill", "status": "done",
-        "dependsOn": "—", "stage": "—", "priority": "1",
+        "dependsOn": ["003"], "stage": "—", "priority": "1",
+        "nextEligible": false,
+        "counts": {"todo": 0, "in_progress": 0, "blocked": 0, "interrupted": 0, "done": 5},
         "tasks": [
           {"id": "T001", "owner": "agent", "status": "done", "text": "...", "note": "..."}
         ]
       }
     ],
+    "totals": {"todo": 3, "in_progress": 1, "blocked": 0, "interrupted": 0, "done": 42},
     "drift": [
       {"specId": "018", "rule": "...", "message": "..."}
     ],
@@ -30,8 +33,17 @@
   }
 
   Notes for whoever produces that JSON:
-  - "dependsOn" is a single display string, already comma-joined if there were
-    multiple dependencies (or "—" if none).
+  - "dependsOn" is a list of spec-ID strings (e.g. ["001", "003"]), not a
+    joined display string — an empty cell or "—" becomes [].
+  - "nextEligible" is a boolean, true for at most one spec (the active
+    in_progress row, or else the next eligible todo row per skills/loop's own
+    rule), false for every other spec — including every spec when none is
+    eligible.
+  - "counts" is a per-spec object, {"todo", "in_progress", "blocked",
+    "interrupted", "done"}, that spec's own task counts by status.
+  - "totals" is the same shape as "counts" but sits at the top level
+    alongside "generatedAt"/"specs", not nested inside a spec entry — it's
+    the repo-wide sum across every spec.
   - "status" (on a spec or a task) is one of: done / in_progress / blocked /
     interrupted / todo. A fix entry's "status" is a separate enum: open /
     in_progress / resolved / wontfix (or "" if the entry predates this field).
@@ -225,6 +237,15 @@
     padding: 14px clamp(10px, 3vw, 22px) 18px;
   }
 
+  .detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
   .toggle-caret {
     display: inline-block;
     width: 1em;
@@ -250,6 +271,7 @@
   .badge-blocked { background: var(--status-blocked-bg); color: var(--status-blocked-fg); }
   .badge-interrupted { background: var(--status-interrupted-bg); color: var(--status-interrupted-fg); }
   .badge-todo { background: var(--status-todo-bg); color: var(--status-todo-fg); }
+  .badge-neutral { background: var(--surface-alt); color: var(--text-muted); border: 1px solid var(--border); }
 
   table.task-table {
     background: transparent;
@@ -301,6 +323,159 @@
     font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     font-size: 0.9em;
   }
+
+  .kpi-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .kpi-card {
+    flex: 1 1 180px;
+    min-width: 0;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .kpi-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .kpi-label {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .kpi-status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .kpi-status-badge {
+    font-weight: 600;
+  }
+
+  .progress-bar-wrap {
+    margin-top: 16px;
+  }
+
+  .progress-bar-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--status-done-fg);
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+
+  .spec-progress-wrap {
+    min-width: 110px;
+  }
+
+  .spec-progress-track {
+    display: flex;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .spec-progress-segment {
+    height: 100%;
+  }
+
+  .spec-progress-text {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .depends-on-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .badge-dependency {
+    cursor: pointer;
+  }
+
+  .badge-dependency:hover {
+    opacity: 0.75;
+  }
+
+  tr.next-eligible td:first-child {
+    border-left: 3px solid var(--link);
+  }
+
+  .roadmap-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .roadmap-filter-input,
+  .roadmap-filter-select {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+  }
+
+  .roadmap-filter-input {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  .roadmap-filter-input:focus,
+  .roadmap-filter-select:focus {
+    outline: 2px solid var(--link);
+    outline-offset: 1px;
+  }
+
+  tr.filtered-out {
+    display: none;
+  }
+
+  @keyframes row-highlight-pulse {
+    0% { background-color: var(--status-in_progress-bg); }
+    100% { background-color: transparent; }
+  }
+
+  tr.row-highlight {
+    animation: row-highlight-pulse 1.6s ease-out;
+  }
 </style>
 </head>
 <body>
@@ -316,8 +491,33 @@
     <ul id="drift-list"></ul>
   </section>
 
+  <section class="panel" id="kpi-section">
+    <h2>Overview</h2>
+    <div class="kpi-strip" id="kpi-strip"></div>
+    <div class="progress-bar-wrap" id="overall-progress-wrap">
+      <div class="progress-bar-label">
+        <span>Overall progress</span>
+        <span id="overall-progress-text"></span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="overall-progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
   <section class="panel" id="roadmap-section">
     <h2>Roadmap</h2>
+    <div class="roadmap-filters">
+      <input type="text" id="roadmap-search" class="roadmap-filter-input" placeholder="Filter by ID or plan…" aria-label="Filter roadmap by ID or plan">
+      <select id="roadmap-status-filter" class="roadmap-filter-select" aria-label="Filter roadmap by status">
+        <option value="">All statuses</option>
+        <option value="todo">todo</option>
+        <option value="in_progress">in_progress</option>
+        <option value="blocked">blocked</option>
+        <option value="interrupted">interrupted</option>
+        <option value="done">done</option>
+      </select>
+    </div>
     <table id="roadmap-table">
       <thead>
         <tr>
@@ -325,6 +525,7 @@
           <th>ID</th>
           <th>Plan</th>
           <th>Status</th>
+          <th>Progress</th>
           <th>Depends on</th>
           <th>Stage</th>
           <th>Priority</th>
@@ -358,6 +559,13 @@
     var span = document.createElement("span");
     span.className = "badge badge-" + key;
     span.textContent = status || "todo";
+    return span;
+  }
+
+  function neutralBadge(value) {
+    var span = document.createElement("span");
+    span.className = "badge badge-neutral";
+    span.textContent = value == null ? "" : value;
     return span;
   }
 
@@ -405,8 +613,8 @@
     var tbody = document.createElement("tbody");
     tasks.forEach(function (task) {
       var row = document.createElement("tr");
-      row.appendChild(cell(task.id || ""));
-      row.appendChild(cell(task.owner || ""));
+      row.appendChild(cell(neutralBadge(task.id || "")));
+      row.appendChild(cell(neutralBadge(task.owner || "")));
       row.appendChild(cell(statusBadge(task.status)));
 
       var textCell = document.createElement("td");
@@ -423,6 +631,71 @@
     return wrap;
   }
 
+  function buildSpecProgressBar(counts) {
+    var wrap = document.createElement("div");
+    wrap.className = "spec-progress-wrap";
+
+    var track = document.createElement("div");
+    track.className = "spec-progress-track";
+
+    var c = counts || {};
+    var order = ["done", "in_progress", "blocked", "interrupted", "todo"];
+    var total = order.reduce(function (sum, key) { return sum + (c[key] || 0); }, 0);
+
+    if (total > 0) {
+      order.forEach(function (key) {
+        var n = c[key] || 0;
+        if (n === 0) return;
+        var seg = document.createElement("div");
+        seg.className = "spec-progress-segment";
+        seg.style.flexGrow = n;
+        seg.style.background = "var(--status-" + key + "-fg)";
+        seg.title = STATUS_LABELS[key] + ": " + n;
+        track.appendChild(seg);
+      });
+    }
+
+    wrap.appendChild(track);
+    wrap.appendChild(text(
+      "div",
+      total === 0 ? "No tasks" : (c.done || 0) + " / " + total + " done",
+      "spec-progress-text"
+    ));
+
+    return wrap;
+  }
+
+  function jumpToSpecRow(specId) {
+    var target = document.getElementById("spec-row-" + specId);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.classList.remove("row-highlight");
+    void target.offsetWidth; // restart the animation if it's already mid-run
+    target.classList.add("row-highlight");
+    target.addEventListener("animationend", function handler() {
+      target.classList.remove("row-highlight");
+      target.removeEventListener("animationend", handler);
+    });
+  }
+
+  function buildDependsOnCell(dependsOn) {
+    if (!dependsOn || dependsOn.length === 0) {
+      return document.createTextNode("—");
+    }
+    var wrap = document.createElement("div");
+    wrap.className = "depends-on-list";
+    dependsOn.forEach(function (depId) {
+      var badge = neutralBadge(depId);
+      badge.classList.add("badge-dependency");
+      badge.addEventListener("click", function (event) {
+        event.stopPropagation();
+        jumpToSpecRow(depId);
+      });
+      wrap.appendChild(badge);
+    });
+    return wrap;
+  }
+
   function renderRoadmap(specs) {
     var tbody = document.getElementById("roadmap-body");
     tbody.innerHTML = "";
@@ -430,7 +703,7 @@
     if (!specs || specs.length === 0) {
       var row = document.createElement("tr");
       var td = document.createElement("td");
-      td.colSpan = 7;
+      td.colSpan = 8;
       td.appendChild(text("div", "No specs found in planning/roadmap.md.", "empty-state"));
       row.appendChild(td);
       tbody.appendChild(row);
@@ -439,16 +712,28 @@
 
     specs.forEach(function (spec) {
       var mainRow = document.createElement("tr");
-      mainRow.className = "spec-row";
+      mainRow.className = "spec-row" + (spec.nextEligible ? " next-eligible" : "");
+      mainRow.id = "spec-row-" + (spec.id || "");
+      mainRow.dataset.specId = (spec.id || "").toLowerCase();
+      mainRow.dataset.specPlan = (spec.plan || "").toLowerCase();
+      mainRow.dataset.specStatus = spec.status || "";
 
       var caretCell = document.createElement("td");
       caretCell.appendChild(text("span", "▸", "toggle-caret"));
       mainRow.appendChild(caretCell);
 
-      mainRow.appendChild(cell(spec.id || ""));
+      var idCell = document.createElement("td");
+      idCell.appendChild(document.createTextNode(spec.id || ""));
+      if (spec.nextEligible) {
+        var nextUpBadge = neutralBadge("Next up");
+        nextUpBadge.style.marginLeft = "6px";
+        idCell.appendChild(nextUpBadge);
+      }
+      mainRow.appendChild(idCell);
       mainRow.appendChild(cell(spec.plan || ""));
       mainRow.appendChild(cell(statusBadge(spec.status)));
-      mainRow.appendChild(cell(spec.dependsOn || "—"));
+      mainRow.appendChild(cell(buildSpecProgressBar(spec.counts)));
+      mainRow.appendChild(cell(buildDependsOnCell(spec.dependsOn)));
       mainRow.appendChild(cell(spec.stage || "—"));
       mainRow.appendChild(cell(spec.priority || "—"));
 
@@ -456,9 +741,14 @@
       detailRow.className = "detail-row";
       detailRow.hidden = true;
       var detailCell = document.createElement("td");
-      detailCell.colSpan = 7;
+      detailCell.colSpan = 8;
       var panel = document.createElement("div");
       panel.className = "detail-panel";
+      var meta = document.createElement("div");
+      meta.className = "detail-meta";
+      meta.appendChild(text("span", "Priority:"));
+      meta.appendChild(neutralBadge(spec.priority || "—"));
+      panel.appendChild(meta);
       panel.appendChild(buildTaskTable(spec.tasks));
       detailCell.appendChild(panel);
       detailRow.appendChild(detailCell);
@@ -470,6 +760,54 @@
       tbody.appendChild(mainRow);
       tbody.appendChild(detailRow);
     });
+
+    var emptyRow = document.createElement("tr");
+    emptyRow.id = "roadmap-filter-empty";
+    emptyRow.hidden = true;
+    var emptyTd = document.createElement("td");
+    emptyTd.colSpan = 8;
+    emptyTd.appendChild(text("div", "No specs match the current filter.", "empty-state"));
+    emptyRow.appendChild(emptyTd);
+    tbody.appendChild(emptyRow);
+  }
+
+  function filterRoadmap() {
+    var searchInput = document.getElementById("roadmap-search");
+    var statusSelect = document.getElementById("roadmap-status-filter");
+    var tbody = document.getElementById("roadmap-body");
+    if (!tbody) return;
+
+    var query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+    var statusFilter = statusSelect ? statusSelect.value : "";
+    var rows = tbody.querySelectorAll("tr.spec-row");
+    var anyVisible = false;
+
+    rows.forEach(function (mainRow) {
+      var detailRow = mainRow.nextElementSibling;
+      var matchesQuery = !query ||
+        (mainRow.dataset.specId || "").indexOf(query) !== -1 ||
+        (mainRow.dataset.specPlan || "").indexOf(query) !== -1;
+      var matchesStatus = !statusFilter || mainRow.dataset.specStatus === statusFilter;
+      var visible = matchesQuery && matchesStatus;
+
+      mainRow.classList.toggle("filtered-out", !visible);
+      if (detailRow && detailRow.classList.contains("detail-row")) {
+        detailRow.classList.toggle("filtered-out", !visible);
+      }
+      if (visible) anyVisible = true;
+    });
+
+    var emptyRow = document.getElementById("roadmap-filter-empty");
+    if (emptyRow) {
+      emptyRow.hidden = anyVisible || rows.length === 0;
+    }
+  }
+
+  function initRoadmapFilters() {
+    var searchInput = document.getElementById("roadmap-search");
+    var statusSelect = document.getElementById("roadmap-status-filter");
+    if (searchInput) searchInput.addEventListener("input", filterRoadmap);
+    if (statusSelect) statusSelect.addEventListener("change", filterRoadmap);
   }
 
   function renderDrift(drift) {
@@ -574,6 +912,76 @@
     container.appendChild(table);
   }
 
+  function specStatusCounts(specs) {
+    var counts = { todo: 0, in_progress: 0, blocked: 0, interrupted: 0, done: 0 };
+    (specs || []).forEach(function (spec) {
+      var key = counts.hasOwnProperty(spec.status) ? spec.status : "todo";
+      counts[key] += 1;
+    });
+    return counts;
+  }
+
+  function taskCompletionPercent(totals) {
+    if (!totals) return null;
+    var sum = (totals.todo || 0) + (totals.in_progress || 0) + (totals.blocked || 0) +
+      (totals.interrupted || 0) + (totals.done || 0);
+    if (sum === 0) return null;
+    return Math.round(((totals.done || 0) / sum) * 100);
+  }
+
+  function buildKpiValueCard(label, value) {
+    var card = document.createElement("div");
+    card.className = "kpi-card";
+    card.appendChild(text("div", value, "kpi-value"));
+    card.appendChild(text("div", label, "kpi-label"));
+    return card;
+  }
+
+  function buildKpiStatusCard(counts) {
+    var card = document.createElement("div");
+    card.className = "kpi-card";
+    card.appendChild(text("div", "Specs by status", "kpi-label"));
+    var row = document.createElement("div");
+    row.className = "kpi-status-row";
+    ["done", "in_progress", "blocked", "interrupted", "todo"].forEach(function (key) {
+      var badge = document.createElement("span");
+      badge.className = "badge badge-" + key + " kpi-status-badge";
+      badge.textContent = STATUS_LABELS[key] + " " + (counts[key] || 0);
+      row.appendChild(badge);
+    });
+    card.appendChild(row);
+    return card;
+  }
+
+  function renderKpiStrip(data) {
+    var container = document.getElementById("kpi-strip");
+    if (!container) return;
+    container.innerHTML = "";
+
+    container.appendChild(buildKpiStatusCard(specStatusCounts(data.specs)));
+
+    var pct = taskCompletionPercent(data.totals);
+    container.appendChild(buildKpiValueCard("Tasks done", pct === null ? "—" : pct + "%"));
+
+    var driftCount = (data.drift || []).length;
+    container.appendChild(buildKpiValueCard("Drift flags", String(driftCount)));
+  }
+
+  function renderOverallProgress(totals) {
+    var fill = document.getElementById("overall-progress-fill");
+    var label = document.getElementById("overall-progress-text");
+    if (!fill || !label) return;
+
+    var t = totals || {};
+    var done = t.done || 0;
+    var sum = (t.todo || 0) + (t.in_progress || 0) + (t.blocked || 0) +
+      (t.interrupted || 0) + done;
+    var pct = sum === 0 ? 0 : Math.round((done / sum) * 100);
+
+    fill.style.width = pct + "%";
+    label.textContent = done + " / " + sum + " tasks done (" + pct + "%)";
+  }
+
   function renderGeneratedAt(iso) {
     var el = document.getElementById("generated-at");
     if (!iso) {
@@ -595,8 +1003,11 @@
 
     renderGeneratedAt(data.generatedAt);
     renderDrift(data.drift);
+    renderKpiStrip(data);
+    renderOverallProgress(data.totals);
     renderRoadmap(data.specs);
     renderFixLog(data.fixes);
+    initRoadmapFilters();
   }
 
   if (document.readyState === "loading") {

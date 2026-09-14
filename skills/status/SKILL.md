@@ -203,6 +203,23 @@ in `skills/status/references/template.html`'s header comment:
   strings rather than passed through as display text: split on commas, trim
   each piece, drop anything empty. An empty cell or `—` becomes `[]`. E.g.
   `"001, 003"` -> `["001", "003"]`; `"—"` -> `[]`.
+- `nextEligible` — boolean, `true` for at most one spec: the one Phase 1.1's
+  eligibility rule already identifies (the `in_progress` row if one exists,
+  else the lowest-`Priority` `todo` row whose every `Depends on` entry is
+  itself `done` and that has at least one runnable task), `false` for every
+  other spec. Reuse that same computation here rather than re-deriving
+  eligibility a second time — if Phase 1.1 finds nothing eligible, every spec
+  gets `false`.
+- `counts` — per spec, alongside `id`/`plan`/`status`/`stage`/`priority` in
+  that same entry: an object `{"todo", "in_progress", "blocked",
+  "interrupted", "done"}`, that spec's own task counts by status. Reuse
+  Phase 1.2's already-computed per-spec counts — don't recount `tasks.md`
+  again here.
+- `totals` — one object, same shape as each spec's `counts`
+  (`{"todo", "in_progress", "blocked", "interrupted", "done"}`), summed across
+  every spec. Sits at the top level alongside `generatedAt`/`specs`, not
+  nested inside a spec entry. Reuse Phase 1.2's already-computed repo-wide
+  total — don't re-sum here.
 - `drift` — Phase 2's flagged list, each as `{"specId", "rule", "message"}`.
 - `fixes` — Phase 4's list, already in the right shape; `[]` if
   `planning/fix/` doesn't exist.
