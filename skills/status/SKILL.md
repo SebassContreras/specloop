@@ -162,19 +162,24 @@ Check whether `planning/fix/` exists. If it doesn't, the fix-log data is an
 empty list — that's a normal outcome, not an error or a warning, and nothing
 here or later should treat it as one.
 
-If it exists, list its `NNN-name` subfolders and read each one's
-`report.md`, per `planning/fix/README.md`'s convention.
+If it exists, list its `NNN-name.md` files and read each one — every file in that
+folder matches that pattern (`skills/fix/SKILL.md` is the only writer and never
+creates anything else).
 
-From each `report.md`, extract:
+From each file, extract:
 
-- `id` — the `NNN` from the folder name.
-- `name` — the `short-name` from the folder name, the part after `NNN-`.
+- `id` — the `NNN` from the file name.
+- `name` — the `short-name` from the file name, the part after `NNN-` and before
+  `.md`.
 - `scope` — the trimmed body text under that file's `## Scope` header.
 - `found` — the trimmed body text under `## Found`.
+- `status` — the trimmed body text under `## Status` (one of `open`/`in_progress`/
+  `resolved`/`wontfix`; empty string if the entry predates this field — never
+  invent one).
 - `fix` — the trimmed body text under `## Fix`.
 - `date` — the trimmed body text under `## Date`.
 
-Produce one object per entry as `{"id", "name", "scope", "date", "found",
+Produce one object per entry as `{"id", "name", "scope", "status", "date", "found",
 "fix"}` — all string values, same key names `skills/status/references/template.html`'s
 header comment documents for its `fixes[]` array. Order the objects by `id`
 ascending, matching the fix log's own numbering.

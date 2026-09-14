@@ -15,6 +15,10 @@ only ever said "write that status into the matching row," with no mention of `St
 all — a real gap, not a one-off mistake by the harness running it (OpenCode followed the
 skill text exactly as written).
 
+## Status
+
+resolved
+
 ## Fix
 
 `skills/loop/SKILL.md` Phase 2: when the status being written is `done`, also write `—`

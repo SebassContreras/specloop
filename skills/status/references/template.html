@@ -25,15 +25,16 @@
       {"specId": "018", "rule": "...", "message": "..."}
     ],
     "fixes": [
-      {"id": "001", "name": "language-field-format", "scope": "018", "date": "2026-09-13", "found": "...", "fix": "..."}
+      {"id": "001", "name": "language-field-format", "scope": "018", "status": "resolved", "date": "2026-09-13", "found": "...", "fix": "..."}
     ]
   }
 
   Notes for whoever produces that JSON:
   - "dependsOn" is a single display string, already comma-joined if there were
     multiple dependencies (or "—" if none).
-  - "status" is one of: done / in_progress / blocked / interrupted / todo
-    (also used for each task's "status", same five values).
+  - "status" (on a spec or a task) is one of: done / in_progress / blocked /
+    interrupted / todo. A fix entry's "status" is a separate enum: open /
+    in_progress / resolved / wontfix (or "" if the entry predates this field).
   - "note", "message", "found", "fix" may be empty strings — this template
     renders gracefully when they are (it omits the line rather than showing a
     blank one).
@@ -528,7 +529,7 @@
     var table = document.createElement("table");
     var thead = document.createElement("thead");
     var headRow = document.createElement("tr");
-    ["", "ID", "Name", "Scope", "Date"].forEach(function (h) {
+    ["", "ID", "Name", "Scope", "Status", "Date"].forEach(function (h) {
       headRow.appendChild(text("th", h));
     });
     thead.appendChild(headRow);
@@ -547,13 +548,14 @@
       mainRow.appendChild(cell(fix.id || ""));
       mainRow.appendChild(cell(fix.name || ""));
       mainRow.appendChild(cell(fix.scope || "—"));
+      mainRow.appendChild(cell(fix.status || "—"));
       mainRow.appendChild(cell(fix.date || "—"));
 
       var detailRow = document.createElement("tr");
       detailRow.className = "detail-row";
       detailRow.hidden = true;
       var detailCell = document.createElement("td");
-      detailCell.colSpan = 5;
+      detailCell.colSpan = 6;
       var panel = document.createElement("div");
       panel.className = "detail-panel";
       panel.appendChild(buildFixDetail(fix));

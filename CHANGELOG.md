@@ -63,9 +63,22 @@ roadmap-level `in_progress` resume).
 
 `planning/fix/` — a flat, hand-authored log for anything a developer finds wrong
 after the fact, naming which spec (`Scope`) generated it and what changed. Not
-loop-runnable, not roadmap-tracked, no guided skill — deliberately lighter-weight than
-a spec, since a one-paragraph correction doesn't need a requirements/design/tasks
-pipeline. See `planning/fix/README.md`.
+loop-runnable, not roadmap-tracked — deliberately lighter-weight than a spec, since a
+one-paragraph correction doesn't need a requirements/design/tasks pipeline. (Its
+entry shape, and hand-authoring itself, were superseded by `027`, below.)
+
+### 027 — fix-log-skill-and-status
+
+Two changes to `023`'s fix log: entries went from one folder per entry
+(`NNN-name/report.md`) to one flat file (`planning/fix/NNN-name.md`), and every
+entry now carries an explicit `## Status` (`open`/`in_progress`/`resolved`/
+`wontfix`) instead of the implicit `"Not yet fixed"` string inside `## Fix`. Added
+`specloop:fix` (`skills/fix/`) — and made it the *only* supported way to add an
+entry: `planning/fix/README.md` is deleted, hand-authoring is dropped, and the
+template now lives solely inside the skill (matching how a spec file is never
+hand-started either). `skills/status`'s dashboard now reads and shows `status` per
+entry. Still not loop-runnable, still not roadmap-tracked — `023`'s hard constraint
+is unchanged.
 
 ### 020 — checklist-task-format
 

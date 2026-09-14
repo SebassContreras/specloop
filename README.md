@@ -114,8 +114,9 @@ fully each time you ask, never a background process. Works even before
 - [`planning/roadmap.md`](planning/roadmap.md) — index of every spec, status, dependencies.
 - [`planning/specs/`](planning/specs/) — one folder per spec: `requirements.md`,
   `design.md`, `tasks.md`.
-- [`planning/fix/`](planning/fix/) — a flat, hand-authored log of anything found
-  wrong after the fact and its correction. Not loop-runnable, not roadmap-tracked.
+- [`planning/fix/`](planning/fix/) — a flat log of anything found wrong after the
+  fact and its correction, one entry per file, logged via `specloop:fix`
+  (`skills/fix/`). Not loop-runnable, not roadmap-tracked.
 - [`examples/`](examples/) — a worked `requirements.md` → `design.md` →
   `tasks.md` example and a sample `.specloop/loop.config.json`, so you can see
   what a skill's output actually looks like before running one.

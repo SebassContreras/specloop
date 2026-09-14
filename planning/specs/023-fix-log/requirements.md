@@ -1,5 +1,11 @@
 # 023 — fix-log
 
+> **Amended by `027`, 2026-09-14**: authoring moved from hand-written-only to
+> `specloop:fix` as the sole supported path, and entries gained a `## Status`
+> field. The bullets below describing hand-authoring and `planning/fix/README.md`
+> are this spec's original, now-superseded shape — kept for history, not current
+> behavior. See `027` for what's actually true today.
+
 ## What's being built
 
 **Implemented 2026-09-05**, in the same pass it was decided, same as `020`/`015`
@@ -9,7 +15,7 @@ design/tasks pipeline, because a fix report isn't a feature to be built, it's a 
 of something already wrong and (usually) already corrected.
 
 A developer working in a terminal — no guided Q&A skill, no interview — creates
-`planning/fix/NNN-short-name/report.md` by hand whenever they find something a spec
+`planning/fix/NNN-short-name.md` by hand whenever they find something a spec
 got wrong, naming:
 
 - **Scope** — which spec (by ID) generated the defect. `—` if it predates any spec or
@@ -20,7 +26,7 @@ got wrong, naming:
 
 Delivered:
 
-- `planning/fix/README.md` — the convention, the `report.md` template, and the
+- `planning/fix/README.md` — the convention, the entry template, and the
   numbering rule (next `NNN` = highest existing `planning/fix/` entry + 1, independent
   of `planning/specs/`'s own numbering — the two sequences don't share a namespace).
 - `planning/architecture.md`'s Resolved section documents the convention and why it's

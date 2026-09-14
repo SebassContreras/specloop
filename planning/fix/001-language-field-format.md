@@ -15,6 +15,10 @@ wrote `"language": "Spanish"` (spelled-out, English name of the language), while
 just interpolated into a sentence), so neither was ever caught as wrong — they'd just
 read differently to a human or another tool comparing two projects' configs.
 
+## Status
+
+resolved
+
 ## Fix
 
 Researched the industry standard before picking one (not guessed): BCP 47 is the
