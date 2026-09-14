@@ -11,6 +11,13 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
   (`skills/loop/SKILL.md`) — instructions for whatever agent runs it, no
   separate code or package to build.
 
+## Code conventions
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+(`<type>(<scope>): <description>`, imperative mood) from 2026-09-14 onward — see
+[`planning/styles.md`](planning/styles.md#code-conventions) for the full naming/
+comment/commit rules. Existing history predates this and isn't rewritten.
+
 ## Local dev
 
 - `claude plugin validate .` — checks the plugin manifest/skills.

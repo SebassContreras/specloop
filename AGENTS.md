@@ -88,6 +88,36 @@ there. See `planning/architecture.md`'s roadmap Fixed rules; both columns are no
 written/consulted in exactly one place (`skills/loop`), since the deterministic
 `loop run` CLI path that once lagged behind on this no longer exists.
 
+## Style
+
+Technical and direct, English. Terse and structural — no filler, no
+marketing language. Kebab-case naming; minimal why-not-what comments;
+Conventional Commits for commit messages going forward (existing history not
+rewritten). specloop's own product has no UI; the one real visual surface is
+`planning/dashboard.html` (light/dark, semantic status colors, system
+fonts). **Every preference here is a hard rule — no defaults, no
+agent-judgement deviation.** Full detail: `planning/styles.md`.
+
+## Rules for agents
+
+- When creating, auditing, or improving any `skills/*/SKILL.md`, use the
+  `skill-architect` skill (available in-session, no install needed) rather than
+  editing it ad hoc — recorded 2026-09-14, `specloop:start`'s Phase C
+  helper-skills recommendation, revisited on this repo itself.
+- After changing any cross-cutting mechanism or format, sweep the whole repo
+  (grep, not just the file where the change started) before calling it done —
+  fixing only the originating file has twice left another file quietly
+  asserting the old version.
+- Never guess a technical/factual value (a CLI's flag, a field's format) —
+  verify it (search) before writing it into a config or a skill.
+- Before adding a new column, field, or skill, check whether an existing
+  mechanism already covers the same need at a different granularity (e.g.
+  per-task instead of per-spec) — avoid a second source of truth that can
+  drift from the first.
+- Never edit a Fixed rule or a `Declined`-table row in
+  `planning/architecture.md` without the user's explicit go-ahead in the same
+  conversation.
+
 ## Two rules that exist because they were broken once
 
 - **A "Declined" row may not overrule a stated user objective**, and may not cite a
