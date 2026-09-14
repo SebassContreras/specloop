@@ -1,6 +1,6 @@
 # 024 — loop-skill-verification
 
-## Why this exists
+## What's being built
 
 `skills/loop/SKILL.md` and `skills/loop-setup/SKILL.md` were rewritten on
 2026-09-12 when `framework/orchestrator/` (the deterministic `loop run` CLI)
@@ -23,18 +23,34 @@ longer exists. `007` was retired the same day (nothing to unit-test anymore);
 `worker.ts` did, not a substitute for re-verifying the *skill text* that
 replaced it.
 
-## What's being verified
+This spec covers a live run of `specloop:loop-setup` then `specloop:loop`
+against a scratch fixture repo (local-only, under gitignored `test/`, same as
+every other fixture in this repo — see `017`), using a stub worker CLI that
+records whatever prompt it actually receives (same technique `014` T9 used: a
+stub is the better instrument here because it makes the exact prompt text
+assertable, not a real model's variable output). The run confirms the
+rewritten skill text alone — no code to fall back on — correctly drives spec
+selection, `tasks.md` mutation, worker-prompt construction, status rollup,
+config-shape handling, and the failure/interrupt/continuation branches listed
+under "Acceptance criteria" below.
 
-A live run of `specloop:loop-setup` then `specloop:loop` against a scratch
-fixture repo (local-only, under gitignored `test/`, same as every other
-fixture in this repo — see `017`), using a stub worker CLI that records
-whatever prompt it actually receives (same technique `014` T9 used: a stub is
-the better instrument here because it makes the exact prompt text assertable,
-not a real model's variable output).
+## Who/what it serves
 
-Specifically, that the rewritten skill text alone — no code to fall back on —
-correctly:
+Anyone relying on `skills/loop`/`skills/loop-setup` to actually drive a real
+loop run — the rewrite replaced tested code with prose, so this is what
+establishes that the prose is trustworthy in place of the deleted tests.
 
+## Hard constraints
+
+(none stated)
+
+## Acceptance criteria
+
+- A single annotated live-run table (see `design.md`) covers every bullet
+  below, each with a concrete observed result, not just a checkmark.
+- Any behavior that doesn't match the skill's own stated rule is fixed in
+  `skills/loop`/`skills/loop-setup` directly (fix-forward, same as `006`'s
+  own rule), and the fix is re-verified before this spec closes.
 - Picks the right next spec: resumes an `in_progress` row before any `todo`
   one; among eligible `todo` rows, prefers the lower `Priority`; skips a
   `todo` row with no runnable task instead of getting stuck on it; refuses
@@ -83,11 +99,10 @@ correctly:
   `worker.ts` did and stays as-is; this spec's table (see `design.md`) is
   independent, against the current skill text.
 
-## Acceptance criteria
+## Dependencies
 
-- A single annotated live-run table (see `design.md`) covers every bullet
-  under "What's being verified" above, each with a concrete observed result,
-  not just a checkmark.
-- Any behavior that doesn't match the skill's own stated rule is fixed in
-  `skills/loop`/`skills/loop-setup` directly (fix-forward, same as `006`'s
-  own rule), and the fix is re-verified before this spec closes.
+`002` (loop-orchestrator) — per `planning/roadmap.md`'s `024` row.
+
+## Owner split
+
+(none stated)

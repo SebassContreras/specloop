@@ -70,3 +70,12 @@ type gets interviewed properly rather than forced into the software questions.
 - Styles and preferences (`018`), though the visual-surface gate is type-adjacent.
 - Supporting project types by shipping domain templates — the question bank asks, it
   doesn't prescribe a methodology.
+
+## Dependencies
+
+`001`, `016` (per `planning/roadmap.md`'s `017` row) — `016`'s interview engine is
+what this spec's per-project-type branching hooks into (see Out of scope above).
+
+## Owner split
+
+(none stated)

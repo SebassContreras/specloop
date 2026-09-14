@@ -93,3 +93,11 @@ way to tell "the user said no" from "nobody asked".
   owns the engine that consumes them).
 - Style/preference dimensions (`018`).
 - Re-planning an existing roadmap mid-flight (`012-spec-amend-skill`).
+
+## Dependencies
+
+`001` (per `planning/roadmap.md`'s `016` row).
+
+## Owner split
+
+(none stated)

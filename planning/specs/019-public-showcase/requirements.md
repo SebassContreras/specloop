@@ -45,3 +45,13 @@ deciding whether this is worth their time — without having to read through `pl
   whatever `design.md` adds is the target for this pass, not a new toolchain.
 - Marketing copy rewrites of files `specloop:start` owns (`planning/product.md`,
   `planning/architecture.md`) — this spec only touches public-facing presentation.
+
+## Dependencies
+
+`001`, `005` (per `planning/roadmap.md`'s `019` row) — the Hard constraints section
+above notes `005` already made the repo public, which this spec's presentation pass
+assumes.
+
+## Owner split
+
+(none stated)

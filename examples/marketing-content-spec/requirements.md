@@ -35,3 +35,11 @@
 - Paid promotion/ad spend for this launch — organic channels only for this spec.
 - Localization — English-only for the first pass; a later spec covers translated
   markets if the feature does well.
+
+## Dependencies
+
+(none stated)
+
+## Owner split
+
+(none stated)

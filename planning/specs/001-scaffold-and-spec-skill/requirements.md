@@ -1,16 +1,12 @@
 # 001 — scaffold-and-spec-skill
 
-## Requirements
+## What's being built
 
 - The plugin ships one or more Skills that, when invoked inside a target repo, create
   there: `AGENTS.md`, `CLAUDE.md`, `planning/product.md`, `planning/architecture.md`,
   `planning/roadmap.md`, `planning/specs/NNN-name/{requirements,design,tasks}.md` per feature,
   `planning/styles.md` when the project has a visual surface, and the `.specloop/` loop
   folder's static files (`loop.config.json`, `logs/.gitkeep`, `.gitignore`).
-- **`AGENTS.md` is the single source of project context; `CLAUDE.md` is a thin
-  `@AGENTS.md` import.** Required by the orchestrator's CLI-agnostic rule:
-  `codex`/`opencode` auto-load `AGENTS.md`, `claude` auto-loads `CLAUDE.md`, and
-  scaffolding only one makes the plugin Claude-only in its context layer.
 - **Project type first.** The first interview question establishes whether this is
   software (app, service, site), a marketing/content project, an operations/process
   project, a research project, or something else. It is persisted in
@@ -26,22 +22,14 @@
   container/stack.
 - **Skill recommendation**, run *after* the technology Q&A so it keys off the user's
   actual selections rather than a guess from the goal: propose relevant Claude Code
-  skills/plugins other than specloop, ask which to install, **never install without
-  explicit confirmation**, print manual instructions when no install mechanism
-  resolves, and route anything uninstallable to the roadmap so the recommendation
-  isn't lost.
+  skills/plugins other than specloop, ask which to install, print manual instructions
+  when no install mechanism resolves, and route anything uninstallable to the roadmap so
+  the recommendation isn't lost.
 - **Styles & preferences Q&A**, gated on whether the project has a visual surface:
   palette, typography, density/mode, brand references, tone, accessibility — plus
   code conventions and anti-preferences, which apply to every project type. Detail to
   `planning/styles.md`, operative summary to `AGENTS.md`, each with its strength (hard rule
-  vs. overridable default). Never invent a style value.
-- **The interview is exhaustive by contract, not by script.** No Q&A phase terminates
-  on a fixed question count. Each draws from
-  `skills/start/references/question-bank.md`, records every dimension as
-  `covered`/`skipped`/`open` in `.specloop/interview.md`, generates follow-ups for
-  anything named but unspecified, and ends only after a closing sweep returns nothing
-  new twice in a row. A declined dimension is recorded as skipped, with its reason.
-  (Enforcement mechanism is spec `016`.)
+  vs. overridable default).
 - **Roadmap seeding** from the recorded answers — not from inference. Technologies,
   architectures and skills that need setting up before the project's own features
   become ordered spec entries, with an explicit dependency question per item and an
@@ -51,6 +39,33 @@
   (not all at once), in roadmap order, including `## Acceptance criteria`.
 - Single entry point: the user says "I need to set up X" and the plugin runs
   scaffold → type/vision → tech → skills → styles → seeding → spec requirements.
+
+## Who/what it serves
+
+The user starting a brand-new project (or bringing specloop into an existing one)
+who needs the planning scaffold — context files, roadmap, per-spec docs, and the
+loop folder — created and populated through an interview rather than by hand.
+Every later spec and skill in this repo depends on the structure this one
+establishes: `AGENTS.md`/`CLAUDE.md` are the context channel workers read
+(`014`), `planning/roadmap.md`'s row format is what `skills/loop` and
+`skills/status` parse, and `tasks.md`'s `Owner` column is what `002`'s
+`loop-setup` consumes downstream.
+
+## Hard constraints
+
+- **`AGENTS.md` is the single source of project context; `CLAUDE.md` is a thin
+  `@AGENTS.md` import.** Required by the orchestrator's CLI-agnostic rule:
+  `codex`/`opencode` auto-load `AGENTS.md`, `claude` auto-loads `CLAUDE.md`, and
+  scaffolding only one makes the plugin Claude-only in its context layer.
+- **The interview is exhaustive by contract, not by script.** No Q&A phase terminates
+  on a fixed question count. Each draws from
+  `skills/start/references/question-bank.md`, records every dimension as
+  `covered`/`skipped`/`open` in `.specloop/interview.md`, generates follow-ups for
+  anything named but unspecified, and ends only after a closing sweep returns nothing
+  new twice in a row. A declined dimension is recorded as skipped, with its reason.
+  (Enforcement mechanism is spec `016`.)
+- Never install a recommended skill without explicit confirmation.
+- Never invent a style value in the styles Q&A.
 - The target repo's `planning/roadmap.md` is kept as a real index table (ID, plan, status,
   depends on) — not a free-form changelog. The `Plan` cell must be byte-identical to
   its folder's post-`NNN-` segment, since the orchestrator concatenates them into a
@@ -59,6 +74,22 @@
 - Does not run the loop's own worker-CLI Q&A (that's `002`'s `loop-setup`) — but writes the loop
   folder's static config, and leaves `tasks.md` in a format `002` can consume,
   including the `Owner` column.
+
+## Acceptance criteria
+
+- Running the scaffold skill in a target repo produces `AGENTS.md`, `CLAUDE.md`,
+  `planning/product.md`, `planning/architecture.md`, `planning/roadmap.md`, one
+  `planning/specs/NNN-name/{requirements,design,tasks}.md` set per seeded feature,
+  `planning/styles.md` (when the project has a visual surface), and the `.specloop/`
+  static loop files.
+- The interview runs end to end — vision, tech, skill recommendation, styles,
+  roadmap seeding, per-spec requirements — as a single entry point, in that order,
+  without the user having to invoke separate commands per phase.
+- `planning/roadmap.md`'s `Plan` column is byte-identical to each spec folder's
+  post-`NNN-` segment.
+- `006-e2e-smoke-testing` live-verified this pipeline end to end against a real
+  target repo, confirming the scaffold-through-spec-requirements flow actually
+  produces a working `002`-consumable roadmap and task set.
 
 ## Out of scope
 
@@ -78,3 +109,11 @@
   silently changing the user's environment is not.
 - Enforcing the interview contract mechanically (`016`), the per-type question sets
   (`017`), and delivering context to workers (`014`).
+
+## Dependencies
+
+None — foundational spec, predates the `Depends on` convention.
+
+## Owner split
+
+(none stated)

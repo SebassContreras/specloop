@@ -30,7 +30,7 @@ we, what's next."
 | 028 | clickable-roadmap-ids         | todo        | 001                | requirements | 14       |
 | 029 | spec-worktree-isolation       | todo        | 002                | requirements | —        |
 | 030 | dashboard-build-script        | todo        | 009, 026           | requirements | 16       |
-| 031 | markdown-convention-retrofit  | todo        | —                  | requirements | 20       |
+| 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`

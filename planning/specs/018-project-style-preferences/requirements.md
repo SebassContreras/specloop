@@ -62,3 +62,13 @@ anything is rendered.
 - Brand asset generation or storage.
 - Enforcing style conformance in review (a target-repo concern, and adjacent to
   `security-review`-style skills recommended in question-bank Phase C).
+
+## Dependencies
+
+`014`, `016` (per `planning/roadmap.md`'s `018` row) — the "What's being built"
+section above states delivery "depends on `014`" directly; `016` supplies the
+interview engine this spec's Phase D branches from.
+
+## Owner split
+
+(none stated)

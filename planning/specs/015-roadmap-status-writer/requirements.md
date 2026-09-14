@@ -76,3 +76,12 @@ any agent dropped into the repo trying to work out what's next.
 - Multi-spec parallelism (`planning/architecture.md`, "Still to define").
 - The dashboard rendering itself (`009`).
 - Amending/splitting/dropping specs (`012`).
+
+## Dependencies
+
+`002` (per `planning/roadmap.md`'s `015` row) — the loop this spec's `Status`/
+`Stage`/`Priority` writer feeds.
+
+## Owner split
+
+(none stated)

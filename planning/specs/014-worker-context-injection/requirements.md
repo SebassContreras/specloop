@@ -65,3 +65,13 @@ first-class per `planning/architecture.md`'s CLI-agnostic rule, and
 - Per-task context selection or retrieval ranking — the whole `contextFiles` list goes
   to every task.
 - Changing how the worker is spawned, timed out, or logged (that is `002`).
+
+## Dependencies
+
+`002` (per `planning/roadmap.md`'s `014` row) — the loop-orchestrator spec whose
+retirement moved this spec's prompt-building logic into `skills/loop/SKILL.md`
+Phase 3, per the "What's being built" section above.
+
+## Owner split
+
+(none stated)

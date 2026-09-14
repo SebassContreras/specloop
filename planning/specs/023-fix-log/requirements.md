@@ -66,3 +66,12 @@ and without the record being mistaken for a loop-runnable task.
 - Retroactively writing `planning/fix/` entries for defects found and fixed before this
   spec existed (e.g. `002` T13's malformed row, found during `020`'s migration) — the
   folder starts empty; backfilling history isn't the point.
+
+## Dependencies
+
+None — per `planning/roadmap.md`'s `023` row; deliberately disconnected from the
+loop/roadmap machinery other specs plug into (see Hard constraints above).
+
+## Owner split
+
+(none stated)

@@ -82,3 +82,11 @@ it.
 - Building a universal installer/CLI for specloop across every tool — start from
   documentation of what already works, per the audit above, before building tooling
   around it.
+
+## Dependencies
+
+`001` (per `planning/roadmap.md`'s `022` row).
+
+## Owner split
+
+(none stated)

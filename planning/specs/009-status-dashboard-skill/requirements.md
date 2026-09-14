@@ -66,3 +66,11 @@ answer that question.
   reasoning above; would reopen a rule this project has already settled twice.
 - Multi-repo or cross-project dashboards — one target repo per run, same scope as
   every other specloop skill.
+
+## Dependencies
+
+`001` (per `planning/roadmap.md`'s `009` row).
+
+## Owner split
+
+(none stated)

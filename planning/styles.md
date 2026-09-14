@@ -46,7 +46,7 @@ constraint every visual piece of this repo follows):
 One fixed density — a compact roadmap table with an expandable per-spec
 drill-down. No dense/spacious toggle.
 
-## Brand references / Accessibility
+## Brand references / accessibility
 
 Not asked — no external brand to match (specloop is the product, not a
 client's brand), and no accessibility target beyond what the existing

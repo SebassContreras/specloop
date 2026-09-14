@@ -1,4 +1,4 @@
-# Security Policy
+# Security policy
 
 specloop is a personal project shared as-is — no dedicated security team, but
 reports are welcome and taken seriously.

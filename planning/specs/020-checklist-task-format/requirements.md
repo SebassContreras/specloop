@@ -81,3 +81,11 @@ which spec-kit's own format has no room for.
 - Committed regression tests for the new parser — was meant to fold into
   `007-orchestrator-unit-tests` (retired 2026-09-12, same as `015`'s round-trip
   checks); no successor exists, since there's no code left to unit-test.
+
+## Dependencies
+
+`002`, `003` (per `planning/roadmap.md`'s `020` row).
+
+## Owner split
+
+(none stated)
