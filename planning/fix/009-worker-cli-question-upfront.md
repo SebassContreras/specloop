@@ -15,19 +15,20 @@ of what the user declares upfront.
 
 ## Status
 
-open
+wontfix
 
 ## Fix
 
-Not yet fixed. Plan: re-examine whether `worker-cli` needs to be asked at
-all, versus having `skills/loop`/`skills/loop-setup` detect the running
-session's own provider directly and only fall back to asking when detection
-fails or the user explicitly wants a different provider than the one
-running the interview. Needs design review before changing
-`question-bank.md` — the question's current answers also feed
-`.specloop/loop.config.json`'s fallback list (worker-context-injection, see
-`014`), so removing it outright would need a replacement source for that
-list.
+Kept as-is, decided 2026-09-15 (same conversation). Considered moving
+`worker-cli` from an eager upfront question (`start` Phase 4 /
+`loop-setup` Phase 1) to a lazy one asked only the first time
+`specloop:loop` actually needs a fallback CLI (no native sub-agent
+mechanism available, or an explicit provider switch on suspected
+rate-limit) — the question only matters for that fallback path, not the
+native-harness happy path. User decided the friction isn't worth it: having
+the fallback list ready in advance is preferred over saving one question,
+and it's not something that actually bothers them day to day. No change —
+`worker-cli` stays an upfront question in both `start` and `loop-setup`.
 
 ## Date
 
