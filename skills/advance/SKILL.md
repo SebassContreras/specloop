@@ -44,10 +44,21 @@ this batch flow.
 4. For each `Stage: design_closed` spec in the batch, no requirements check applies —
    `specloop:design-closing` already gated it. It only needs the task-breakdown pass
    (Phase 2 below), not another design-closing pass.
-5. The result is an ordered worklist for the rest of this skill to consume: specs
-   needing Phase 1 (design-closing, `Stage: requirements`, passed the stub check) and
-   specs needing Phase 2 only (`Stage: design_closed`). Nothing in this phase writes to
-   disk.
+5. **Reopened-spec check.** For each `Stage: requirements` spec that passed step 3,
+   also check `design.md`: if it's still the `TBD` stub, this spec is genuinely
+   fresh (never designed) — proceed normally. If `design.md` already has real,
+   non-stub content, this spec was previously closed and then reopened (most likely
+   by `specloop:amend`, which resets `Stage` to `requirements` without blanking
+   `design.md`) — **refuse it here** (skip it, report why, keep processing the rest
+   of the batch): silently re-deriving Phase 1's answers from interview/requirements
+   context alone, with no live human comparing them to the existing closed design,
+   risks quietly discarding content `specloop:amend` deliberately preserved. Tell the
+   user to run `specloop:design-closing` directly on that spec instead, where a live
+   session can see and reconcile against the current `design.md`.
+6. The result is an ordered worklist for the rest of this skill to consume: specs
+   needing Phase 1 (design-closing, `Stage: requirements`, passed both the stub and
+   reopened-spec checks) and specs needing Phase 2 only (`Stage: design_closed`).
+   Nothing in this phase writes to disk.
 
 ## Phase 1 — Design-closing pass
 

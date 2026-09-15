@@ -41,15 +41,22 @@ coverage in `.specloop/interview.md`, generates follow-ups on anything named but
 unspecified, and ends only after a closing sweep comes back clean twice. An explicit
 skip is recorded as a skip — never silently dropped. See `planning/architecture.md`.
 
-**Separate, deliberate steps** — run later, per spec, once it's actually ready for
-each one (a repo can sit with several specs at requirements-only for a while; none
-of this is chained automatically after the scaffold trigger):
+**Auto-chained once every spec's requirements are filled** (step 6): a skill closes
+each spec's `design.md`, then breaks it into a populated `tasks.md`, deriving its
+answers from the interview instead of re-asking and asking live only when something
+genuinely can't be inferred — the user reviews a real draft per spec (accept,
+request changes, or defer it for a later pass) rather than typing answers by hand:
 
-7. A guided skill closes a spec's `design.md` once its `requirements.md` is ready,
-   and writes any stack/convention decisions it settles back into
-   `planning/architecture.md` and `AGENTS.md`.
-8. A guided skill breaks a closed `design.md` into a populated `tasks.md`, marking
-   each task as agent-runnable or human-only.
+7. Closes a spec's `design.md`, and writes any stack/convention decisions it
+   settles back into `planning/architecture.md` and `AGENTS.md`. Still directly
+   invocable on its own, per spec, any time.
+8. Breaks a closed `design.md` into a populated `tasks.md`, marking each task as
+   agent-runnable or human-only. Also still directly invocable on its own.
+
+**Separate, deliberate steps** — run later, once actually ready (a repo can sit
+with several specs short of a configured loop for a while; neither of these is
+chained automatically):
+
 9. A guided Q&A asks which worker CLI(s) to use and writes `.specloop/loop.config.json`
    — a one-time step, run once there's at least one spec with agent-runnable tasks.
    The loop folder's *static* files already exist from step 1; this step fills in

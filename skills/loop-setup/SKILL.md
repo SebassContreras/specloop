@@ -103,9 +103,10 @@ Ask, one at a time, waiting for each reply:
    way to actually work the backlog whenever they choose to.
 
 Then report what the loop would actually find: if no spec has agent-runnable tasks
-yet, say so and name the next step (`specloop:design-closing`, then
-`specloop:task-breakdown`, on a named spec). If some specs have only `human` tasks,
-name them — the loop will skip those.
+yet, say so and name the next step (`specloop:advance`, which closes design and
+tasks per spec in one go — or `specloop:design-closing` then
+`specloop:task-breakdown` directly, on a named spec). If some specs have only
+`human` tasks, name them — the loop will skip those.
 
 **Do not invoke `specloop:loop` automatically.**
 

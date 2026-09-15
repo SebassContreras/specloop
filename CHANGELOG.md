@@ -15,6 +15,29 @@ version is actually tagged.
 > here, since auditing/writing three unrelated historical entries is out of scope
 > for today's changes.
 
+### 033 — interview-to-loop-auto-continuation (partial)
+
+`specloop:advance` (`skills/advance/SKILL.md`) — chains `specloop:design-closing`
+then `specloop:task-breakdown` per spec, for every spec still short of
+`tasks_ready`. Derives their Q&A/draft-task answers from what the interview
+already established (`.specloop/interview.md`, `requirements.md`,
+`planning/architecture.md`) instead of re-asking, shows the real draft (design
+or task list) with a yes/changes/defer choice, and asks live only when a
+question genuinely can't be inferred — concrete derivability criteria,
+calibrated against `029` (a real unresolved hard constraint) and `028` (a
+fully-specified spec needing no live question). Re-runnable via the existing
+`Stage` column alone, no new state. `specloop:start`'s Phase 8 now auto-chains
+into it after reporting, instead of only naming `design-closing`/
+`task-breakdown` as manual next steps; `specloop:loop-setup`/`specloop:loop`
+stay untouched, manual, deliberate steps. `design-closing`'s Phase 3 gains a
+one-line exception noting `specloop:advance` is the one caller allowed to
+chain past its stop; `design-closing`/`task-breakdown` themselves are
+otherwise unchanged and still directly invocable. **Partial**: `T013` (a local
+end-to-end test against a real multi-spec fixture) is `[human]` and still
+`todo` — everything `[agent]`-owned is done and the roadmap row is `done` (a
+`[human]` task doesn't hold a spec open), but this entry should be revisited
+once that test actually runs.
+
 ### 012 — spec-amend-skill
 
 `specloop:amend` (`skills/amend/SKILL.md`) — the first supported way to revise a

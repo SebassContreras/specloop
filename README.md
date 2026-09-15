@@ -21,9 +21,8 @@ the first thing the interview establishes, and it branches everything after it.
 
 ```mermaid
 flowchart LR
-    A["/specloop:start"] -->|"AGENTS.md, product.md,<br/>architecture.md, roadmap.md"| B["/specloop:design-closing"]
-    B -->|"design.md"| C["/specloop:task-breakdown"]
-    C -->|"tasks.md"| D["/specloop:loop-setup"]
+    A["/specloop:start"] -->|"auto-chains, once<br/>the interview ends"| ADV["/specloop:advance<br/>(design-closing + task-breakdown,<br/>per spec)"]
+    ADV -->|"tasks.md"| D["/specloop:loop-setup"]
     D -->|".specloop/loop.config.json"| E["/specloop:loop"]
 ```
 
@@ -58,8 +57,10 @@ harnesses this has actually been verified against is tracked in `planning/roadma
 
 ## Quickstart
 
-Run these skills from inside your **target** repo, one at a time, whenever each is
-actually ready — none of them chain automatically:
+Run these skills from inside your **target** repo, whenever each is actually ready.
+Only one link in this chain is automatic — `/specloop:start` chains straight into
+`/specloop:advance` once every seeded spec's requirements are filled; everything
+else is still one at a time, deliberately, never auto-triggered:
 
 1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` +
    `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
@@ -76,20 +77,33 @@ actually ready — none of them chain automatically:
 
    Project deliverables (`README.md`, `CONTRIBUTING.md`, `LICENSE`, CI config) are
    specs the roadmap decides, not files this skill assumes.
-2. **`/specloop:design-closing`** — once a spec's requirements are filled, closes its
-   `design.md` via guided Q&A, and appends any stack/convention decisions it settles
-   to `planning/architecture.md` and `AGENTS.md`.
-3. **`/specloop:task-breakdown`** — once a spec's design is closed, drafts and
-   confirms a `tasks.md` (single-action, verifiable tasks), marking each `agent` or
-   `human` so the loop only attempts what an agent can actually finish. Written as a
-   GFM checkbox list with zero-padded IDs (`- [ ] T001 [agent] [status:todo] ...`) —
-   the same convention GitHub spec-kit uses, so it renders and reads like any other
-   task list, while the `[owner]`/`[status:...]` tags carry the agent/human split and
-   5-state status a plain checkbox can't.
-4. **`/specloop:loop-setup`** — one-time step: asks which worker CLI(s) to use and
+
+   Once every seeded spec's requirements are filled, this chains straight into
+   `/specloop:advance` (below) — no separate invocation needed for that first pass.
+2. **`/specloop:advance`** — auto-chained from step 1, or run directly any time to
+   pick up a spec deferred earlier. For every spec still short of `tasks_ready`, it
+   closes `design.md` then `tasks.md` in turn, deriving its answers from what the
+   interview already established rather than re-asking, showing you the real draft
+   for a yes/changes/defer, and asking live only when something genuinely can't be
+   inferred. Internally this is `/specloop:design-closing` then `/specloop:task-breakdown`
+   (below) — same logic, not a rewrite — just chained per spec instead of run by
+   hand each time.
+3. **`/specloop:design-closing`** — closes a single spec's `design.md` via guided
+   Q&A, and appends any stack/convention decisions it settles to
+   `planning/architecture.md` and `AGENTS.md`. Run it directly whenever you want to
+   work one spec by hand instead of through `/specloop:advance`'s batch flow.
+4. **`/specloop:task-breakdown`** — drafts and confirms a single spec's `tasks.md`
+   (single-action, verifiable tasks), marking each `agent` or `human` so the loop
+   only attempts what an agent can actually finish. Written as a GFM checkbox list
+   with zero-padded IDs (`- [ ] T001 [agent] [status:todo] ...`) — the same
+   convention GitHub spec-kit uses, so it renders and reads like any other task
+   list, while the `[owner]`/`[status:...]` tags carry the agent/human split and
+   5-state status a plain checkbox can't. Also runs directly, same as
+   `design-closing` above.
+5. **`/specloop:loop-setup`** — one-time step: asks which worker CLI(s) to use and
    writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
    config already exists from step 1; this fills in the rest.
-5. **`/specloop:loop`** — the only way to run it: this chat session is the master.
+6. **`/specloop:loop`** — the only way to run it: this chat session is the master.
    It reads the roadmap and tasks itself, works every eligible spec in turn
    (or just one, if you name it), and runs tasks **always through your own
    harness's own native sub-agent tool** — never splitting work across the

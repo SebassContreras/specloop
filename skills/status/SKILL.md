@@ -73,8 +73,8 @@ its `Stage` cell to one line naming the skill to run next:
 
 | `Stage` | Suggested next skill |
 |---|---|
-| `requirements` | `specloop:design-closing` |
-| `design_closed` | `specloop:task-breakdown` |
+| `requirements` | `specloop:advance` (or `specloop:design-closing` directly, for just this one spec) |
+| `design_closed` | `specloop:advance` (or `specloop:task-breakdown` directly, for just this one spec) |
 | `tasks_ready` | `specloop:loop-setup` if `.specloop/loop.config.json` doesn't exist yet, else `specloop:loop` |
 | `looping` | resume `specloop:loop` |
 

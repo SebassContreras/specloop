@@ -16,6 +16,7 @@ body:
       label: Where's the problem?
       options:
         - specloop:start
+        - specloop:advance
         - specloop:design-closing
         - specloop:task-breakdown
         - specloop:loop-setup
