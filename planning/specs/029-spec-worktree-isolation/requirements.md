@@ -21,6 +21,11 @@ where T006–T012 all touched `skills/status/references/template.html` and ran
 one at a time on purpose, not because they were otherwise ready to
 parallelize.
 
+Further evidence: GitHub issue #11 (`No inicio las spec en paralelo`, filed
+2026-09-15 and closed as covered by this spec) — independent specs with no
+`Depends on` between them still only started one at a time (with a
+sub-agent) when the loop begins, never more than the first.
+
 ## Hard constraints
 
 - **Blocking, unresolved**: `planning/roadmap.md` is written by nearly every
