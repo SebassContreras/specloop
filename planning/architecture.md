@@ -27,10 +27,19 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - **Design-closing Skill** (`004`, `skills/design-closing/`): guided Q&A, run
   separately per spec once its `requirements.md` is ready, closes `design.md`, and
   appends any stack/convention decisions it settles to `planning/architecture.md` and
-  `AGENTS.md`.
+  `AGENTS.md`. Directly invoked, it stops before task-breakdown — `033`'s
+  `specloop:advance` is the one caller allowed to chain past that stop.
 - **Task-breakdown Skill** (`003`, `skills/task-breakdown/`): run separately per spec
   once its `design.md` is closed, drafts + confirms + writes `tasks.md`, marking each
   task agent-runnable or human-only.
+- **Advance Skill** (`033`, `skills/advance/`): chains `design-closing` then
+  `task-breakdown` per spec, for every spec still short of `tasks_ready` — deriving
+  their Q&A answers from the interview's own answers rather than re-asking, showing
+  the real draft for a yes/changes/defer, and asking live only when a question
+  genuinely can't be inferred. Auto-chained from `start`'s Phase 7 right after the
+  interview, and separately re-invocable later to pick up deferred specs.
+  `design-closing`/`task-breakdown` themselves are unchanged and still directly
+  invocable on a single spec.
 - **Amend Skill** (`012`, `skills/amend/`): revises an existing spec's
   `requirements.md` and/or reopens its closed `design.md`, refusing outright if any
   task is `[status:in_progress]` and requiring an explicit confirm before touching

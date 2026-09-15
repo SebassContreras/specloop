@@ -69,9 +69,29 @@ turn.
 
 ## Acceptance criteria
 
-Not yet defined — ready for `specloop:design-closing` to work through the
-"can't infer an answer" question above; not blocked on a user decision
-anymore.
+- [ ] `specloop:advance` (`skills/advance/`) exists as its own skill and is
+      also auto-chained from `specloop:start`'s Phase 7 immediately after
+      the per-spec requirements Q&A — no separate invocation needed for the
+      first pass over a freshly-seeded set of specs.
+- [ ] For each spec at `Stage: requirements`, `specloop:advance` derives
+      `design-closing`'s 5 Q&A answers from the interview's own answers and
+      produces the real `design.md` draft (not a shortened synthesis),
+      showing it to the user with three options: yes / changes / defer.
+- [ ] On yes, the spec's `design.md` is written and `Stage` becomes
+      `design_closed`, then `task-breakdown`'s own draft-confirm-write flow
+      runs the same way (draft shown, yes/changes/defer), landing the spec
+      at `Stage: tasks_ready`.
+- [ ] If a `design-closing` or `task-breakdown` question can't be
+      confidently derived from the interview, `specloop:advance` stops and
+      asks that one specific question live instead of guessing.
+- [ ] Re-running `specloop:advance` later only processes specs still short
+      of `tasks_ready` — deferred specs from an earlier run get picked up
+      without re-processing already-closed ones.
+- [ ] `design-closing` (`004`) and `task-breakdown` (`003`) remain
+      independently invokable on a single spec, unchanged, outside the
+      batch flow.
+- [ ] `specloop:advance` never chains into `specloop:loop` — starting the
+      loop stays a separate, explicit user action.
 
 ## Out of scope
 
