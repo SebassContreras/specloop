@@ -15,19 +15,20 @@ enough).
 
 ## Status
 
-open
+wontfix
 
 ## Fix
 
-Not yet fixed. `Priority` is a documented Fixed rule in
-`planning/architecture.md` (`015`'s own section) — per `AGENTS.md`'s rule,
-changing or removing it needs the user's explicit, dated go-ahead in the
-same conversation as the edit, which this issue alone doesn't constitute.
-Plan: revisit explicitly with the user whether row order + `Depends on`
-alone can replace `Priority`'s tie-breaking role in `skills/loop`, then
-either drop the column (editing the Fixed rule and backfilling every row)
-or close this as "kept as-is" if the tie-break behavior still earns its
-keep.
+Kept as-is, decided 2026-09-15 (same conversation). Weighed row order +
+`Depends on` as a replacement for `Priority`'s tie-breaking role in
+`skills/loop` and rejected it: the roadmap table's row order currently
+doubles as an ID/filing-order log (new specs just get appended at the
+bottom, e.g. `032`/`033`), and making row order also carry execution
+priority would force reordering rows — out of ID order — every time
+priority changes, plus lose the explicit `—` ("order-independent," e.g.
+`019`) signal that neither `Depends on` (hard constraints only) nor `Stage`
+(pipeline phase only) can express. `Priority` stays as the documented Fixed
+rule in `planning/architecture.md`; no code or doc changes needed.
 
 ## Date
 
