@@ -32,7 +32,7 @@ we, what's next."
 | 030 | dashboard-build-script        | todo        | 009, 026           | requirements | 16       |
 | 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
 | 032 | automate-markdown-convention-check | todo   | 031                | requirements | —        |
-| 033 | interview-to-loop-auto-continuation | todo | 001, 002, 003, 004 | design_closed | —      |
+| 033 | interview-to-loop-auto-continuation | todo | 001, 002, 003, 004 | tasks_ready | —       |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`
