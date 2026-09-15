@@ -114,7 +114,10 @@ Write `design_closed` into this spec's `Stage` cell in `planning/roadmap.md` —
 touch only that cell, nothing else in the row. Then tell the user it's closed
 and that `specloop:task-breakdown` can be run on it whenever they're ready.
 **Do not invoke it automatically** — these are separate, deliberate steps per
-spec.
+spec. This is the default for a direct, standalone invocation of
+`specloop:design-closing` — `specloop:advance` (033) is the one caller
+allowed to chain straight into task-breakdown for the same spec, without a
+separate invocation.
 
 ## Style rules
 

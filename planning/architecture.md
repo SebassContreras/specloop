@@ -36,7 +36,7 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   `task-breakdown` per spec, for every spec still short of `tasks_ready` — deriving
   their Q&A answers from the interview's own answers rather than re-asking, showing
   the real draft for a yes/changes/defer, and asking live only when a question
-  genuinely can't be inferred. Auto-chained from `start`'s Phase 7 right after the
+  genuinely can't be inferred. Auto-chained from `start`'s Phase 8 right after the
   interview, and separately re-invocable later to pick up deferred specs.
   `design-closing`/`task-breakdown` themselves are unchanged and still directly
   invocable on a single spec.

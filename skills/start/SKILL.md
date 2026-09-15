@@ -359,13 +359,27 @@ Question-bank Phase E, for the next unfilled spec.
 4. Close with Phase F's sweep, then stop and ask whether to continue into the next
    queued spec — never chain silently through all of them.
 
-## Phase 8 — Report, then stop
+## Phase 8 — Report, then auto-chain into specloop:advance
 
-Tell the user what exists now, and what the next deliberate step is per spec
-(`specloop:design-closing`), plus that `specloop:loop-setup` finishes configuring the
-loop when a spec has agent-runnable tasks. **Do not run any of them.** List any dimension
-left `open` or `skipped` so nothing disappears quietly. Then ask whether to write
-`planning/handoff.md`, same as any other stopping point.
+1. Tell the user what exists now. List any dimension left `open` or `skipped` so
+   nothing disappears quietly.
+2. State that `specloop:advance` now runs automatically to close design and
+   tasks (`specloop:design-closing` then `specloop:task-breakdown`) for every
+   seeded spec, deriving its answers from what the interview already
+   established and asking live only when something can't be inferred — and
+   that it's separately re-invocable later for any spec deferred along the
+   way.
+3. Report that `specloop:loop-setup` finishes configuring the loop when a spec
+   has agent-runnable tasks, and that starting the loop itself
+   (`specloop:loop`) is a further step after that. **Do not run either of
+   these.** They stay manual, separate, deliberate steps.
+4. Chain directly into `specloop:advance`'s logic (Phase 0 onward) — no
+   separate invocation needed.
+5. Once `specloop:advance` reports and stops, ask whether to write
+   `planning/handoff.md`, same as any other stopping point — this is the
+   actual stopping point now, since `specloop:advance` may leave specs at
+   different stages (`tasks_ready`, deferred, blocked) that a handoff written
+   before it ran wouldn't reflect.
 
 ## Style rules
 
