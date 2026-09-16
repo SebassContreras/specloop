@@ -1,5 +1,7 @@
 node_modules/
 dist/
+__pycache__/
+*.pyc
 # test/ holds throwaway repos used to exercise the skills end-to-end —
 # local-only, never pushed.
 test/

@@ -5,57 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>specloop dashboard</title>
 <!--
-  This file is a fixed, self-contained template. skills/status substitutes real
-  data into it (Phase 5) by replacing the placeholder token inside the
-  <script id="dashboard-data"> tag near the end of this file with a JSON
-  string matching this exact shape:
-
-  {
-    "generatedAt": "<ISO 8601 timestamp>",
-    "specs": [
-      {
-        "id": "001", "plan": "scaffold-and-spec-skill", "status": "done",
-        "dependsOn": ["003"], "stage": "—", "priority": "1",
-        "nextEligible": false,
-        "counts": {"todo": 0, "in_progress": 0, "blocked": 0, "interrupted": 0, "done": 5},
-        "tasks": [
-          {"id": "T001", "owner": "agent", "status": "done", "text": "...", "note": "..."}
-        ]
-      }
-    ],
-    "totals": {"todo": 3, "in_progress": 1, "blocked": 0, "interrupted": 0, "done": 42},
-    "drift": [
-      {"specId": "018", "rule": "...", "message": "..."}
-    ],
-    "fixes": [
-      {"id": "001", "name": "language-field-format", "scope": "018", "status": "resolved", "date": "2026-09-13", "found": "...", "fix": "..."}
-    ]
-  }
-
-  Notes for whoever produces that JSON:
-  - "dependsOn" is a list of spec-ID strings (e.g. ["001", "003"]), not a
-    joined display string — an empty cell or "—" becomes [].
-  - "nextEligible" is a boolean, true for at most one spec (the active
-    in_progress row, or else the next eligible todo row per skills/loop's own
-    rule), false for every other spec — including every spec when none is
-    eligible.
-  - "counts" is a per-spec object, {"todo", "in_progress", "blocked",
-    "interrupted", "done"}, that spec's own task counts by status.
-  - "totals" is the same shape as "counts" but sits at the top level
-    alongside "generatedAt"/"specs", not nested inside a spec entry — it's
-    the repo-wide sum across every spec.
-  - "status" (on a spec or a task) is one of: done / in_progress / blocked /
-    interrupted / todo. A fix entry's "status" is a separate enum: open /
-    in_progress / resolved / wontfix (or "" if the entry predates this field).
-  - "note", "message", "found", "fix" may be empty strings — this template
-    renders gracefully when they are (it omits the line rather than showing a
-    blank one).
-  - "specs", "drift", "fixes" may all be empty arrays — this template renders
-    an empty state for each rather than erroring or leaving a blank gap.
-  - That tag's text content must be valid JSON (already escaped for embedding
-    in a script tag) and the placeholder token must appear exactly once in
-    this file so a later substitution step can find-and-replace it
-    unambiguously.
+  This file is a fixed, self-contained template. skills/status/scripts/build_dashboard.py
+  is the sole producer of the JSON substituted into the placeholder token inside the
+  <script type="application/json" id="dashboard-data"> tag near the end of this file —
+  read that script for the exact JSON schema, not this comment. The placeholder token
+  must appear exactly once in this file so the script's find-and-replace works unambiguously.
 -->
 <style>
   :root {

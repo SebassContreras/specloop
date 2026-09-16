@@ -123,7 +123,9 @@ reports the roadmap's state (active spec(s), task counts, anything stuck, what t
 run next, and any recorded `Stage`/`Status` that disagrees with the files on disk)
 as a chat summary, and writes a static `planning/dashboard.html` — regenerated
 fully each time you ask, never a background process. Works even before
-`/specloop:loop-setup` has run.
+`/specloop:loop-setup` has run. The only skill with a runtime dependency beyond
+your harness: it runs `skills/status/scripts/build_dashboard.py`, which needs
+`python3` on `PATH` (standard library only, nothing to `pip install`).
 
 ## Docs
 

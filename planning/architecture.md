@@ -58,7 +58,10 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   spec(s), task counts, `blocked`/`interrupted` rows, next-suggested-action per
   spec, and any `Stage`/`Status` drift — as a chat summary, and writes a static,
   self-contained `planning/dashboard.html` (regenerated fully each run; no
-  server/watcher, by the same no-standalone-process reasoning below).
+  server/watcher, by the same no-standalone-process reasoning below). The
+  mechanical work (parsing, drift detection, JSON assembly, escaping) lives in
+  `skills/status/scripts/build_dashboard.py` (`030`) — the skill's own text runs
+  that script and presents its output, rather than restating the algorithm.
 - **Fix Skill** (`027`, `skills/fix/`): the only supported way to author a new
   `planning/fix/` entry — quick-capture, not a guided interview — computes the next
   `NNN`, asks scope/found/status/fix, writes one `planning/fix/NNN-name.md` entry.

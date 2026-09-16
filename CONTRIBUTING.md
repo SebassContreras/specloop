@@ -9,7 +9,10 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
   writing code for it.
 - Skills live in `skills/<name>/SKILL.md`. The loop is one of them
   (`skills/loop/SKILL.md`) — instructions for whatever agent runs it, no
-  separate code or package to build.
+  separate code or package to build. One exception: `skills/status/scripts/
+  build_dashboard.py` (`030`), a deterministic, judgment-free helper script —
+  the only skill with an external runtime dependency (`python3`, standard
+  library only).
 
 ## Code conventions
 
@@ -23,6 +26,9 @@ comment/commit rules. Existing history predates this and isn't rewritten.
 - `claude plugin validate .` — checks the plugin manifest/skills.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
+- `python3 skills/status/scripts/build_dashboard.py` — run directly, from a
+  target repo's root, to exercise `specloop:status`'s dashboard generation
+  without going through the skill.
 
 ## Choose the right path
 

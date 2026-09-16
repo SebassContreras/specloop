@@ -80,6 +80,27 @@ status/dependencies/pipeline-stage/priority and carries nothing else;
 `skills/*/SKILL.md` target the open Agent Skills format, not a Claude-Code-only one —
 see `planning/architecture.md`'s Container section.
 
+**`028` (clickable-roadmap-ids) declined 2026-09-16** at design-closing, never
+built — every link placement broke something (linking `ID` needs every
+positional parser to strip markdown-link syntax; linking `Plan` breaks its
+byte-identical-with-the-folder-name invariant; a link column before `ID`
+shifts the positional-cell contract `Stage`/`Priority` also rely on), and
+`roadmap.md` is deliberately agent-optimized, not for human browsing — see
+`planning/architecture.md`'s Declined table for the full reasoning. Filed
+**`034` (dashboard-github-pages)** instead, same day, scoped to this repo
+only (no plugin/skill changes): publish `planning/dashboard.html` via GitHub
+Pages through a GitHub Actions workflow calling `030`'s build script.
+Depends on `030`, `Stage: requirements`. **`030` (dashboard-build-script)
+closed the same day** — `skills/status/scripts/build_dashboard.py` (Python
+3, standard library only — the first and only plugin skill with an external
+runtime dependency) is now the sole implementation of `skills/status`'s
+mechanical work; `SKILL.md` shrank to running it, reading back its JSON
+output, and presenting the same chat summary from that JSON alone, never
+re-parsing `roadmap.md`/`tasks.md` directly. `template.html`'s duplicate
+JSON-schema comment reduced to a pointer at the script. README/CONTRIBUTING/
+SECURITY/the bug-report template updated for the new Python dependency and
+the escaping code's new location.
+
 `planning/roadmap.md` was restructured 2026-09-12: gained `Stage` (pipeline phase,
 written by whichever skill completes that transition) and made `Priority` a live,
 human-edited ordering number instead of a historical record — its old "Build order"

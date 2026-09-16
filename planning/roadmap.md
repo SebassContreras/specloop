@@ -28,7 +28,7 @@ we, what's next."
 | 026 | dashboard-visual-enhancements | done        | 009                | —            | 11       |
 | 027 | fix-log-skill-and-status      | done        | 023, 009           | —            | 19       |
 | 029 | spec-worktree-isolation       | todo        | 002                | requirements | —        |
-| 030 | dashboard-build-script        | todo        | 009, 026           | tasks_ready  | 16       |
+| 030 | dashboard-build-script        | done        | 009, 026           | —            | 16       |
 | 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
 | 032 | automate-markdown-convention-check | todo   | 031                | requirements | —        |
 | 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —           | —       |

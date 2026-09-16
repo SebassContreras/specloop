@@ -59,6 +59,7 @@ body:
       label: Environment
       description: >
         OS, which harness ran the skill (Claude Code/OpenCode/Codex CLI/...), worker
-        CLI(s) (claude/codex/opencode/...).
+        CLI(s) (claude/codex/opencode/...), and `python3` version if the bug is in
+        `specloop:status` (the only skill with a Python dependency).
     validations:
       required: false

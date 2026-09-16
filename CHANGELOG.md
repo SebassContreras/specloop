@@ -38,6 +38,24 @@ end-to-end test against a real multi-spec fixture) is `[human]` and still
 `[human]` task doesn't hold a spec open), but this entry should be revisited
 once that test actually runs.
 
+### 030 — dashboard-build-script
+
+`skills/status/scripts/build_dashboard.py` — a stdlib-only Python script that
+becomes the sole implementation of `skills/status`'s mechanical work
+(previously `SKILL.md`'s Phase 0-5 prose): reads `planning/roadmap.md` and
+every spec's `tasks.md`, computes task counts/eligibility, detects the five
+`Stage`/`Status` drift rules, reads `planning/fix/`, assembles the JSON,
+escapes `</script`, and writes `planning/dashboard.html` — deterministic
+(byte-identical output across runs on unchanged input), UTF-8 no BOM.
+`skills/status/SKILL.md` rewritten to 4 phases: run the script, read back its
+JSON output, print the same 5-section chat summary derived only from that
+JSON, report the dashboard path — no re-parsing of `roadmap.md`/`tasks.md`
+anywhere. `skills/status/references/template.html`'s duplicate JSON-schema
+comment reduced to a pointer at the script. First and only plugin skill with
+an external runtime dependency (Python 3, standard library only, no `pip
+install`) — a missing `python3` on `PATH` fails loudly with a clear message,
+no prose fallback.
+
 ### 012 — spec-amend-skill
 
 `specloop:amend` (`skills/amend/SKILL.md`) — the first supported way to revise a
