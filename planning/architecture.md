@@ -106,9 +106,14 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   Priority) and **carries no other content** — no prose history, no separate ordering
   list. Without this, an agent dropped into the repo has no idea what's next, and
   shouldn't have to read anything else to find out. The row parser reads the first
-  four cells (`ID`/`Plan`/`Status`/`Depends on`) positionally and ignores trailing
-  ones, so the table can gain columns without breaking every existing row — `Stage`
-  and `Priority` exist only as those trailing, code-ignored cells. Any rationale
+  four cells (`ID`/`Plan`/`Status`/`Depends on`) positionally; a parser written
+  before a later column existed safely ignores it, which is how `Stage` and
+  `Priority` were added as trailing cells without breaking every existing row.
+  **Neither is cosmetic**: both are actively read and used today —
+  `skills/loop`'s Phase 1 reads `Stage` and `Priority` at positions 5 and 6, for
+  the in-progress-resume check and the lowest-`Priority`-wins tiebreak. Any
+  future trailing column stays safely ignored only until some skill is
+  deliberately updated to read it, same as happened here. Any rationale
   behind a row's dependencies or ordering belongs in that spec's own
   `requirements.md`/`design.md`, or `planning/handoff.md` for a point-in-time note —
   never duplicated into the index. See `015` T015/T019/T020 for what went stale
@@ -287,6 +292,15 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   one-element `workers` array — there's no load-time normalization code
   anymore, `skills/loop`'s own text says to treat it that way. See
   `002-loop-orchestrator/design.md`.
+- **Python 3, standard-library only, is the implementation language for a skill's
+  small, deterministic, judgment-free helper script** (`030-dashboard-build-script`)
+  — `skills/status/scripts/build_dashboard.py` is the first and, as of `030`,
+  the only such script; every other skill stays plain-text Skill instructions.
+  Not a project-wide runtime dependency: scoped to `skills/status`'s own
+  mechanical work (deterministic dashboard generation), per the Declined-table
+  scope note on persisting a bounded helper script for a non-judgment sub-task.
+  No `pip install` step, ever — a missing `python3` on `PATH` is a hard failure
+  with a clear message, not a silent prose fallback.
 
 - **A non-software e2e fixture is built against a declared fictional persona, not a
   second real project** (`017`) — run local-only under the gitignored `test/` dir,
@@ -322,5 +336,6 @@ Declining something the user asked for requires a dated decision from the user.
 | A live visual terminal (split-pane) so the user can watch a sub-agent work in its own window | 2026-09-11. Built (`windowsTerminal.ts`/`tmux.ts`), confirmed working end-to-end (`006` T012), then rejected by the user after watching it live — not worth the complexity for what it bought. See `002-loop-orchestrator/design.md`'s "No split panes" section. |
 | A regex heuristic (over captured CLI output) to detect quota/rate-limit exhaustion, run from a standalone script | 2026-09-11. Reasoned "the master always holds the terminal now" — a hole, since "the master" was never meant to be a plain script. Replaced by a chat session reading a worker's output itself and judging with real judgement. See `002-loop-orchestrator/design.md`'s "Quota exhaustion" section. |
 | A standalone script or CLI (in any language/runtime) as a way to run the loop, deterministic or otherwise | 2026-09-12. Tried as `framework/orchestrator/`'s `loop run`/`loop stop`/`loop status` (Node/TypeScript), shipped alongside `skills/loop`, then retired: the user's actual intent was never "a script is the master," it's "I open a chat, and that chat is the master" — a plain script has no chat to ask a quota-exhaustion question in, and an unattended run has nobody to answer it regardless. `skills/loop` is the only way to run the loop now, under any compatible harness. See `002-loop-orchestrator`. **Scope note (2026-09-14):** this is about the loop's own master/orchestration role — decisions needing real judgment (eligibility, batching, quota calls). It does not bar a different skill from persisting a small, judgment-free helper script for a bounded mechanical sub-task — see `030-dashboard-build-script`, where `skills/status`'s dashboard generation (pure data transformation, no decisions) moved into exactly that. |
+| Making `planning/roadmap.md`'s `ID` column a clickable link to its spec folder (`028-clickable-roadmap-ids`, filed from GitHub issue #3) | 2026-09-16. Declined at design-closing, never built. Every link placement broke something: linking `ID` itself needs every positional parser (`skills/loop`, `skills/status`, `skills/start`'s seeding) to strip markdown-link syntax before reading the bare number it uses to build `planning/specs/<id>-<name>/`; linking `Plan` instead breaks the hard constraint that `Plan` stay byte-identical to the folder's name segment; and putting a new link column *before* `ID` shifts the "first four cells read positionally" contract that `Stage`/`Priority` also depend on. A safe trailing column (after `Priority`) was possible with zero parser risk, but `roadmap.md` is deliberately optimized for agents, not humans (see its own Fixed rule above) — the dashboard (`009`/`026`) exists precisely so a human gets a visual view instead, and the actual GitHub/phone-browsing use case this spec wanted turned out not to be served by either file as they stand today (the dashboard's own links only jump within its own page, and a static `.html` doesn't render live in GitHub's web UI without Pages). Superseded by `034-dashboard-github-pages`, which targets the real need — a live-viewable dashboard — without touching `roadmap.md` at all. |
 | Adopting GitHub spec-kit's `tasks.md` wholesale (checkbox-only, grouped by user-story phase, no owner concept) | 2026-09-05. Spec-kit has no agent/human distinction and no 5-state status — everything is assumed agent-executable. Adopting it as-is would drop `nextRunnableTask`/`pendingHumanTasks`, the exact mechanism that makes the loop safe to leave unattended. `020-checklist-task-format` borrows the checkbox *convention* (industry-familiar, GitHub-rendered) but keeps the owner/status tags spec-kit doesn't have. |
 | Automatic bidirectional spec-kit `spec.md`/`plan.md` <-> `requirements.md`/`design.md` conversion | 2026-09-05. spec-kit's `spec.md` is organized by P1/P2/P3 user story with no equivalent of specloop's flat requirements + acceptance criteria shape, and spec-kit has no central roadmap/index to map `roadmap.md` onto. A one-off manual translation remains possible if ever needed; no permanent dual-format reader is planned. |

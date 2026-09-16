@@ -119,8 +119,8 @@ Phase 0's stub check):
 
    **Can derive — do not ask** when `requirements.md`/`design.md`/
    `architecture.md`/`interview.md` together state a specific, unambiguous
-   answer for that question, even a terse one — e.g. `028`'s
-   clickable-roadmap-ids spec: its Approach and Deliverables are fully
+   answer for that question, even a terse one — e.g. `030`'s
+   dashboard-build-script spec: its Approach and Deliverables are fully
    spelled out in its own `## What's being built`/`## Hard constraints` (one
    or two sentences, but specific and unambiguous), so Phase 1 derives both
    without asking anything live. **Terseness alone is never the trigger** —
