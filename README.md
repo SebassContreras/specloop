@@ -126,6 +126,10 @@ fully each time you ask, never a background process. Works even before
 `/specloop:loop-setup` has run. The only skill with a runtime dependency beyond
 your harness: it runs `skills/status/scripts/build_dashboard.py`, which needs
 `python3` on `PATH` (standard library only, nothing to `pip install`).
+This repo's own dashboard is also published live at
+[sebasscontreras.github.io/specloop](https://sebasscontreras.github.io/specloop/),
+rebuilt by a GitHub Actions workflow on every push to `main` that touches
+`planning/`.
 
 ## Docs
 

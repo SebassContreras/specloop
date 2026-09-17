@@ -305,6 +305,13 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   No `pip install` step, ever — a missing `python3` on `PATH` is a hard failure
   with a clear message, not a silent prose fallback.
 
+- **Any static site this repo publishes from its own content uses GitHub
+  Pages sourced from GitHub Actions, never a `gh-pages` branch or a manual
+  copy-to-`/docs` step** (`034-dashboard-github-pages`) — settled while
+  designing the first such site, `planning/dashboard.html`'s public
+  publication. Scoped to this repo's own infrastructure only, same boundary
+  as `README.md`/`CONTRIBUTING.md` in the Declined table below — not a
+  capability the plugin scaffolds into a target repo.
 - **A non-software e2e fixture is built against a declared fictional persona, not a
   second real project** (`017`) — run local-only under the gitignored `test/` dir,
   where the fixture's own notes state this plainly. It proves the type-branching
