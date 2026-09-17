@@ -94,9 +94,9 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   enough; a pass that surfaces something new triggers another sweep, since there's
   more to ask about. A dimension the user declines is recorded as skipped, with the
   reason — never silently dropped. When the user is genuinely unsure rather than
-  declining (`016`),
-  the engine judges whether the dimension is researchable (a technical/stylistic
-  choice — search for current options, or say so and use the model's own knowledge if
+  declining (`016`), the engine judges whether the dimension is researchable (a
+  technical/stylistic choice — search for current options, or say so and use the
+  model's own knowledge if
   no web-search tool is available) or not (a fact about the user's own project —
   ask a narrower question instead of manufacturing options); either way it never
   infers a choice to close the dimension.
