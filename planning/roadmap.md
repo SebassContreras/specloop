@@ -32,7 +32,7 @@ we, what's next."
 | 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
 | 032 | automate-markdown-convention-check | todo   | 031                | requirements | —        |
 | 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —           | —       |
-| 034 | dashboard-github-pages        | todo        | 009, 026, 030      | looping      | —        |
+| 034 | dashboard-github-pages        | done        | 009, 026, 030      | —            | —        |
 
 `007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
 `011` (windows-path-safety), `013` (task-retry-backoff) and `021`
