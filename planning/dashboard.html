@@ -2247,11 +2247,11 @@
     {
       "id": "025",
       "plan": "master-handoff",
-      "status": "todo",
+      "status": "done",
       "dependsOn": [
         "002"
       ],
-      "stage": "requirements",
+      "stage": "\u2014",
       "priority": "\u2014",
       "nextEligible": false,
       "counts": {
@@ -2447,11 +2447,11 @@
     {
       "id": "029",
       "plan": "spec-worktree-isolation",
-      "status": "todo",
+      "status": "done",
       "dependsOn": [
         "002"
       ],
-      "stage": "requirements",
+      "stage": "\u2014",
       "priority": "\u2014",
       "nextEligible": false,
       "counts": {
@@ -2666,11 +2666,11 @@
     {
       "id": "032",
       "plan": "automate-markdown-convention-check",
-      "status": "todo",
+      "status": "done",
       "dependsOn": [
         "031"
       ],
-      "stage": "requirements",
+      "stage": "\u2014",
       "priority": "\u2014",
       "nextEligible": false,
       "counts": {
@@ -2678,9 +2678,52 @@
         "in_progress": 0,
         "blocked": 0,
         "interrupted": 0,
-        "done": 0
+        "done": 6
       },
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T001",
+          "owner": "agent",
+          "status": "done",
+          "text": "Create `scripts/shared/canonical-headers.mjs`, exporting the array of the 7 canonical requirements.md headers (single source of truth for both scripts)",
+          "note": "verified against disk: 7 strings verbatim/in order, matches check-skill-consistency.mjs's inline array"
+        },
+        {
+          "id": "T002",
+          "owner": "agent",
+          "status": "done",
+          "text": "Edit `scripts/check-skill-consistency.mjs`'s group `[2]` to import the header array from `scripts/shared/canonical-headers.mjs` instead of keeping its own inline copy",
+          "note": "verified against disk + re-ran script myself: All checks passed, no other group affected"
+        },
+        {
+          "id": "T003",
+          "owner": "agent",
+          "status": "done",
+          "text": "Create `scripts/check-markdown-conventions.mjs`: group 1 walks every `planning/specs/*/requirements.md` and asserts the 7 canonical headers (from the shared module) appear in order; group 2 scans every git-tracked `.md` file (`git ls-files -- '*.md'`) for sentence-case heading compliance \u2014 strip inline code spans, allow all-caps acronyms, use a curated proper-noun allowlist seeded from this repo's current compliant headings, and fail with a message naming the flagged word and suggesting it may be a legitimate proper noun missing from the allowlist. Same `ok`/`group` helper pattern and pass/fail format as the existing script",
+          "note": "verified against disk + re-ran myself: All checks passed, 670 headings/124 files scanned, allowlist grep-derived not guessed"
+        },
+        {
+          "id": "T004",
+          "owner": "agent",
+          "status": "done",
+          "text": "Add a checklist line to `.github/PULL_REQUEST_TEMPLATE.md`: run `node scripts/check-markdown-conventions.mjs` if any `.md` file changed",
+          "note": "verified against disk: line added right after the existing check-skill-consistency.mjs line, same style"
+        },
+        {
+          "id": "T005",
+          "owner": "agent",
+          "status": "done",
+          "text": "Verify `node scripts/check-skill-consistency.mjs` still passes after the shared-module refactor (T002 didn't break its existing groups)",
+          "note": "verified directly by the orchestrating session itself, re-running the script after T002: All checks passed"
+        },
+        {
+          "id": "T006",
+          "owner": "agent",
+          "status": "done",
+          "text": "Verify AC1-AC4: run `node scripts/check-markdown-conventions.mjs` against this repo's current state, confirm it passes cleanly with output matching the existing script's format; then, in a throwaway scratch fixture, introduce one requirements.md missing a canonical header and one Title-Case heading, confirm each fails with a clear message, then clean up the fixture",
+          "note": "positive case verified earlier by the orchestrating session; negative-test fixture confirmed both failure modes with clear messages, fixture cleaned up, also confirmed the script's relative import resolves correctly regardless of invocation cwd"
+        }
+      ]
     },
     {
       "id": "033",
@@ -2859,7 +2902,7 @@
     "in_progress": 1,
     "blocked": 0,
     "interrupted": 0,
-    "done": 251
+    "done": 257
   },
   "drift": [],
   "fixes": [
@@ -2970,6 +3013,15 @@
       "date": "2026-09-17",
       "found": "`skills/status/SKILL.md`'s Phase 0 ran the build script as a bare relative\npath (`python3 skills/status/scripts/build_dashboard.py`), and\n`build_dashboard.py`'s own `TEMPLATE_PATH` constant was likewise hardcoded\nrelative to the working directory (`Path(\"skills/status/references/template.html\")`).\nBoth assumed the target repo's root and this plugin's own installation\ndirectory are the same directory \u2014 true only when `specloop:status` runs\nagainst `specloop`'s own repo. Running the skill from an unrelated target\nrepo (observed: `clickup-automation`) failed to find the script at all; once\nworked around by copying the script to an absolute path, it failed a second\ntime on the template lookup, for the same underlying reason.",
       "fix": "`skills/status/SKILL.md` Phase 0 now invokes the script via\n`${CLAUDE_PLUGIN_ROOT}/skills/status/scripts/build_dashboard.py` \u2014\nClaude Code's documented placeholder for a plugin's own installation\ndirectory, substituted inline in skill content before the model sees it\n(verified against the official plugin-reference docs; `${CLAUDE_SKILL_DIR}`\nwas considered and rejected \u2014 it's currently unsubstituted in skill\ninstructions per open `anthropics/claude-code` issues #81588/#36135).\n`build_dashboard.py`'s `TEMPLATE_PATH` now resolves via\n`Path(__file__).resolve().parent.parent / \"references\" / \"template.html\"`\ninstead of a bare relative path, since the template is a resource bundled\nwith the plugin, not something read from the target repo \u2014 `ROADMAP_PATH`/\n`FIX_LOG_DIR`/`OUTPUT_PATH` stay relative to the working directory, since\nthose genuinely belong to the target repo. `CONTRIBUTING.md`'s manual\ndev-invocation instructions updated to match."
+    },
+    {
+      "id": "013",
+      "name": "pages-source-defaulted-to-legacy-branch",
+      "scope": "034",
+      "status": "resolved",
+      "date": "2026-09-17",
+      "found": "Enabling GitHub Pages in repo Settings (034's T003, done manually by the\nuser) defaulted the source to \"Deploy from a branch\" (`main` \u2192 `/docs`)\ninstead of \"GitHub Actions\" \u2014 the GitHub UI's own default when nothing\nelse is picked, not something 034's task text called out explicitly. This\ndidn't break the actual published site: `actions/deploy-pages@v4` still\npublished successfully via the `dashboard.yml` workflow's own Actions-based\ndeployment (confirmed live). But GitHub separately auto-injects a legacy\nJekyll build (`pages-build-deployment`, not a workflow file in this repo)\nwhenever the branch-based source is set, and that build failed on every\npush since Pages was first enabled \u2014 this repo has no `docs/` folder \u2014\nshowing as a real, if harmless, red X in the Actions tab on every push.",
+      "fix": "`gh api -X PUT repos/SebassContreras/specloop/pages -f \"build_type=workflow\"`\n\u2014 switched the Pages source to \"GitHub Actions\" directly via the API.\nConfirmed via a follow-up `GET` that `build_type` is now `\"workflow\"`. The\nlegacy Jekyll build no longer fires on push."
     }
   ]
 }</script>
