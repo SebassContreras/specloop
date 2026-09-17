@@ -169,9 +169,10 @@ Phase 0's stub check):
    spec's `requirements.md`: re-read it and list anything it requires that
    the draft doesn't address — every bullet, and every statement under
    `## Acceptance criteria` — same check `design-closing` Phase 2 step 1
-   applies. Repeat the closing-sweep question ("What haven't we covered in
-   this design?") against the draft until it returns nothing new twice, same
-   as `design-closing` Phase 2 step 2. Since the draft was derived, not
+   applies. Ask the closing-sweep question ("What haven't we covered in this
+   design?") against the draft; if it surfaces something new, address it and
+   ask again, stopping as soon as one pass returns nothing new — same as
+   `design-closing` Phase 2 step 2. Since the draft was derived, not
    live-Q&A'd, this gate is what catches anything the derivation missed.
 
    For each gap the gate finds, apply step 3's escape hatch: try to derive

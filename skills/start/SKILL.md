@@ -43,7 +43,7 @@ are just where answers land.
 
 - **No phase ends on a fixed question count.** A phase ends when its question-bank
   dimensions are each `covered` or `skipped`, *and* Phase F's closing sweep has come
-  back with nothing new twice in a row.
+  back with nothing new.
 - **Maintain `.specloop/interview.md`** as you go — one row per dimension:
   `| dimension | status | answer summary or skip reason |`. Write it after every
   answer. This is what makes an interrupted interview resumable and an explicit skip

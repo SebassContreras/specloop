@@ -91,8 +91,9 @@ Replace the file's `TBD` stub with:
    design doesn't address — every bullet, and every statement under
    `## Acceptance criteria`. Ask about each until none remain. A design that doesn't
    cover its own acceptance criteria is not closed.
-2. Ask the closing sweep: **"What haven't we covered in this design?"** Repeat until it
-   returns nothing new twice.
+2. Ask the closing sweep: **"What haven't we covered in this design?"** If it returns
+   something new, address it and ask again; stop as soon as one pass returns nothing
+   new.
 3. Append anything from question 4 to `planning/architecture.md`'s decision register and
    the operative form to `AGENTS.md`'s "Stack & conventions". This is the mechanism
    that keeps those files current as specs close — without it they stay whatever the

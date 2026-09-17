@@ -90,9 +90,11 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
 - **No Q&A phase terminates on a fixed question count.** Every interview phase draws
   from `skills/start/references/question-bank.md`, records covered/skipped/open
   dimensions in `.specloop/interview.md`, generates follow-ups for anything named but
-  unspecified, and ends only after a closing sweep returns nothing new twice in a row.
-  A dimension the user declines is recorded as skipped, with the reason — never
-  silently dropped. When the user is genuinely unsure rather than declining (`016`),
+  unspecified, and ends once a closing sweep returns nothing new — one clean pass is
+  enough; a pass that surfaces something new triggers another sweep, since there's
+  more to ask about. A dimension the user declines is recorded as skipped, with the
+  reason — never silently dropped. When the user is genuinely unsure rather than
+  declining (`016`),
   the engine judges whether the dimension is researchable (a technical/stylistic
   choice — search for current options, or say so and use the model's own knowledge if
   no web-search tool is available) or not (a fact about the user's own project —

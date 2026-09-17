@@ -72,7 +72,7 @@ else is still one at a time, deliberately, never auto-triggered:
    The interview is exhaustive by contract, not by script: it draws from a
    per-project-type question bank, tracks coverage in `.specloop/interview.md`, follows
    up on anything you named but didn't specify, and won't end a phase until a closing
-   sweep comes back clean twice. A dimension you skip is recorded as skipped, not
+   sweep comes back clean. A dimension you skip is recorded as skipped, not
    quietly dropped.
 
    Project deliverables (`README.md`, `CONTRIBUTING.md`, `LICENSE`, CI config) are

@@ -38,7 +38,7 @@ branches everything downstream (see `planning/architecture.md`'s fixed rules).
 **The interview is exhaustive by contract, not by script.** No Q&A phase terminates on
 a fixed question count. Each one draws from a per-project-type question bank, records
 coverage in `.specloop/interview.md`, generates follow-ups on anything named but
-unspecified, and ends only after a closing sweep comes back clean twice. An explicit
+unspecified, and ends once a closing sweep comes back clean. An explicit
 skip is recorded as a skip — never silently dropped. See `planning/architecture.md`.
 
 **Auto-chained once every spec's requirements are filled** (step 6): a skill closes

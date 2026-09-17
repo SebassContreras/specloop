@@ -135,8 +135,11 @@ Run at the end of every phase above. Not optional, and not a formality.
    ("the dashboard", "the integration", "the brand guidelines"), ask about it.
 2. List the dimensions still `open` for this phase and ask about each one.
 3. Ask: **"What haven't we covered that matters here?"**
-4. If steps 1–3 produced anything new, write it down and run the sweep again.
-5. The phase ends only when a full sweep produces nothing new **twice in a row**.
+4. If steps 1–3 produced anything new, write it down and run the sweep again — there's
+   more to ask about.
+5. The phase ends as soon as a full sweep produces nothing new. One clean pass is
+   enough; don't repeat the question once the user has already said there's nothing
+   more.
 
 ## Help-me-decide protocol (`016`)
 

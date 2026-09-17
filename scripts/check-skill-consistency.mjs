@@ -107,7 +107,8 @@ for (const [name, re] of Object.entries(objectives)) {
 group('[5] Interview contract is stated coherently');
 ok(/\.specloop\/interview\.md/.test(start), 'ledger path is named');
 ok(/covered/.test(start) && /skipped/.test(start) && /open/.test(start), 'ledger states covered/skipped/open');
-ok(/twice in a row/.test(start) && /twice in a row/.test(questionBank), 'sweep stop-rule agrees across both files');
+ok(/nothing new/.test(start) && /nothing new/.test(questionBank), 'sweep stop-rule agrees across both files');
+ok(!/twice in a row/i.test(start) && !/twice in a row/i.test(questionBank), 'sweep stop-rule is single-pass, not double-confirmed');
 ok(/Phase F/.test(start), 'start defers to the question bank sweep');
 
 group('[6] Question bank covers every phase and project-type branch');
