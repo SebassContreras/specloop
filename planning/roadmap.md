@@ -24,13 +24,13 @@ we, what's next."
 | 022 | cross-agent-skill-compat      | done        | 001                | —            | 17       |
 | 023 | fix-log                       | done        | —                  | —            | 18       |
 | 024 | loop-skill-verification       | done        | 002                | —            | 8        |
-| 025 | master-handoff                | todo        | 002                | requirements | —        |
+| 025 | master-handoff                | done        | 002                | —            | —        |
 | 026 | dashboard-visual-enhancements | done        | 009                | —            | 11       |
 | 027 | fix-log-skill-and-status      | done        | 023, 009           | —            | 19       |
-| 029 | spec-worktree-isolation       | todo        | 002                | requirements | —        |
+| 029 | spec-worktree-isolation       | done        | 002                | —            | —        |
 | 030 | dashboard-build-script        | done        | 009, 026           | —            | 16       |
 | 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
-| 032 | automate-markdown-convention-check | todo   | 031                | requirements | —        |
+| 032 | automate-markdown-convention-check | todo   | 031                | tasks_ready  | —        |
 | 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —           | —       |
 | 034 | dashboard-github-pages        | done        | 009, 026, 030      | —            | —        |
 
