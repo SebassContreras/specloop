@@ -14,6 +14,7 @@ Exact commands run and their results. Do not write only "tests pass".
 - `claude plugin validate .` (if `.claude-plugin/plugin.json` or `skills/`
   changed)
 - `node scripts/check-skill-consistency.mjs` (if any `skills/*/SKILL.md` changed)
+- `node scripts/check-markdown-conventions.mjs` (if any `.md` file changed)
 
 ## Checklist
 

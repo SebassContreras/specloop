@@ -19,6 +19,7 @@
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { CANONICAL_HEADERS } from './shared/canonical-headers.mjs';
 
 let failed = 0;
 const ok = (cond, msg) => {
@@ -49,15 +50,7 @@ for (const ref of [...refs].sort()) {
 }
 
 group('[2] Templates start writes match what downstream skills parse');
-for (const h of [
-  "## What's being built",
-  '## Who/what it serves',
-  '## Hard constraints',
-  '## Acceptance criteria',
-  '## Out of scope',
-  '## Dependencies',
-  '## Owner split',
-]) {
+for (const h of CANONICAL_HEADERS) {
   ok(start.includes(h), `start's requirements template writes "${h}"`);
 }
 ok(
