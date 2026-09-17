@@ -53,7 +53,14 @@ might be running low.
 
 ## Acceptance criteria
 
-Not yet defined — deferred, not designed yet.
+None — closed without one. Design-closing (2026-09-17) found the gap this
+spec was filed to cover already fully resolved by `skills/loop`'s existing
+Phase 1/Phase 2 resume rules (on-disk state, no live handoff needed), and
+confirmed via research that no harness exposes a self-usage-limit signal to
+the model to detect in the first place. See `design.md` for the full
+finding. The user explicitly declined even a documentation-only addition
+(a proactive note in `skills/loop/SKILL.md`) as more plugin surface than
+warranted — no file changes at all.
 
 ## Out of scope
 

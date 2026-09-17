@@ -53,9 +53,14 @@ sub-agent) when the loop begins, never more than the first.
 
 ## Acceptance criteria
 
-Not yet defined — blocked on the hard constraint above.
-`specloop:design-closing` should not proceed past requirements until the
-roadmap-write reconciliation question has an actual answer.
+None — closed without one. Design-closing (2026-09-17) found the isolation
+this spec proposed isn't needed: `skills/loop`'s existing file/section-
+overlap batching rule already runs genuinely independent tasks concurrently
+in the one shared working tree, with no git-level collision possible —
+confirmed against a real, external project run (three concurrent agents,
+no issue). The blocking hard constraint (roadmap-write reconciliation
+across worktrees) was never resolved as a result — moot, since nothing is
+being built. See `design.md` for the full finding. No file changes.
 
 ## Out of scope
 
