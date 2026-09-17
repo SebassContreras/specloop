@@ -312,6 +312,16 @@ phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-com
   publication. Scoped to this repo's own infrastructure only, same boundary
   as `README.md`/`CONTRIBUTING.md` in the Declined table below — not a
   capability the plugin scaffolds into a target repo.
+- **Any repo-wide file-scanning dev script (`scripts/*.mjs`) enumerates its
+  file set via `git ls-files`, never a hand-picked list of directories/
+  categories** (`032-automate-markdown-convention-check`) — a git-tracked
+  enumeration can't miss a new category later and naturally excludes
+  untracked/gitignored cruft (found while designing `032`: a leftover
+  `framework/orchestrator/node_modules/` on disk, holding hundreds of
+  vendored `README.md`/`CHANGELOG.md` files, that a hand-rolled filesystem
+  walk would have wrongly scanned). Scoped to this repo's own `scripts/`
+  dev-tooling only, same boundary as `check-skill-consistency.mjs` — never
+  scaffolded into or run against a target repo using the plugin.
 - **A non-software e2e fixture is built against a declared fictional persona, not a
   second real project** (`017`) — run local-only under the gitignored `test/` dir,
   where the fixture's own notes state this plainly. It proves the type-branching

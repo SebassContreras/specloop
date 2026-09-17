@@ -15,15 +15,32 @@ new check group that:
   headers (`What's being built`, `Who/what it serves`, `Hard constraints`,
   `Acceptance criteria`, `Out of scope`, `Dependencies`, `Owner split`) appear,
   in order, with none missing.
-- Scans headings repo-wide — specs, `skills/*/SKILL.md`, root docs,
-  `planning/*.md`, **including `AGENTS.md`/`CLAUDE.md`** — for sentence-case
-  compliance.
+- Scans headings for sentence-case compliance across **every `.md` file
+  tracked by git in the repo** (`git ls-files -- '*.md'`, not a hand-picked
+  list of categories) — any Claude-facing agent file (`SKILL.md`, `AGENTS.md`,
+  `CLAUDE.md`) or doc should follow the same heading pattern, and a
+  git-tracked enumeration also naturally excludes untracked/gitignored
+  cruft (e.g. a leftover `node_modules/` under `framework/orchestrator/`)
+  without a manual exclude-list to maintain. **Broadened 2026-09-17** from
+  the original filing's enumerated category list (specs, `skills/*/SKILL.md`,
+  root docs, `planning/*.md`, `AGENTS.md`/`CLAUDE.md`) during design-closing,
+  at the user's explicit direction, to close that gap outright rather than
+  enumerate categories that can miss a new one later.
 
 ## Who/what it serves
 
 Anyone hand-editing a spec's `requirements.md` or a skill file after `031`'s
 retrofit — the check catches drift (a missing header, a re-introduced
 Title-Case heading) that today only a human happens to notice.
+
+**Scoped to this repo (`specloop`) only, same as `check-skill-consistency.mjs`**
+— a contributor-maintenance script under `scripts/`, not a plugin-shipped
+mechanism. It never runs against, or gets scaffolded into, a target repo
+that installs the plugin; nobody using `specloop` as a plugin is affected
+by or even aware of it. Invoked manually (`node
+scripts/check-markdown-conventions.mjs`), same voluntary, non-hooked
+pattern as the existing script — never forced on anyone. Clarified
+2026-09-17 during design-closing, at the user's explicit question.
 
 ## Hard constraints
 
@@ -46,9 +63,8 @@ Title-Case heading) that today only a human happens to notice.
 - [ ] Running the check fails with a clear message when a
       `planning/specs/*/requirements.md` is missing one of the 7 canonical
       headers, or has them out of order.
-- [ ] Running the check fails with a clear message when any scanned file
-      (specs, `skills/*/SKILL.md`, root docs, `planning/*.md`, `AGENTS.md`,
-      `CLAUDE.md`) has a non-sentence-case heading.
+- [ ] Running the check fails with a clear message when any git-tracked
+      `.md` file in the repo has a non-sentence-case heading.
 - [ ] The check passes cleanly against this repo's current state (post-`031`)
       with zero fixes needed.
 - [ ] Invocation and output style match the existing
