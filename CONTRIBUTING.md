@@ -26,9 +26,14 @@ comment/commit rules. Existing history predates this and isn't rewritten.
 - `claude plugin validate .` — checks the plugin manifest/skills.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
-- `python3 skills/status/scripts/build_dashboard.py` — run directly, from a
-  target repo's root, to exercise `specloop:status`'s dashboard generation
-  without going through the skill.
+- `python3 /path/to/this/specloop/checkout/skills/status/scripts/build_dashboard.py`
+  — run with a target repo's root as the working directory, but the script
+  itself by its full path into this checkout (not a bare relative
+  `skills/status/scripts/build_dashboard.py` — that only exists here, not in
+  the target repo you're testing against) — to exercise `specloop:status`'s
+  dashboard generation without going through the skill. The skill itself
+  uses `${CLAUDE_PLUGIN_ROOT}` for this same reason — see
+  `planning/fix/012-status-script-path-not-portable.md`.
 
 ## Choose the right path
 

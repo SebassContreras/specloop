@@ -3,7 +3,12 @@
 
 Replaces skills/status/SKILL.md's former Phases 0-5 prose algorithm (030-dashboard-
 build-script) so every harness gets byte-identical output instead of re-implementing
-the same read/compute/escape steps freehand. No arguments; run from the repo root.
+the same read/compute/escape steps freehand. No arguments; the working directory must
+be the *target* repo's root (planning/roadmap.md, every spec's tasks.md, and
+planning/dashboard.html are all read/written relative to it) — this script is
+typically invoked from a different directory than its own (it ships inside the
+specloop plugin install, the target repo is wherever the skill is actually running),
+so its own bundled template.html is located relative to this file, never to cwd.
 Standard library only, no pip install. Deterministic: every listing is sorted
 explicitly and no wall-clock value is embedded in the written file, so unchanged
 input always produces byte-identical output.
@@ -16,7 +21,9 @@ from pathlib import Path
 
 ROADMAP_PATH = Path("planning/roadmap.md")
 FIX_LOG_DIR = Path("planning/fix")
-TEMPLATE_PATH = Path("skills/status/references/template.html")
+# Bundled with this script inside the plugin, not the target repo — resolve relative
+# to this file's own location, never to cwd (the target repo's root).
+TEMPLATE_PATH = Path(__file__).resolve().parent.parent / "references" / "template.html"
 OUTPUT_PATH = Path("planning/dashboard.html")
 
 TASK_LINE_RE = re.compile(r"^- \[([ xX])\] (T\d+) \[(\w+)\] \[status:(\w+)\] (.*)$")
@@ -274,7 +281,7 @@ def build_data(specs, drift, fixes):
 
 def render_dashboard(data):
     if not TEMPLATE_PATH.exists():
-        fail(f"{TEMPLATE_PATH} not found — run this script from the repo root")
+        fail(f"{TEMPLATE_PATH} not found — plugin install is missing its own references/template.html")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
 
     placeholder = "__DASHBOARD_DATA_JSON__"

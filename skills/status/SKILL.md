@@ -26,11 +26,26 @@ script in Phase 0 that writes it, not this skill's own prose.
 
 ## Phase 0 — Run the build script
 
-Run, from the target repo's root, with no arguments:
+Run, with the target repo's root as the working directory, with no
+arguments:
 
 ```
-python3 skills/status/scripts/build_dashboard.py
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/status/scripts/build_dashboard.py"
 ```
+
+**Always use the `${CLAUDE_PLUGIN_ROOT}` placeholder for the script's own
+path, never a bare relative path like `skills/status/scripts/build_dashboard.py`.**
+This skill's plugin install and the target repo it's invoked in are two
+different directories whenever `specloop:status` runs in any repo other than
+`specloop` itself — a relative path only resolves by accident, when the two
+happen to be the same checkout. Claude Code substitutes
+`${CLAUDE_PLUGIN_ROOT}` inline, in skill content, with the plugin's absolute
+installation directory before this text reaches you — see
+`planning/fix/012-status-script-path-not-portable.md` for the failure this
+fixed. The *working directory* for the command still must be the target
+repo's root (unrelated to the script's own path) — the script reads
+`planning/roadmap.md`/every spec's `tasks.md` and writes
+`planning/dashboard.html` relative to it.
 
 This one script owns all of the mechanical work — reading
 `planning/roadmap.md` and every spec's `tasks.md`, computing task counts and
