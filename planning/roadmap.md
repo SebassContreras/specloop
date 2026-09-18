@@ -50,11 +50,13 @@ spec needs next, so nobody has to open its files to find out. `—` once `done`,
 a spec never tracked through the pipeline (`001`–`005`, foundational, predate this
 column). Unlike `Status`, no single writer: each pipeline skill sets it once, at its
 own transition (`specloop:start` → `requirements`, `specloop:design-closing` →
-`design_closed`, `specloop:task-breakdown` → `tasks_ready`, `specloop:loop`/`loop-setup`
-→ `looping`).
+`design_closed`, `specloop:task-breakdown` → `tasks_ready`, `specloop:loop` →
+`looping` — `loop-setup` only writes `.specloop/loop.config.json`, never this column).
 
 `Priority`: a live, human-edited ordering number — lower runs first among specs
 `Depends on` doesn't already force an order. Edit the number directly to reorder; no
-separate list to keep in sync. `—` means the spec predates this convention (`001`–`005`)
-or was deliberately left unranked as order-independent of everything else (`019`).
-`skills/loop` breaks ties on it when more than one spec is eligible.
+separate list to keep in sync. `—` means no priority was ever assigned: the spec is
+foundational and predates this convention (`002`–`005` — `001` itself got `1`), was
+deliberately left unranked as order-independent of everything else (`019`), or was
+filed and closed the same day without ever entering an ordered backlog (`032`, `033`,
+`034`). `skills/loop` breaks ties on it when more than one spec is eligible.

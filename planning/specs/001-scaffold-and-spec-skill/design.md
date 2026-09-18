@@ -200,7 +200,7 @@ need migrating to stay readable (`T28` decides whether to migrate them anyway).
   hardcoded, since the useful set changes over time.
 - How long an interview a user will actually sit through. The contract removes the
   ceiling on questions, which is what the objective demands, but the sweep's
-  stopping rule ("nothing new twice") is the only brake. `T31` resolved this during
+  stopping rule (one clean pass ends it) is the only brake. `T31` resolved this during
   `T30`'s live run: rather than a per-phase escape hatch, the user can stop at any
   point in plain language, and is asked whether to write `planning/handoff.md`
   before actually stopping — see the interview contract in `SKILL.md`.

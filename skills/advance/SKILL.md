@@ -7,12 +7,12 @@ description: >
   yes/changes/defer, and asking live only when a question genuinely can't be
   inferred from the interview.
 when_to_use: >
-  Auto-chained from specloop:start's Phase 7 immediately after the per-spec
-  requirements Q&A ends — no separate invocation needed for the first pass over
-  a freshly-seeded set of specs. Also separately invocable to resume specs
-  deferred on an earlier pass, once there's no just-finished interview to chain
-  from. Trigger on phrasing like "close out the seeded specs", "advance the
-  specs", "/specloop:advance".
+  Auto-chained from specloop:start's Phase 8, right after every seeded spec's
+  requirements Q&A has ended (not per individual spec) — no separate invocation
+  needed for the first pass over a freshly-seeded set of specs. Also separately
+  invocable to resume specs deferred on an earlier pass, once there's no
+  just-finished interview to chain from. Trigger on phrasing like "close out
+  the seeded specs", "advance the specs", "/specloop:advance".
 ---
 
 # specloop: advance
