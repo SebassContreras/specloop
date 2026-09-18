@@ -109,6 +109,45 @@ there. See `planning/architecture.md`'s roadmap Fixed rules; both columns are no
 written/consulted in exactly one place (`skills/loop`), since the deterministic
 `loop run` CLI path that once lagged behind on this no longer exists.
 
+**`034` (dashboard-github-pages) closed 2026-09-17** — built and live-verified:
+`.github/workflows/dashboard.yml` regenerates `planning/dashboard.html` via
+`030`'s script on every push to `main` touching `planning/**`, then publishes
+via GitHub Pages' Actions-based flow; confirmed live at
+`sebasscontreras.github.io/specloop`. Also found the same session:
+`planning/fix/012` (the skill itself called the build script by a bare
+relative path, which only worked by accident inside this repo's own
+checkout — fixed via `${CLAUDE_PLUGIN_ROOT}`) and `planning/fix/013`
+(enabling Pages in Settings defaulted to a legacy branch/Jekyll source,
+which failed loudly on every push alongside the real Actions-based
+deploy — fixed via the Pages API). **`032`
+(automate-markdown-convention-check) closed the same day** — a new sibling
+script, `scripts/check-markdown-conventions.mjs`, checks the 7 canonical
+`requirements.md` headers and a sentence-case heading scan across every
+git-tracked `.md` file (`git ls-files`, broadened from the original
+filing's category list at the user's direction); the 7-header array moved
+into a new shared module, `scripts/shared/canonical-headers.mjs`, imported
+by both this script and `scripts/check-skill-consistency.mjs`, so the two
+can't drift on what "canonical" means. Repo-only dev tooling, same
+boundary as the script it extends — never scaffolded to a target repo.
+
+**`025` (master-handoff) and `029` (spec-worktree-isolation) declined
+2026-09-17 at design-closing, never built, folders deleted** — same
+treatment as `028`. `025`: researched rather than assumed that no harness
+(Claude Code confirmed via `anthropics/claude-code` issue #26340) exposes a
+self-usage-limit signal to the model, so the "detect and announce" this
+spec proposed would never fire; the actual resume path already works via
+`skills/loop`'s existing Phase 1/2 rules and on-disk state, with no new
+mechanism needed — the user also declined even a one-line proactive note
+in `skills/loop/SKILL.md` as unwarranted plugin surface. `029`: its own
+requirements.md gated design-closing on an unresolved roadmap-write
+reconciliation question; that question turned out moot — confirmed
+against a real, external project run that `skills/loop`'s existing
+file/section-overlap batching already runs independent tasks concurrently
+in the shared working tree with no git-level collision possible, the exact
+case worktree isolation would have served. Both recorded in
+`planning/architecture.md`'s Declined table; full reasoning there, not
+repeated here.
+
 ## Style
 
 Technical and direct, English. Terse and structural — no filler, no
