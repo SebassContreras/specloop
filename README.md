@@ -3,19 +3,46 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-5A67D8)](https://claude.com/claude-code)
 
-Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills) format,
-that unify how a project gets started and kept moving: they interview you, turn the
-answers into a roadmap that can be built step by step, and then run a CLI-agnostic loop
-— right in the chat session you're already in — to work through that roadmap. Distributed today as
-a [Claude Code](https://claude.com/claude-code) plugin for convenient installation —
-the same `SKILL.md` format is also read natively by Cursor, Codex CLI, Gemini CLI,
-OpenCode and others. OpenCode is live-verified (discovery, auto-trigger, and the
-interview's write-as-you-go loop all confirmed); Cursor and Codex CLI parity is
-tracked but not yet audited (see `planning/roadmap.md`'s `022`).
+Bootstrapping a new project the same way every time — interview yourself about
+scope and stack, write it down, break it into a backlog, then work through that
+backlog — is tedious enough to automate. Specloop is a set of skills that does
+exactly that: it interviews you, turns the answers into a roadmap you can build
+step by step, and then runs a CLI-agnostic loop, right in the chat session
+you're already in, to work through it largely unsupervised.
 
 Not software-only — an app, a website, a marketing or content project, an
-operations/research project, or anything else that needs a roadmap. The project type is
-the first thing the interview establishes, and it branches everything after it.
+operations/research project, or anything else that needs a roadmap. The project
+type is the first thing the interview establishes, and it branches everything
+after it.
+
+## Key concepts
+
+- **Spec** — one feature. Lives in `planning/specs/NNN-name/` as three files, in
+  order: `requirements.md` → `design.md` → `tasks.md`.
+- **Roadmap** — `planning/roadmap.md`, the single index of every spec: its
+  status, dependencies, pipeline stage, and build order.
+- **Loop** — the interactive chat session that works through a spec's
+  `tasks.md`. That session *is* the master; there's no separate process to
+  start or watch.
+- **Worker / harness** — the harness is the agent CLI itself (Claude Code,
+  OpenCode, Codex CLI, ...); a worker is one instance of it running a single
+  task. The loop always runs tasks through its own harness's native sub-agent
+  tool first — other configured harnesses exist for portability, not for
+  splitting load, unless you explicitly ask it to send work to one.
+- **`.specloop/`** — the loop's own state/config folder inside the target repo:
+  `loop.config.json`, the interview's coverage log, and run logs.
+
+Everything below builds on these five terms.
+
+## What this is
+
+Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills)
+format. Distributed today as a [Claude Code](https://claude.com/claude-code)
+plugin for convenient installation — the same `SKILL.md` format is also read
+natively by Cursor, Codex CLI, Gemini CLI, OpenCode and others. OpenCode is
+live-verified (discovery, auto-trigger, and the interview's write-as-you-go loop
+all confirmed); Cursor and Codex CLI parity is tracked but not yet audited (see
+`planning/roadmap.md`'s `022`).
 
 ## Demo
 
@@ -48,12 +75,26 @@ claude --plugin-dir /path/to/specloop
 (from inside the repo you want to bootstrap — not from this repo itself).
 
 For a harness that doesn't read `.claude-plugin/plugin.json`, there's no manifest to
-install — point it at (or copy) this repo's `skills/` directory into wherever that
-harness scans for skills. `.agents/skills/` is the vendor-neutral form to reach for
-first (several harnesses, including OpenCode, also accept `.opencode/skills/` or
-`.claude/skills/` as equivalent aliases, or a global home-directory equivalent). Which
-harnesses this has actually been verified against is tracked in `planning/roadmap.md`'s
-`022`, not asserted here.
+install — copy this repo's `skills/` directory into wherever that harness scans for
+skills. Per each harness's own docs:
+
+- **Codex CLI** — copy `skills/` to `.agents/skills/` in the target repo (Codex walks
+  up from the current directory to the repo root looking for
+  `.agents/skills/<name>/SKILL.md`), or `~/.agents/skills/` for a global install.
+  Auto-detected, no flag to enable. Source:
+  [OpenAI's build-skills guide](https://developers.openai.com/codex/skills).
+- **OpenCode** — copy `skills/` to `.opencode/skills/`, or either of the two aliases
+  OpenCode also reads, `.agents/skills/` or `.claude/skills/`, walking up to the git
+  worktree root; `~/.config/opencode/skills/` (or `~/.agents/skills/`,
+  `~/.claude/skills/`) for a global install. Source:
+  [OpenCode's skills doc](https://opencode.ai/docs/skills/).
+- **Any other Agent-Skills-compatible harness** — `.agents/skills/` is the
+  vendor-neutral path to try first, or a global home-directory equivalent.
+
+These are the paths each harness's own documentation says it scans — not a claim that
+the skill *behaves* the same once discovered there. OpenCode's actual behavior
+(discovery, auto-trigger, the interview's write-as-you-go loop) is live-verified;
+Codex CLI and Cursor are not — see `planning/roadmap.md`'s `022`.
 
 ## Quickstart
 
@@ -118,18 +159,29 @@ else is still one at a time, deliberately, never auto-triggered:
    (e.g. "do `007` yourself, send `008` to `codex`") — real cross-provider
    parallelism, only when you ask for it.
 
-Available any time, not part of that sequence: **`/specloop:status`** — read-only,
-reports the roadmap's state (active spec(s), task counts, anything stuck, what to
-run next, and any recorded `Stage`/`Status` that disagrees with the files on disk)
-as a chat summary, and writes a static `planning/dashboard.html` — regenerated
-fully each time you ask, never a background process. Works even before
-`/specloop:loop-setup` has run. The only skill with a runtime dependency beyond
-your harness: it runs `skills/status/scripts/build_dashboard.py`, which needs
-`python3` on `PATH` (standard library only, nothing to `pip install`).
-This repo's own dashboard is also published live at
-[sebasscontreras.github.io/specloop](https://sebasscontreras.github.io/specloop/),
-rebuilt by a GitHub Actions workflow on every push to `main` that touches
-`planning/`.
+Available any time, not part of that sequence:
+
+- **`/specloop:status`** — read-only, reports the roadmap's state (active
+  spec(s), task counts, anything stuck, what to run next, and any recorded
+  `Stage`/`Status` that disagrees with the files on disk) as a chat summary, and
+  writes a static `planning/dashboard.html` — regenerated fully each time you
+  ask, never a background process. Works even before `/specloop:loop-setup` has
+  run. The only skill with a runtime dependency beyond your harness: it runs
+  `skills/status/scripts/build_dashboard.py`, which needs `python3` on `PATH`
+  (standard library only, nothing to `pip install`). This repo's own dashboard
+  is also published live at
+  [sebasscontreras.github.io/specloop](https://sebasscontreras.github.io/specloop/),
+  rebuilt by a GitHub Actions workflow on every push to `main` that touches
+  `planning/`.
+- **`/specloop:amend`** — revises an already-advanced spec: edit its
+  `requirements.md`, or reopen a closed `design.md` for changes. Refuses outright
+  if any of that spec's tasks is `in_progress` (the loop might be actively
+  working it), and always asks for explicit confirmation before touching
+  anything already closed. Never chained automatically by any other skill.
+- **`/specloop:fix`** — logs one entry in `planning/fix/`: a correction to
+  something found wrong after the fact, not a new spec. No interview, no
+  phases — a short set of questions and it writes the file. This is the only
+  supported way to add an entry there.
 
 ## Docs
 
