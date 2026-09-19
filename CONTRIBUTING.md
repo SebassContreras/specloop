@@ -26,6 +26,8 @@ comment/commit rules. Existing history predates this and isn't rewritten.
 - `claude plugin validate .` — checks the plugin manifest/skills.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
+- Any other harness: copy `skills/` to `.agents/skills/` in a scratch repo (see the
+  README's Install section) and start the harness there.
 - `python3 /path/to/this/specloop/checkout/skills/status/scripts/build_dashboard.py`
   — run with a target repo's root as the working directory, but the script
   itself by its full path into this checkout (not a bare relative

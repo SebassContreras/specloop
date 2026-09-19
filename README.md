@@ -1,7 +1,7 @@
 # Specloop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Agent Skills: Claude Code, OpenCode](https://img.shields.io/badge/Agent%20Skills-Claude%20Code%20%C2%B7%20OpenCode-5A67D8)](https://github.com/agentskills/agentskills)
+[![Agent Skills: verified on 6 agent CLIs](https://img.shields.io/badge/Agent%20Skills-verified%20on%206%20agent%20CLIs-5A67D8)](#support-matrix)
 
 Bootstrapping a new project the same way every time — interview yourself about
 scope and stack, write it down, break it into a backlog, then work through that
@@ -25,7 +25,7 @@ after it.
   `tasks.md`. That session *is* the master; there's no separate process to
   start or watch.
 - **Worker / harness** — the harness is the agent CLI itself (Claude Code,
-  OpenCode, Codex CLI, ...); a worker is one instance of it running a single
+  OpenCode, Codex CLI, GitHub Copilot CLI, Cursor, Antigravity CLI); a worker is one instance of it running a single
   task. The loop always runs tasks through its own harness's native sub-agent
   tool first — other configured harnesses exist for portability, not for
   splitting load, unless you explicitly ask it to send work to one.
@@ -37,12 +37,11 @@ Everything below builds on these five terms.
 ## What this is
 
 Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills)
-format. Distributed today as a [Claude Code](https://claude.com/claude-code)
-plugin for convenient installation — the same `SKILL.md` format is also read
-natively by a growing list of agent CLIs and IDEs. Which of them are verified
-with specloop, and which are only documented so far, is in the
-[support matrix](#support-matrix) below (audit tracked in `planning/roadmap.md`'s
-`022`).
+format, verified on six agent CLIs: Claude Code, OpenCode, Codex CLI, GitHub Copilot CLI,
+Cursor and Antigravity CLI. Install and usage for each is under [Install](#install); the
+state per harness is in the [support matrix](#support-matrix) (audit tracked in
+`planning/roadmap.md`'s `022`). Claude Code also gets a plugin for convenient installation;
+every other harness reads the `skills/` folder directly.
 
 ## Demo
 
@@ -62,45 +61,118 @@ Captured material, dropped into .github/assets/ once generated (planning/specs/0
 <p align="center">
   <img src=".github/assets/demo-interview.gif" alt="specloop:start interview" width="700"><br>
   <sub>A live <code>/specloop:start</code> interview, running under OpenCode — one
-  question at a time, written to disk as it lands. Also runs under Claude Code via
-  the plugin install above.</sub>
+  question at a time, written to disk as it lands. Also runs under the other harnesses in
+  the support matrix below.</sub>
 </p>
 
 ## Install
 
-```
-claude --plugin-dir /path/to/specloop
-```
-
-(from inside the repo you want to bootstrap — not from this repo itself).
-
-For a harness that doesn't read `.claude-plugin/plugin.json`, there's no manifest to
-install — copy this repo's `skills/` directory into wherever that harness scans for
-skills. Codex CLI, OpenCode and most others read `.agents/skills/`, so from inside the
-repo you want to bootstrap:
+specloop is a folder of skills (`skills/`). Installing it means making your agent CLI see
+that folder from the repo you want to bootstrap — your **target** repo, not this one.
+Claude Code has a plugin shortcut; every other harness reads the folder from
+`.agents/skills/`. To copy it there, in bash or Git Bash:
 
 ```
 mkdir -p .agents && cp -r /path/to/specloop/skills .agents/skills
 ```
 
-Per each harness's own docs:
+or in PowerShell:
 
-- **Codex CLI** — copy `skills/` to `.agents/skills/` in the target repo (Codex walks
-  up from the current directory to the repo root looking for
-  `.agents/skills/<name>/SKILL.md`), or `~/.agents/skills/` for a global install.
-  Auto-detected, no flag to enable. Source:
-  [OpenAI's build-skills guide](https://developers.openai.com/codex/skills).
-- **OpenCode** — copy `skills/` to `.opencode/skills/`, or either of the two aliases
-  OpenCode also reads, `.agents/skills/` or `.claude/skills/`, walking up to the git
-  worktree root; `~/.config/opencode/skills/` (or `~/.agents/skills/`,
-  `~/.claude/skills/`) for a global install. Source:
-  [OpenCode's skills doc](https://opencode.ai/docs/skills/).
-- **Any other Agent-Skills-compatible harness** — `.agents/skills/` is the
-  vendor-neutral path to try first, or a global home-directory equivalent.
+```
+New-Item -ItemType Directory -Force .agents | Out-Null
+Copy-Item -Recurse C:\path\to\specloop\skills .agents\skills
+```
 
-These are the paths each harness's own documentation says it scans — not a claim that
-the skill *behaves* the same once discovered there. Only a `verified` row in the
-[support matrix](#support-matrix) below is that claim.
+Then pick your harness below. You don't need a command name to start: in every non-Claude
+harness audited, a plain request activated the right skill unprompted — "I need to set up
+a new project and get it organized from scratch." for `start`, "where are we? give me the
+status of this project's roadmap" for `status`. The `/specloop:<name>` form used in the
+[Quickstart](#quickstart) is Claude Code's plugin namespace.
+
+The *Headless* bullets are for scripts and CI (no interactive session); ordinary use needs
+none of those flags. Several grant the CLI permission to run commands and write files
+without asking, so use them in throwaway or trusted repos only.
+
+### Claude Code
+
+- **CLI:** [claude.com/claude-code](https://claude.com/claude-code).
+- **Install specloop:** from your target repo, `claude --plugin-dir /path/to/specloop`.
+  Skills are namespaced: `/specloop:start`, `/specloop:status`, ... Or copy `skills/` to
+  `.claude/skills/`.
+- **Context:** `CLAUDE.md` is a one-line import of `AGENTS.md`, which Claude Code resolves.
+- **Headless:** `claude -p "<prompt>" --plugin-dir /path/to/specloop --allowedTools Bash Read`.
+
+### OpenCode
+
+- **CLI:** [opencode.ai](https://opencode.ai). Works with whichever model it is configured
+  for (audited with a model that is neither Anthropic's nor OpenAI's).
+- **Install specloop:** copy `skills/` to `.agents/skills/`. It also reads `.opencode/skills/`
+  and `.claude/skills/`; globally `~/.config/opencode/skills/` or `~/.agents/skills/`.
+  [Its skills doc](https://opencode.ai/docs/skills/).
+- **Context:** reads `AGENTS.md`.
+- **Headless:** `opencode run "<prompt>"`; add `--format json` for raw events.
+
+### Codex CLI
+
+- **CLI:** `pnpm add -g @openai/codex`, then sign in per its
+  [docs](https://developers.openai.com/codex/skills).
+- **Install specloop:** copy `skills/` to `.agents/skills/` (globally `~/.agents/skills/`).
+  Auto-detected, no flag to enable.
+- **Context:** reads `AGENTS.md`.
+- **Headless:** `codex exec "<prompt>"`; continue with `codex exec resume --last`; add
+  `--json` for events.
+- **Windows:** leave the sandbox mode at your own configuration's default. Forcing
+  `-s workspace-write` made Codex reject every process it tried to start.
+
+### GitHub Copilot CLI
+
+- **CLI:** `pnpm add -g @github/copilot` or `winget install GitHub.Copilot`, then
+  `copilot login` ([docs](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started)).
+  The Free plan includes the CLI, with limited credits.
+- **Install specloop:** copy `skills/` to `.agents/skills/`. It also reads `.github/skills/` and
+  `.claude/skills/`; globally `~/.copilot/skills/` or `~/.agents/skills/`. Check with
+  `copilot skill list`.
+- **Context:** reads `AGENTS.md` (`copilot instruction list` shows it).
+- **Headless:** `copilot -p "<prompt>" --allow-all-tools` — the flag is required in
+  non-interactive mode. Name a session with `-n <name>` and continue it with `-r <name>`.
+
+### Cursor
+
+- **CLI:** PowerShell `irm 'https://cursor.com/install?win32=true' | iex`; macOS, Linux or WSL
+  `curl https://cursor.com/install -fsS | bash`; then `cursor-agent login`
+  ([docs](https://cursor.com/docs/cli/overview)). The command is `cursor-agent` (the
+  installer also creates `agent`). Audited on the Free plan.
+- **Install specloop:** copy `skills/` to `.agents/skills/` (or `.cursor/skills/`); the CLI loads
+  them. It also loads skills from your `~/.claude/skills` and its own built-ins, one of which is
+  also named `loop` — check which one answers.
+- **Context:** reads `AGENTS.md`.
+- **Headless:** `cursor-agent -p "<prompt>" --trust --force`. `--trust` is required (otherwise it
+  stops at "Workspace Trust Required"); `--force` lets it write files and run commands without
+  asking. Continue with `cursor-agent create-chat`, then `--resume <id>`.
+
+### Antigravity CLI
+
+- **CLI:** PowerShell `irm https://antigravity.google/cli/install.ps1 | iex`; macOS or Linux
+  `curl -fsSL https://antigravity.google/cli/install.sh | bash`
+  ([docs](https://antigravity.google/docs/cli/install)). The command is `agy`. Sign in once by
+  running `agy` interactively with a Google account: headless mode before that prints a URL
+  and times out.
+- **Install specloop:** copy `skills/` to `.agents/skills/`.
+- **Context:** reads `AGENTS.md`. Its own data lives in `~/.gemini/antigravity-cli`.
+- **Headless — read this:** `agy -p "<prompt>" --add-dir /absolute/path/to/repo --mode accept-edits`.
+  `--add-dir` is required, with an **absolute** path (`.` did not work): without it `agy -p`
+  loads only its built-in skills. Continue with `--conversation <id>` (the id is in the `init`
+  event of `--output-format stream-json`).
+- **Limits:** in headless mode it edits files but auto-denies shell commands unless you allow
+  them in its own settings, so it can't run tests. Avoid `--dangerously-skip-permissions`: in the
+  audit the agent then read files outside the repo. Interactive mode was not audited.
+
+### Any other harness
+
+`.agents/skills/` is the vendor-neutral path to try first, or a global home-directory
+equivalent. The paths in the matrix below are what each harness's own documentation says it
+scans — not a claim that the skill behaves the same once discovered there. Only a `verified`
+row is that claim.
 
 ### Support matrix
 
@@ -120,12 +192,16 @@ more; a row ends as `verified` (the four audit checks passed) or `discarded` (wi
 ## Quickstart
 
 Run these skills from inside your **target** repo, whenever each is actually ready.
+Command names below use Claude Code's `/specloop:<name>` form. Under every other harness
+the skills carry no `specloop:` prefix: say what you want in plain words (see
+[Install](#install)), or invoke the skill by its bare name (`start`, `advance`, `status`,
+...) if your harness offers that.
 Only one link in this chain is automatic — `/specloop:start` chains straight into
 `/specloop:advance` once every seeded spec's requirements are filled; everything
 else is still one at a time, deliberately, never auto-triggered:
 
-1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` +
-   `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
+1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` (a one-line
+   import for Claude Code) + `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
    project type → goal/audience/MVP → technologies, architecture and tools →
    recommended skills/plugins already available in your session → styles and
    preferences. Each answer is written to disk as it lands, the roadmap is seeded from
@@ -162,8 +238,8 @@ else is still one at a time, deliberately, never auto-triggered:
    list, while the `[owner]`/`[status:...]` tags carry the agent/human split and
    5-state status a plain checkbox can't. Also runs directly, same as
    `design-closing` above.
-5. **`/specloop:loop-setup`** — one-time step: asks which worker CLI(s) to use and
-   writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
+5. **`/specloop:loop-setup`** — one-time step: asks which worker CLI(s) to use (`claude`, `codex`,
+   `opencode`, `copilot`, `cursor-agent`, `agy`, or another) and writes `.specloop/loop.config.json`. Nothing to install — the loop folder's
    config already exists from step 1; this fills in the rest.
 6. **`/specloop:loop`** — the only way to run it: this chat session is the master.
    It reads the roadmap and tasks itself, works every eligible spec in turn

@@ -45,6 +45,11 @@ const ALLOWED_WORDS = new Set([
   'Tasks',
   'Requirements',
 
+  // Product names in the README's per-harness Install headings
+  // (`### Claude Code`, `### GitHub Copilot CLI`): proper nouns, not sentence text.
+  'Code',
+  'Copilot',
+
   // `### Phase N — <Clause>` / `### Step N — <Clause>` sub-headings: this
   // repo's own established convention (predates this check, left untouched
   // by 031) capitalizes the clause after the em dash like a mini-title, not

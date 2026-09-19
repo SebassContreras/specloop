@@ -26,7 +26,8 @@ when_to_use: >
 CLI watching over you, and none to install — you read the state, launch the
 workers, and decide, right here, in this conversation. This holds under
 whichever compatible harness is running this skill (Claude Code, OpenCode,
-Codex CLI, or another) — nothing here is specific to one provider.
+Codex CLI, GitHub Copilot CLI, Cursor, Antigravity CLI, or another) — nothing here is
+specific to one provider.
 
 ## Phase 0 — Preconditions
 
@@ -140,7 +141,8 @@ tasks mostly touch shared files — not a failure to parallelize.
 
 **Pick the worker once per batch, not per task: the `config.workers` entry
 whose `cli` matches this session's own harness/provider** (e.g. `claude`
-under Claude Code, `opencode` under OpenCode, `codex` under Codex CLI) —
+under Claude Code, `opencode` under OpenCode, `codex` under Codex CLI, `copilot` under
+GitHub Copilot CLI, `cursor-agent` under Cursor, `agy` under Antigravity CLI) —
 **never round-robin across the other configured entries.** The rest of
 `config.workers` exists for portability (a different session, under a
 different harness, finds its own matching entry in the same file) and for

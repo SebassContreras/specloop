@@ -5,7 +5,7 @@ description: >
   planning/architecture.md, planning/roadmap.md, planning/specs/NNN-name/{requirements,
   design,tasks}.md, .specloop/) in the current repo, then run the full guided
   interview: project type, goal, technologies/architecture/tools, recommended
-  Claude Code skills, styles/preferences — seeding the roadmap from the answers
+  skills/plugins for your agent, styles/preferences — seeding the roadmap from the answers
   and filling each spec's requirements one at a time.
 when_to_use: >
   Use when the user wants to bootstrap a new project's docs from scratch, or
@@ -74,8 +74,9 @@ are just where answers land.
   here", or similar. Before actually stopping, ask whether to write `planning/handoff.md`.
   If yes, write a point-in-time note in the shape of this repo's own `planning/handoff.md`
   template: what's covered per the ledger, what's still `open`/`skipped` and why, and the
-  exact command to resume (`claude --plugin-dir <path-to-specloop>` then `/specloop:start`
-  — the ledger picks up at the first `open` dimension). Never stop silently: a bare `open`
+  how to resume (start your harness in this repo and invoke `start` — under Claude Code,
+  `claude --plugin-dir <path-to-specloop>` then `/specloop:start`; the ledger picks up at the
+  first `open` dimension). Never stop silently: a bare `open`
   row in the ledger says *that* something is unanswered, not *why*, which is what a
   resuming session or person actually needs.
 
@@ -110,8 +111,8 @@ Create, only if missing:
 
   @AGENTS.md
   ```
-  Claude Code resolves `@path` imports; `codex`/`opencode` read `AGENTS.md` directly.
-  Both CLIs therefore see one set of facts. Never write project content into
+  Claude Code resolves `@path` imports; the other harnesses in the README's support
+  matrix read `AGENTS.md` directly. Every harness therefore sees one set of facts. Never write project content into
   `CLAUDE.md` itself.
 - **`planning/product.md`** — headers only: "What this is", "Who uses it", "Out of scope".
 - **`planning/architecture.md`** — headers keyed to `project-type` (asked in Phase 2,

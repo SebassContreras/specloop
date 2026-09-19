@@ -50,7 +50,7 @@ whose answer won't be exercised yet.
 Ask, one at a time, waiting for each reply:
 
 1. **Worker CLI** — "Which CLI(s) might ever run this loop — `claude`,
-   `codex`, `opencode`, or another command on PATH? List every one you might
+   `codex`, `opencode`, `copilot`, `cursor-agent`, `agy`, or another command on PATH? List every one you might
    use, even from a different machine or harness later — the loop always
    picks whichever entry matches the session actually running it, never
    splits work across the others." → `workers`, an array of `{ "cli": "...",
@@ -62,8 +62,17 @@ Ask, one at a time, waiting for each reply:
    TTY, stdin
    closed) — a CLI invoked without its non-interactive flag will hang. **Never
    ask the user for a known CLI's headless flag — it's a fixed fact of that
-   CLI, not a preference.** Use this map: `claude` → `-p`, `codex` → `exec`,
-   `opencode` → `run`. Only ask "what's its headless/non-interactive flag?"
+   CLI, not a preference.** Use this map (each value is the whole `args` array):
+   `claude` → `["-p"]`, `codex` → `["exec"]`, `opencode` → `["run"]`,
+   `copilot` → `["--allow-all-tools", "-p"]`, `cursor-agent` →
+   `["--trust", "--force", "-p"]`, `agy` → `["--add-dir", "<absolute path of this
+   repo>", "--mode", "accept-edits", "-p"]`. For `agy`, write this repo's real absolute
+   path: a relative one doesn't work, and without `--add-dir` its headless mode loads
+   no project skills. Say plainly, once, that `copilot` and `cursor-agent` need those
+   flags to run headless and that they let the worker write files and run commands
+   without asking, and that `agy`'s headless mode edits files but auto-denies shell
+   commands unless the user allows them in its own settings, so an `agy` worker can't
+   run tests. Only ask "what's its headless/non-interactive flag?"
    for a CLI not in that map. Mention this once, plainly: `specloop:loop`
    always uses whichever entry's provider matches the session running it,
    and prefers that harness's own native sub-agent mechanism over this CLI

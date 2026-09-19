@@ -58,8 +58,8 @@ body:
     attributes:
       label: Environment
       description: >
-        OS, which harness ran the skill (Claude Code/OpenCode/Codex CLI/...), worker
-        CLI(s) (claude/codex/opencode/...), and `python3` version if the bug is in
+        OS, which harness ran the skill (Claude Code/OpenCode/Codex CLI/GitHub Copilot CLI/Cursor/
+        Antigravity CLI/...), worker CLI(s) (claude/codex/opencode/copilot/cursor-agent/agy/...), and `python3` version if the bug is in
         `specloop:status` (the only skill with a Python dependency).
     validations:
       required: false
