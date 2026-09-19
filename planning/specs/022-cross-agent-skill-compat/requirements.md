@@ -49,12 +49,10 @@ filtered to clients that can be driven from a terminal. Non-CLI clients on that 
 
 - **Already audited:** Claude Code, OpenCode (`T003`), Codex CLI (`T002`, agent-driven
   run recorded 2026-09-19).
-- **High-usage:** Cursor (`cursor-agent`), Gemini CLI.
-- **Open-source terminal agents:** Mistral Vibe, pi, Hermes Agent, Autohand Code CLI,
-  Deep Code, Workshop.
-- **Commercial:** Letta Code, GitHub Copilot, Junie. The official list does not
-  confirm a CLI for several of these, so confirming that a CLI exists is the first step
-  for each, not an assumption.
+- **High-usage:** Cursor (`cursor-agent`), Antigravity CLI (`agy`, Google's
+  replacement for Gemini CLI).
+- **Open-source terminal agents:** Hermes Agent, Workshop.
+- **Commercial:** GitHub Copilot.
 
 Every roster entry is audited against the same four-dimension matrix, and ends in one of
 two final states only: `verified` or `discarded` (with a stated reason).
@@ -135,6 +133,16 @@ these extend, not replace, them):*
   team/enterprise deployment, sits on a paid plan (~$59/user/month, per third-party
   sources) with no personal signup path found, and no headless flags were found in its
   docs. Re-add through an amendment if a team account ever exists.
+- Gemini CLI — replaced on the roster by Antigravity CLI 2026-09-19 at the user's
+  direction: on 2026-06-18 Google stopped serving Gemini CLI to free, Google AI Pro and
+  Ultra users (per Google's own announcement it stays available to enterprise licences
+  and paid API keys), so it can't be used here without a paid key. Antigravity CLI is
+  Google's successor.
+- Mistral Vibe, pi, Autohand Code CLI, Deep Code, Letta Code and Junie — removed from the roster
+  2026-09-19 at the user's direction. Each was installed and passed a startup smoke test
+  (`--version`, `--help`), then uninstalled because each needs its own account or API key
+  and the owner won't test them. Their install/auth notes stay in the owner's personal
+  harness guide; re-add through an amendment if that changes.
 - Any harness not on the roster above; the roster only grows or shrinks through an
   amendment.
 

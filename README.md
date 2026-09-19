@@ -114,16 +114,10 @@ more; a row ends as `verified` (the four audit checks passed) or `discarded` (wi
 | OpenCode | verified | `.opencode/skills/`, `.agents/skills/`, `.claude/skills/` · `~/.config/opencode/skills/`, `~/.agents/skills/` | `022` T003 |
 | Codex CLI | pending | `.agents/skills/` · `~/.agents/skills/` | `022` T002 note: agent-driven run passed all four checks, closing call pending |
 | Cursor | documented | `.agents/skills/`, `.cursor/skills/` · `~/.agents/skills/`, `~/.cursor/skills/` | [skills](https://cursor.com/docs/skills), [CLI](https://cursor.com/docs/cli/overview) (command `agent`); docs don't say the CLI loads skills — `T001` |
-| Gemini CLI | documented | `.gemini/skills/`, `.agents/skills/` · `~/.gemini/skills/`, `~/.agents/skills/` | [docs](https://geminicli.com/docs/cli/skills/) |
-| Mistral Vibe | documented | `.vibe/skills/`, `.agents/skills/` · `~/.vibe/skills/`, `~/.agents/skills/` | [repo](https://github.com/mistralai/mistral-vibe) (command `vibe`, `--prompt`) |
-| pi | documented | `.pi/skills/`, `.agents/skills/` · `~/.pi/agent/skills/`, `~/.agents/skills/` | [docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md) |
+| Antigravity CLI | documented | `.agents/skills/` (project; global path not found) | [install](https://antigravity.google/docs/cli/install), [skills codelab](https://codelabs.developers.google.com/antigravity/how-to-create-agent-skills-for-antigravity-cli) (command `agy`, `-p`); Google's docs don't say whether a free account works — `T013` |
 | Hermes Agent | documented | `.hermes/skills/`, `.agents/skills/` · `~/.hermes/skills/` | [docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) (command `hermes`) |
-| Autohand Code CLI | documented | `.autohand/skills/` · `~/.autohand/skills/` — no `.agents/skills/` | [docs](https://docs.autohand.ai/working-with-autohand-code/agent-skills.html) (command `autohand`) |
-| Deep Code | documented | `.deepcode/skills/`, `.agents/skills/` · `~/.deepcode/skills/`, `~/.agents/skills/` | [docs](https://deepcode.vegamo.cn/en/docs/configuration/agent-skills), [repo](https://github.com/lessweb/deepcode-cli) (command `deepcode`) |
 | Workshop | pending | not found | official docs reached name no CLI command or skills path; step 1 unresolved — `T020` |
-| Letta Code | documented | `.agents/skills/` · `~/.letta/skills/` | [docs](https://docs.letta.com/letta-code/skills/) (command `letta`) |
 | GitHub Copilot CLI | documented | `.github/skills/`, `.claude/skills/`, `.agents/skills/` · `~/.copilot/skills/`, `~/.agents/skills/` | [docs](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) |
-| Junie CLI | documented | `.junie/skills/`, `.agents/skills/` · `~/.junie/skills/`, `~/.agents/skills/` | [docs](https://junie.jetbrains.com/docs/agent-skills.html) |
 
 ## Quickstart
 
