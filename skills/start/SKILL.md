@@ -54,6 +54,14 @@ are just where answers land.
   "the integration", "our brand guidelines", that noun is a new open dimension. Ask.
 - **A skip is recorded, never silently dropped.** "Don't care" / "later" / "not
   relevant" → `skipped`, with the reason.
+- **Ask in plain chat text by default.** Never call the harness's structured-question
+  tool (a selectable-options dialog, where one exists) for an open-ended dimension —
+  `goal`, `audience`, `mvp`, `done-when` and the rest. That tool needs a list of options,
+  an open question has none, and whatever goes there is filler ("Type your answer",
+  "Answer in own words", "Skip") beside the free-text choice the harness already adds.
+  Use it only for a closed choice with 2–6 real alternatives (`project-type`, a yes/no
+  confirmation), where every option is an actual answer and none is a skip. Never
+  preselect a skip: a stray Enter would record a `skipped` the user didn't ask for.
 - **Never infer an answer to close a dimension.** Leave it `open` and ask again in the
   sweep. `TBD` on disk is always better than a guess.
 - **Help the user decide when they're unsure.** If the answer shows genuine

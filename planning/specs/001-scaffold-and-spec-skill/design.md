@@ -62,6 +62,14 @@ T15–T27 and `planning/architecture.md`'s "Declined" preamble.
 Eight phases. `SKILL.md` is the authoritative statement of each; this records *why*
 each is shaped the way it is.
 
+**Question delivery (`planning/fix/017`, 2026-09-19)**: the interview contract says how
+to ask, not just what. OpenCode's `question` tool takes a header, the question text and
+a list of options, and adds its own free-text choice; asked an open question such as
+`goal`, a model fills the list with filler ("Type your answer", "Skip for now"), and a
+stray Enter on the preselected skip records a `skipped` nobody asked for. So open-ended
+dimensions are plain chat text, and a structured-question tool is for closed choices
+with real alternatives only. Harness-neutral on purpose: the skill runs under six.
+
 ### Phase 0 — Detect state
 
 Branches on `.specloop/interview.md` first: if a ledger exists, this is a resumed
