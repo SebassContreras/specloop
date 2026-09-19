@@ -16,11 +16,40 @@ this spec's acceptance criteria). Per harness, record:
 | `when_to_use` tolerance | The harness ignores the non-base-spec `when_to_use` frontmatter key gracefully — vs. erroring, silently dropping the whole skill, or otherwise choking. |
 | Multi-turn Q&A loop | `start`'s one-question-at-a-time, write-as-you-go interview survives a full phase (ask → wait for reply → write to disk → ask next) without the harness collapsing turns, auto-answering, or losing the running context between questions. |
 
-Each of these is binary human judgment from a live session, not something inferable
-from documentation — hence `human`-owned tasks, same reasoning as `001` T30. A harness
+Each of these is a binary observation of a real run, not something inferable from
+documentation. *Amended 2026-09-19:* the run may be driven by an agent through the
+harness's non-interactive mode (Codex's `codex exec` / `codex exec resume --last`, see
+`T002`'s note) and still counts as `verified`; a live human session stays an option
+(`T003` was one) and is the fallback for a harness with no non-interactive mode — those
+tasks stay `human`-owned, same reasoning as `001` T30. A harness
 that fails the multi-turn row doesn't get marked "partial support" — it gets recorded
 as "cannot run `start`," per the hard constraint that this must be documented, not
 smoothed over.
+
+**1a. Roster, states and method (amended 2026-09-19).** The roster is the list in
+`requirements.md`; this section is how each entry gets processed. Per harness, states
+move `pending` → `documented` (interim) → `verified` | `discarded`:
+
+1. *Confirm a CLI exists and find its skill scan path* from the harness's own official
+   docs, citing them. No CLI, or no skills support: `discarded` with that reason. This
+   is `documented` for the ones that pass.
+2. *Install it* in an isolated fixture — its own `.git` (the `T003` lesson: without one,
+   the harness walks up and reads this repo's real `AGENTS.md`/`planning/`) and a copy of
+   `skills/` in the path from step 1. Can't obtain or run it here (paid account, waitlist,
+   platform-only): `discarded`, reason stated.
+3. *Run the four dimensions.* Prefer the non-interactive mode; drive `start` turn by turn
+   through its resume mechanism, checking each turn's final message holds one question
+   and that the answer hit disk first. If the non-interactive mode doesn't load a full
+   `SKILL.md` (a third-party source claims Gemini CLI's headless mode doesn't — unverified),
+   fall back to an interactive/human run rather than counting a partial result.
+4. *Record* the evidence as a note on that harness's task in `tasks.md` and update its
+   row in `README.md`'s support matrix.
+
+A harness sandbox rejecting process spawn (Codex on Windows with an explicit
+`-s workspace-write`) is a harness/OS limit, not a skill failure: record it and rerun
+under the harness's own default, don't score it against the skill. Because `discarded`
+covers "not runnable here", a harness that only fails for lack of access still resolves
+to a final state, but the reason must say so rather than implying the skill was tested.
 
 **2. Skill-recommendation step (`skills/start/SKILL.md` Phase 4 / `question-bank.md`
 Phase C `helper-skills`).** Generalize it. The current wording — "name the Claude Code
@@ -66,6 +95,11 @@ changes and item 1 is read-only observation. Additive, as required.
   the file that are legitimately Claude-Code-specific (the `.claude-plugin/plugin.json`
   / `claude --plugin-dir` distribution mentions).
 - `planning/specs/022-cross-agent-skill-compat/tasks.md` populated (this pass).
+- *Amended 2026-09-19:* a support-matrix table in `README.md`'s `## Install` (one row per
+  roster harness: state, scan path, evidence pointer) — the only per-harness list;
+  `planning/architecture.md`'s Container section is reduced to a pointer at it when the
+  audit closes, not edited piecemeal per harness. `tasks.md` gains one audit task per
+  roster harness (via `specloop:task-breakdown`, offered, not automatic).
 - Not in this pass: the live audit itself (`human`-owned, needs real sessions in each
   tool) and the resulting `planning/architecture.md` Container update from "unaudited"
   to named-verified harnesses — both blocked on that audit landing.
@@ -74,16 +108,18 @@ changes and item 1 is read-only observation. Additive, as required.
 
 Wording/doc fixes (items 2, 3) and the consistency-script check are independent of the
 audit and land now. The audit (item 1) and the `architecture.md` update it unlocks stay
-`blocked`/`todo` until a human runs each harness — no shortcut around that; a
-documentation-only "looks compatible" claim is exactly what the hard constraint rules
-out.
+`blocked`/`todo` until each harness is actually run (by an agent through its
+non-interactive mode, or by a human) — no shortcut around that; a documentation-only
+"looks compatible" claim is exactly what the hard constraint rules out. Within the
+amended roster, run the cheap step first for all (step 1: does a CLI exist, where does it
+scan) so impossible entries are `discarded` before any install effort is spent.
 
 ## Open questions / deferred
 
 - Gemini CLI, GitHub Copilot, Windsurf, Goose — named in the research as also reading
-  the format, but not in this spec's acceptance criteria. Left for a future pass or a
-  follow-up spec if the three-harness audit surfaces something that makes them worth
-  prioritizing sooner.
+  the format, but not in the original acceptance criteria. *Amended 2026-09-19:* Gemini
+  CLI and GitHub Copilot are now on the roster (`requirements.md`). Windsurf and Goose
+  stay deferred — neither was in the groups chosen — and can be added by a further amend.
 - Whether a real install script (vs. documentation) is worth building — deferred until
   the audit confirms which scan paths actually matter in practice, per
   `requirements.md`'s "start from documentation... before building tooling" scoping.

@@ -21,7 +21,7 @@ we, what's next."
 | 018 | project-style-preferences     | done        | 014, 016           | —            | 6        |
 | 019 | public-showcase               | in_progress | 001, 005           | —            | —        |
 | 020 | checklist-task-format         | done        | 002, 003           | —            | 15       |
-| 022 | cross-agent-skill-compat      | done        | 001                | —            | 17       |
+| 022 | cross-agent-skill-compat      | done        | 001                | tasks_ready  | 17       |
 | 023 | fix-log                       | done        | —                  | —            | 18       |
 | 024 | loop-skill-verification       | done        | 002                | —            | 8        |
 | 026 | dashboard-visual-enhancements | done        | 009                | —            | 11       |
