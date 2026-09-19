@@ -32,8 +32,11 @@ comment/commit rules. Existing history predates this and isn't rewritten.
   `skills/status/scripts/build_dashboard.py` — that only exists here, not in
   the target repo you're testing against) — to exercise `specloop:status`'s
   dashboard generation without going through the skill. The skill itself
-  uses `${CLAUDE_PLUGIN_ROOT}` for this same reason — see
-  `planning/fix/012-status-script-path-not-portable.md`.
+  uses `${CLAUDE_PLUGIN_ROOT}` for this same reason under Claude Code, and
+  falls back to resolving the script relative to the skill's own directory
+  under other harnesses — see
+  `planning/fix/012-status-script-path-not-portable.md` and
+  `planning/fix/014-status-script-path-non-claude-harness.md`.
 
 ## Choose the right path
 

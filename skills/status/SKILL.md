@@ -47,6 +47,19 @@ repo's root (unrelated to the script's own path) — the script reads
 `planning/roadmap.md`/every spec's `tasks.md` and writes
 `planning/dashboard.html` relative to it.
 
+**If the placeholder reaches you unsubstituted** — the literal text
+`${CLAUDE_PLUGIN_ROOT}` still in the command, which happens under any
+harness other than Claude Code — don't run it as-is and don't invent another
+variable name. Instead resolve `scripts/build_dashboard.py` against the
+directory this `SKILL.md` was loaded from (the Agent Skills format's own
+convention: bundled files are relative to the skill root), and if this
+harness never told you that directory, look for `status/scripts/build_dashboard.py`
+under `.agents/skills/`, `.opencode/skills/` and `.claude/skills/` in the
+target repo, then under `~/.agents/skills/` and `~/.config/opencode/skills/`.
+Run the script by its absolute path, still with the target repo's root as the
+working directory. If none of those exist, say so and stop — same as any
+other script failure below.
+
 This one script owns all of the mechanical work — reading
 `planning/roadmap.md` and every spec's `tasks.md`, computing task counts and
 eligibility, detecting the five `Stage`/`Status` drift rules, reading
