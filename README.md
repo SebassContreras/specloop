@@ -39,10 +39,10 @@ Everything below builds on these five terms.
 Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills)
 format. Distributed today as a [Claude Code](https://claude.com/claude-code)
 plugin for convenient installation — the same `SKILL.md` format is also read
-natively by Cursor, Codex CLI, Gemini CLI, OpenCode and others. OpenCode is
-live-verified (discovery, auto-trigger, and the interview's write-as-you-go loop
-all confirmed); Cursor and Codex CLI parity is tracked but not yet audited (see
-`planning/roadmap.md`'s `022`).
+natively by a growing list of agent CLIs and IDEs. Which of them are verified
+with specloop, and which are only documented so far, is in the
+[support matrix](#support-matrix) below (audit tracked in `planning/roadmap.md`'s
+`022`).
 
 ## Demo
 
@@ -99,9 +99,34 @@ Per each harness's own docs:
   vendor-neutral path to try first, or a global home-directory equivalent.
 
 These are the paths each harness's own documentation says it scans — not a claim that
-the skill *behaves* the same once discovered there. OpenCode's actual behavior
-(discovery, auto-trigger, the interview's write-as-you-go loop) is live-verified;
-Codex CLI and Cursor are not — see `planning/roadmap.md`'s `022`.
+the skill *behaves* the same once discovered there. Only a `verified` row in the
+[support matrix](#support-matrix) below is that claim.
+
+### Support matrix
+
+Per-harness state, the only place it is listed (`planning/specs/022-cross-agent-skill-compat`).
+`documented` is interim — the harness's own docs name where it scans for skills, nothing
+more; a row ends as `verified` (the four audit checks passed) or `discarded` (with a reason).
+
+| Harness | State | Skills scan path (project · global) | Evidence |
+| --- | --- | --- | --- |
+| Claude Code | verified | `.claude/skills/`, or `--plugin-dir` | native host |
+| OpenCode | verified | `.opencode/skills/`, `.agents/skills/`, `.claude/skills/` · `~/.config/opencode/skills/`, `~/.agents/skills/` | `022` T003 |
+| Codex CLI | pending | `.agents/skills/` · `~/.agents/skills/` | `022` T002 note: agent-driven run passed all four checks, closing call pending |
+| Cursor | documented | `.agents/skills/`, `.cursor/skills/` · `~/.agents/skills/`, `~/.cursor/skills/` | [skills](https://cursor.com/docs/skills), [CLI](https://cursor.com/docs/cli/overview) (command `agent`); docs don't say the CLI loads skills — `T001` |
+| Gemini CLI | documented | `.gemini/skills/`, `.agents/skills/` · `~/.gemini/skills/`, `~/.agents/skills/` | [docs](https://geminicli.com/docs/cli/skills/) |
+| Mistral Vibe | documented | `.vibe/skills/`, `.agents/skills/` · `~/.vibe/skills/`, `~/.agents/skills/` | [repo](https://github.com/mistralai/mistral-vibe) (command `vibe`, `--prompt`) |
+| pi | documented | `.pi/skills/`, `.agents/skills/` · `~/.pi/agent/skills/`, `~/.agents/skills/` | [docs](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/skills.md) |
+| Hermes Agent | documented | `.hermes/skills/`, `.agents/skills/` · `~/.hermes/skills/` | [docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) (command `hermes`) |
+| Autohand Code CLI | documented | `.autohand/skills/` · `~/.autohand/skills/` — no `.agents/skills/` | [docs](https://docs.autohand.ai/working-with-autohand-code/agent-skills.html) (command `autohand`) |
+| Deep Code | documented | `.deepcode/skills/`, `.agents/skills/` · `~/.deepcode/skills/`, `~/.agents/skills/` | [docs](https://deepcode.vegamo.cn/en/docs/configuration/agent-skills), [repo](https://github.com/lessweb/deepcode-cli) (command `deepcode`) |
+| nanobot | documented | `~/.nanobot/workspace/skills/` only — no project-level directory found | [docs](https://nanobot.wiki/docs/0.1.5/use-nanobot/skills), [repo](https://github.com/HKUDS/nanobot) (command `nanobot`, `-m`) |
+| Workshop | pending | not found | official docs reached name no CLI command or skills path; step 1 unresolved — `T020` |
+| Tabnine CLI | documented | `.tabnine/agent/skills/`, `.agents/skills/` · `~/.tabnine/agent/skills/`, `~/.agents/skills/` | [docs](https://docs.tabnine.com/main/getting-started/tabnine-cli/features/agent-skills) |
+| Letta Code | documented | `.agents/skills/` · `~/.letta/skills/` | [docs](https://docs.letta.com/letta-code/skills/) (command `letta`) |
+| Kiro | documented | `.kiro/skills/` · `~/.kiro/skills/` | [docs](https://kiro.dev/docs/skills/) |
+| GitHub Copilot CLI | documented | `.github/skills/`, `.claude/skills/`, `.agents/skills/` · `~/.copilot/skills/`, `~/.agents/skills/` | [docs](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) |
+| Junie CLI | documented | `.junie/skills/`, `.agents/skills/` · `~/.junie/skills/`, `~/.agents/skills/` | [docs](https://junie.jetbrains.com/docs/agent-skills.html) |
 
 ## Quickstart
 

@@ -4,17 +4,14 @@
 
 **An Agent Skills package, distributed today as a Claude Code Plugin.** The skills
 themselves (`SKILL.md`: `name`/`description`/`when_to_use` frontmatter + instructions)
-target the open, cross-tool Agent Skills format — the same format Cursor, Codex CLI,
-Gemini CLI, GitHub Copilot, OpenCode, Windsurf and Goose all read natively, several via
-the vendor-neutral `.agents/skills/<name>/SKILL.md` discovery path (OpenCode confirmed
-also accepts `.opencode/skills/` and `.claude/skills/` as equivalent aliases).
-`.claude-plugin/
-plugin.json` is a *distribution* convenience for `claude --plugin-dir` installs, not a
-claim that the skills only work there. **Verified: OpenCode** — live-audited
-2026-09-08 (`022-cross-agent-skill-compat` T003), confirmed to auto-trigger a skill
-from its `description` unmodified, tolerate the non-base-spec `when_to_use` key, and
-sustain `start`'s one-question-at-a-time write-as-you-go interview across a full
-phase. **Not yet audited: Cursor, Codex CLI** — see `022-cross-agent-skill-compat`.
+target the open, cross-tool Agent Skills format — the same format a growing list of
+agent CLIs and IDEs read natively (the official adopters list is at agentskills.io),
+several via the vendor-neutral `.agents/skills/<name>/SKILL.md` discovery path.
+`.claude-plugin/plugin.json` is a *distribution* convenience for `claude --plugin-dir`
+installs, not a claim that the skills only work there. **Which harnesses are actually
+verified, and how, is in `README.md`'s `### Support matrix`** — the only per-harness
+list; `022-cross-agent-skill-compat` owns the audit behind it, and nothing is called
+verified there without a run of that spec's four audit checks.
 
 ## Plugin components
 

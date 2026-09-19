@@ -42,8 +42,10 @@ a roadmap-level `in_progress` resume, harness-synergy wording under a
 non-Claude-Code harness) — see `planning/handoff.md`'s "Not verified" section.
 `022`'s acceptance criteria only required one
 non-Claude-Code harness verified — OpenCode passed a live audit 2026-09-08, so
-`planning/architecture.md`'s Container section names it; Cursor and Codex CLI
-audits (`022` T001/T002) remain open as optional follow-up, not blocking. **`018`
+`planning/architecture.md`'s Container section named it (since 2026-09-19 that
+state lives in `README.md`'s support matrix, and `022` was amended to audit many
+more harnesses); Cursor and Codex CLI audits (`022` T001/T002) are now part of that
+wider audit. **`018`
 (project-style-preferences) closed 2026-09-13** — its capture/storage/delivery
 turned out to already be built (`001` T024/T025, `014`), just never traced back to
 close the spec; closed via a live verification under OpenCode against an external
