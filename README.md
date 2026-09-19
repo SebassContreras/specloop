@@ -1,7 +1,7 @@
 # Specloop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-5A67D8)](https://claude.com/claude-code)
+[![Agent Skills: Claude Code, OpenCode](https://img.shields.io/badge/Agent%20Skills-Claude%20Code%20%C2%B7%20OpenCode-5A67D8)](https://github.com/agentskills/agentskills)
 
 Bootstrapping a new project the same way every time — interview yourself about
 scope and stack, write it down, break it into a backlog, then work through that
@@ -76,7 +76,14 @@ claude --plugin-dir /path/to/specloop
 
 For a harness that doesn't read `.claude-plugin/plugin.json`, there's no manifest to
 install — copy this repo's `skills/` directory into wherever that harness scans for
-skills. Per each harness's own docs:
+skills. Codex CLI, OpenCode and most others read `.agents/skills/`, so from inside the
+repo you want to bootstrap:
+
+```
+mkdir -p .agents && cp -r /path/to/specloop/skills .agents/skills
+```
+
+Per each harness's own docs:
 
 - **Codex CLI** — copy `skills/` to `.agents/skills/` in the target repo (Codex walks
   up from the current directory to the repo root looking for
@@ -167,8 +174,8 @@ Available any time, not part of that sequence:
   writes a static `planning/dashboard.html` — regenerated fully each time you
   ask, never a background process. Works even before `/specloop:loop-setup` has
   run. The only skill with a runtime dependency beyond your harness: it runs
-  `skills/status/scripts/build_dashboard.py`, which needs `python3` on `PATH`
-  (standard library only, nothing to `pip install`). This repo's own dashboard
+  `skills/status/scripts/build_dashboard.py`, which needs Python 3 on `PATH`
+  as `python3` or `python` (standard library only, nothing to `pip install`). This repo's own dashboard
   is also published live at
   [sebasscontreras.github.io/specloop](https://sebasscontreras.github.io/specloop/),
   rebuilt by a GitHub Actions workflow on every push to `main` that touches

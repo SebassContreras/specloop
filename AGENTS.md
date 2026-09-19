@@ -63,14 +63,13 @@ design-closed the same day**, after actually seeing `009`'s output rendered
 against this repo's own data (a real dogfood run) — progress bars, richer
 per-task badges, a KPI strip, clickable `dependsOn` badges, a "next eligible"
 highlight, and client-side filter/search, all as edits to the same two `009`
-files, no new files. Not started. **`027` (fix-log-skill-and-status) filed and
+files, no new files. Since built and closed — `done` in `planning/roadmap.md`. **`027` (fix-log-skill-and-status) filed and
 closed 2026-09-14** — `specloop:fix` (`skills/fix/`) is now the only way to add a
 `planning/fix/` entry (hand-authoring dropped, `planning/fix/README.md` deleted —
 the format lives solely in the skill now), and every entry carries an explicit
 `## Status` (`open`/`in_progress`/`resolved`/`wontfix`) instead of the old
 string-matched `"Not yet fixed"`; `skills/status`'s dashboard reads and shows it.
-`012` is `todo`, unstarted, still
-undesigned. `019` (public-showcase) is `in_progress`,
+`012` (spec-amend-skill) is now `done` too — `skills/amend/`. `019` (public-showcase) is `in_progress`,
 not unstarted — its first three tasks are `done`, but T001's `demo-loop.tape`
 demoed the now-deleted CLI and was deleted with it; T005 (screenshot capture) needs
 a fresh interactive-skill demo, not a VHS terminal recording. Check
