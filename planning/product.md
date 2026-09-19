@@ -8,7 +8,7 @@ built step by step, and then work through that roadmap unsupervised. Distributed
 as a **Claude Code Plugin** for convenient installation (`claude --plugin-dir`) — not a
 statement that the skills only run there. See `planning/architecture.md`'s Container
 section and `022-cross-agent-skill-compat` for what full parity across other
-Agent-Skills-compatible tools (Cursor, Codex CLI, Gemini CLI, OpenCode, ...) still
+Agent-Skills-compatible tools (Cursor, Codex CLI, OpenCode, ...) still
 requires.
 
 "Any project" is literal — an app, a website, a marketing or content project, an

@@ -7,7 +7,7 @@ itself should be too." Researched 2026-09-05 before committing to a design — t
 finding changes the shape of the work:
 
 **Agent Skills (`SKILL.md`) is now an open, cross-tool standard**, not a Claude Code
-invention. Cursor, Codex CLI, Gemini CLI, GitHub Copilot, OpenCode, Windsurf and Goose
+invention. a growing list of agent CLIs and IDEs
 all read it natively — several (OpenCode confirmed) via the vendor-neutral
 `.agents/skills/<name>/SKILL.md` discovery path, equally reachable via
 `.opencode/skills/` or `.claude/skills/` as aliases, the same shape specloop's
@@ -47,12 +47,9 @@ this roster, drawn from the official Agent Skills adopters list (agentskills.io)
 filtered to clients that can be driven from a terminal. Non-CLI clients on that list
 (IDE extensions, desktop apps, cloud platforms) stay out — see Out of scope.
 
-- **Already audited:** Claude Code, OpenCode (`T003`), Codex CLI (`T002`, agent-driven
-  run recorded 2026-09-19).
-- **High-usage:** Cursor (`cursor-agent`), Antigravity CLI (`agy`, Google's
-  replacement for Gemini CLI).
-- **Open-source terminal agents:** Hermes Agent, Workshop.
-- **Commercial:** GitHub Copilot.
+- **Already audited:** Claude Code, OpenCode (`T003`), Codex CLI (`T002`) and GitHub
+  Copilot CLI (`T026`); the last two by agent-driven runs recorded 2026-09-19.
+- **Still to audit:** Cursor (`cursor-agent`, `T001`) and Antigravity CLI (`agy`, `T013`).
 
 Every roster entry is audited against the same four-dimension matrix, and ends in one of
 two final states only: `verified` or `discarded` (with a stated reason).
@@ -113,36 +110,8 @@ these extend, not replace, them):*
 - Building a universal installer/CLI for specloop across every tool — start from
   documentation of what already works, per the audit above, before building tooling
   around it.
-- Clients on the official adopters list that aren't driven from a terminal — IDE
-  extensions, desktop apps, cloud/platform agents (e.g. VS Code, Roo Code, Trae,
-  Mux, Emdash, Databricks, Snowflake). Only CLI-capable ones are audited here.
-- Goose and Windsurf: named in the original research but not in the groups chosen for
-  this amendment; add them through a further `specloop:amend` if wanted.
-- Factory (Droid) and Amp — removed from the roster 2026-09-19: both are paid-only with
-  no free path found (Factory: cheapest plan $20/month, no documented trial; Amp: free
-  tier closed to new signups, pay-as-you-go from $5), so they can't be tested here.
-  Removed rather than `discarded` at the user's direction; re-add through an amendment
-  if access ever exists.
-- Kiro and nanobot — removed from the roster 2026-09-19 at the user's direction, as not
-  practically testable: Kiro's free tier only works interactively (API-key/headless auth
-  is paid-only) and no Windows install was found; nanobot only scans a global
-  `~/.nanobot/workspace/skills/`, with no per-project directory to isolate a fixture in.
-  Re-add through an amendment if that changes.
-- Tabnine — removed from the roster 2026-09-19 at the user's direction: its CLI needs
-  a team admin to enable Tabnine Agents and an installer host (`TABNINE_HOST`) from a
-  team/enterprise deployment, sits on a paid plan (~$59/user/month, per third-party
-  sources) with no personal signup path found, and no headless flags were found in its
-  docs. Re-add through an amendment if a team account ever exists.
-- Gemini CLI — replaced on the roster by Antigravity CLI 2026-09-19 at the user's
-  direction: on 2026-06-18 Google stopped serving Gemini CLI to free, Google AI Pro and
-  Ultra users (per Google's own announcement it stays available to enterprise licences
-  and paid API keys), so it can't be used here without a paid key. Antigravity CLI is
-  Google's successor.
-- Mistral Vibe, pi, Autohand Code CLI, Deep Code, Letta Code and Junie — removed from the roster
-  2026-09-19 at the user's direction. Each was installed and passed a startup smoke test
-  (`--version`, `--help`), then uninstalled because each needs its own account or API key
-  and the owner won't test them. Their install/auth notes stay in the owner's personal
-  harness guide; re-add through an amendment if that changes.
+- Clients that aren't driven from a terminal — IDE extensions, desktop apps,
+  cloud/platform agents. Only CLI-capable ones are audited here.
 - Any harness not on the roster above; the roster only grows or shrinks through an
   amendment.
 

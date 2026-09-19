@@ -40,9 +40,7 @@ move `pending` → `documented` (interim) → `verified` | `discarded`:
 3. *Run the four dimensions.* Prefer the non-interactive mode; drive `start` turn by turn
    through its resume mechanism, checking each turn's final message holds one question
    and that the answer hit disk first. If the non-interactive mode doesn't load a full
-   `SKILL.md` (a third-party source made that claim for Gemini CLI, since replaced on the roster —
-   unverified),
-   fall back to an interactive/human run rather than counting a partial result.
+   `SKILL.md`, fall back to an interactive/human run rather than counting a partial result.
 4. *Record* the evidence as a note on that harness's task in `tasks.md` and update its
    row in `README.md`'s support matrix.
 
@@ -117,11 +115,6 @@ scan) so impossible entries are `discarded` before any install effort is spent.
 
 ## Open questions / deferred
 
-- Gemini CLI, GitHub Copilot, Windsurf, Goose — named in the research as also reading
-  the format, but not in the original acceptance criteria. *Amended 2026-09-19:* GitHub
-  Copilot is now on the roster (`requirements.md`); Gemini CLI entered it and was then
-  replaced by Antigravity CLI. Windsurf and Goose stay deferred — neither was in the
-  groups chosen — and can be added by a further amend.
 - Whether a real install script (vs. documentation) is worth building — deferred until
   the audit confirms which scan paths actually matter in practice, per
   `requirements.md`'s "start from documentation... before building tooling" scoping.

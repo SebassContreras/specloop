@@ -115,8 +115,6 @@ more; a row ends as `verified` (the four audit checks passed) or `discarded` (wi
 | Codex CLI | verified | `.agents/skills/` · `~/.agents/skills/` | `022` T002 (agent-driven run, all four checks) |
 | Cursor | documented | `.agents/skills/`, `.cursor/skills/` · `~/.agents/skills/`, `~/.cursor/skills/` | [skills](https://cursor.com/docs/skills), [CLI](https://cursor.com/docs/cli/overview) (command `agent`); docs don't say the CLI loads skills — `T001` |
 | Antigravity CLI | documented | `.agents/skills/` (project; global path not found) | [install](https://antigravity.google/docs/cli/install), [skills codelab](https://codelabs.developers.google.com/antigravity/how-to-create-agent-skills-for-antigravity-cli) (command `agy`, `-p`); Google's docs don't say whether a free account works — `T013` |
-| Hermes Agent | documented | `.hermes/skills/`, `.agents/skills/` · `~/.hermes/skills/` | [docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) (command `hermes`) |
-| Workshop | pending | not found | official docs reached name no CLI command or skills path; step 1 unresolved — `T020` |
 | GitHub Copilot CLI | verified | `.github/skills/`, `.claude/skills/`, `.agents/skills/` · `~/.copilot/skills/`, `~/.agents/skills/` | [docs](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills); `022` T026 (agent-driven run, all four checks) |
 
 ## Quickstart

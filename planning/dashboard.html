@@ -2074,15 +2074,15 @@
       "dependsOn": [
         "001"
       ],
-      "stage": "\u2014",
+      "stage": "tasks_ready",
       "priority": "17",
       "nextEligible": false,
       "counts": {
-        "todo": 2,
+        "todo": 3,
         "in_progress": 0,
         "blocked": 0,
         "interrupted": 0,
-        "done": 6
+        "done": 12
       },
       "tasks": [
         {
@@ -2095,9 +2095,9 @@
         {
           "id": "T002",
           "owner": "human",
-          "status": "todo",
+          "status": "done",
           "text": "Same four checks as T001, for Codex CLI.",
-          "note": ""
+          "note": "Agent-driven run, 2026-09-19 \u2014 all four checks pass. Closed by the owner on 2026-09-19 under the amended `design.md` (an agent-driven non-interactive run counts as `verified`). Codex CLI 0.155.0, isolated fixture with its own `.git` and a `skills/` copy in `.agents/skills/`, driven turn by turn with `codex exec` / `codex exec resume --last`; user's own `sandbox_mode = \"danger-full-access\"` (an explicit `-s workspace-write` made Windows reject every process spawn \u2014 harness limit, not a skill defect). Discovery: pass. Auto-trigger: pass \u2014 \"where are we? give me the status of this project's roadmap\" activated `status`, and \"I need to set up a new project and get it organized from scratch.\" activated `start`, neither naming a skill. `when_to_use` tolerance: pass \u2014 all nine skills loaded; the only skill-load error in stderr, every turn, was an unrelated user skill (`hastati-frontend`, missing frontmatter). Multi-turn write-as-you-go: pass \u2014 13 turns; every turn's final message held exactly one question; each answer was written to `.specloop/interview.md`, `planning/product.md` and `AGENTS.md` before the next question; Phase A ran to completion (8 dimensions plus a follow-up dimension the interview opened itself for an unspecified \"simple stats\"), closing sweep included, then moved to Phase B. Also confirmed: \"let's pause\" made it ask whether to write `planning/handoff.md` before stopping, \"keep going\" resumed at the right dimension, and \"no s\u00e9\" on `runtime` triggered a web search plus three ranked options in the user's language, leaving the dimension `open`. Not exercised: Phases C onward, and a real human's typing cadence."
         },
         {
           "id": "T003",
@@ -2139,6 +2139,55 @@
           "owner": "agent",
           "status": "done",
           "text": "Updated `planning/architecture.md`'s Container section to name OpenCode as verified (and how), Cursor/Codex CLI as not yet audited. All three acceptance criteria in `requirements.md` are now met (one harness verified, install path documented, Container section updated) \u2014 `planning/roadmap.md`'s `022` row flipped to `done`. T001/T002 (Cursor, Codex CLI) left `todo` below as optional follow-up for broader confidence, not blocking closure.",
+          "note": ""
+        },
+        {
+          "id": "T009",
+          "owner": "agent",
+          "status": "done",
+          "text": "Add a support-matrix table to `README.md`'s `## Install`: one row per roster harness in `requirements.md` (6 rows: Claude Code, OpenCode, Codex CLI, Cursor, Antigravity CLI and GitHub Copilot), columns harness / state (`pending` \u00b7 `documented` \u00b7 `verified` \u00b7 `discarded`) / skills scan path / evidence pointer. Prefill Claude Code and OpenCode `verified` (native host / `T003`), Codex CLI per `T002`'s note, everything else `pending`.",
+          "note": "Table added as `### Support matrix` under `README.md`'s `## Install` (6 rows). Claude Code and OpenCode prefilled `verified`, Codex CLI `pending` per `T002`'s note; the step-1 results from `T010` and `T012` were filled into the same pass."
+        },
+        {
+          "id": "T010",
+          "owner": "agent",
+          "status": "done",
+          "text": "Step 1 for Cursor and Antigravity CLI (`design.md` item 1a): from each harness's official docs, cite whether a CLI exists and which directory it scans for skills; set its README matrix row to `documented` or `discarded` (reason stated).",
+          "note": "Cursor: `documented` \u2014 scan paths from Cursor's skills docs, CLI command `agent` from its CLI docs; neither page says the CLI loads skills, so `T001` must confirm that. Antigravity CLI: `documented` \u2014 command `agy`, project skills in `.agents/skills/` per Google's skills codelab, global path not found; its own `--help` shows `-p/--print` with `--output-format text|json|stream-json`, `-c/--continue`, and `--disable-slash-commands` (\"slash command and skill expansion in print mode\"); login is a Google browser sign-in; whether a free Google account works is not stated by Google's docs (third-party sources say yes, with tight weekly limits)."
+        },
+        {
+          "id": "T012",
+          "owner": "agent",
+          "status": "done",
+          "text": "Step 1, same as T010, for GitHub Copilot.",
+          "note": "`documented` at the time \u2014 it has a CLI according to its own docs. Gaps to close in the audits: Copilot's page doesn't name the CLI command (`gh skill` installs skills). Caveat on every step-1 result, T010 and T012: read through a page-fetch summarizer, not verbatim; a few summaries carried text foreign to the page and were discarded or refetched, so each audit task should re-check its scan path against the real docs."
+        },
+        {
+          "id": "T013",
+          "owner": "human",
+          "status": "todo",
+          "text": "Antigravity CLI (`agy`): the four checks from `T001`, per `design.md` item 1a (isolated fixture with its own `.git`; non-interactive run if it loads a full `SKILL.md`, otherwise an interactive run). Record the evidence as a note here and set its README matrix row to `verified`, or `discarded` with the reason (no CLI, no skills support, or not obtainable/runnable here).",
+          "note": "Basic readiness only, 2026-09-19: `agy` 1.2.7 installed, signed in with a Google account, and `agy -p \"Reply with the single word OK and nothing else.\" --output-format text` returned `OK` (exit 0) from a temp directory. Headless before signing in prints a Google URL and fails after 60 s (\"authentication timed out\"), so the first sign-in needs an interactive run. The four checks have not been run."
+        },
+        {
+          "id": "T026",
+          "owner": "human",
+          "status": "done",
+          "text": "GitHub Copilot: same as T013 \u2014 four checks, evidence note, README matrix row to `verified` or `discarded` with reason.",
+          "note": "Agent-driven run, 2026-09-19 \u2014 all four checks pass. Copilot CLI 1.0.86; isolated fixtures with their own `.git` and a `skills/` copy in `.agents/skills/`; `copilot -p` with `--allow-all-tools` (required in non-interactive mode), conversation continued by named session (`-n` on turn 1, `-r <name>` after); account signed in by the owner. Discovery: pass \u2014 `copilot skill list` shows all nine under \"Project skills\", read from `.agents/skills/`. Auto-trigger: pass \u2014 \"where are we? give me the status of this project's roadmap\" activated `status`, and \"I need to set up a new project and get it organized from scratch.\" activated `start`, neither naming a skill; `status` probed `python3` then `python`, ran the script by its absolute `.agents/skills/` path (Copilot injects a \"Base directory for this skill\") and wrote the same 31998-byte dashboard as the other harnesses. `when_to_use` tolerance: pass \u2014 all nine skills listed, no frontmatter warning in the debug logs (one unrelated runtime WARNING, \"event was not delivered to its registered session host\"). Multi-turn write-as-you-go: pass \u2014 13 turns; every final message held exactly one question; from turn 2 each answer was written to `.specloop/interview.md` (and `product.md`/`AGENTS.md` where relevant) before the next question; Phase A ran to completion including the closing sweep, then moved to Phase B. Differences from Codex/OpenCode: on turn 1 it asked the first question before scaffolding (nothing to lose yet; it kept scratch state in its own SQL tool) and scaffolded after the first answer; it did not open a follow-up dimension for the unspecified \"simple stats\" the way Codex did. Also confirmed: a \"pause\" made it ask whether to write `planning/handoff.md` and write nothing; \"keep going\" resumed at the right dimension; \"no s\u00e9\" on `runtime` triggered web fetches (python.org, nodejs.org, go.dev) and four ranked options in Spanish, leaving the dimension `open`. Cost: the cumulative AI Credits counter reached 4.17 after the 13 turns, plus 0.8 for the `status` run. Noise, none affecting results: 12 HTTP 422 responses from Copilot's Task API for the named session and 12 hook-reload warnings. Not exercised: Phases C onward, and a real person's cadence. Evidence saved outside the repo in the owner's harness guide."
+        },
+        {
+          "id": "T028",
+          "owner": "agent",
+          "status": "done",
+          "text": "Reduce `planning/architecture.md`'s Container section to a pointer at `README.md`'s support matrix (no per-harness names repeated) and update the README passages that still say Cursor/Codex CLI are \"not yet audited\" (`## What this is`, the closing paragraph of `## Install`) to point at the matrix instead.",
+          "note": "`planning/architecture.md`'s Container section no longer names any harness or verification state \u2014 generic \"growing list of agent CLIs and IDEs\" plus a pointer at `README.md`'s `### Support matrix` (the stray line break inside `.claude-plugin/plugin.json` there is gone too). `README.md`'s `## What this is` and the closing paragraph of `## Install` now point at the matrix instead of saying Cursor/Codex are \"not yet audited\". Swept the repo for the old claim: `AGENTS.md`'s `022` sentence (\"Container section names it\") updated; `planning/product.md`'s pointer to Container/`022` still holds and names harnesses only as examples, left as is; `planning/handoff.md` is point-in-time and left as is."
+        },
+        {
+          "id": "T029",
+          "owner": "agent",
+          "status": "todo",
+          "text": "Acceptance verification against `requirements.md`: no README matrix row is `pending` or `documented`; every `verified` row cites its evidence note; every `discarded` row states a reason; the matrix is the only per-harness list; `node scripts/check-skill-consistency.mjs` and `node scripts/check-markdown-conventions.mjs` pass.",
           "note": ""
         }
       ]
@@ -2860,13 +2909,24 @@
     }
   ],
   "totals": {
-    "todo": 6,
+    "todo": 7,
     "in_progress": 1,
     "blocked": 0,
     "interrupted": 0,
-    "done": 257
+    "done": 263
   },
-  "drift": [],
+  "drift": [
+    {
+      "specId": "022",
+      "rule": "stage-not-reset-on-done",
+      "message": "Status done, Stage tasks_ready \u2014 expected \u2014"
+    },
+    {
+      "specId": "022",
+      "rule": "done-but-tasks-incomplete",
+      "message": "Status done but task(s) T029 not done"
+    }
+  ],
   "fixes": [
     {
       "id": "001",
@@ -2984,6 +3044,24 @@
       "date": "2026-09-17",
       "found": "Enabling GitHub Pages in repo Settings (034's T003, done manually by the\nuser) defaulted the source to \"Deploy from a branch\" (`main` \u2192 `/docs`)\ninstead of \"GitHub Actions\" \u2014 the GitHub UI's own default when nothing\nelse is picked, not something 034's task text called out explicitly. This\ndidn't break the actual published site: `actions/deploy-pages@v4` still\npublished successfully via the `dashboard.yml` workflow's own Actions-based\ndeployment (confirmed live). But GitHub separately auto-injects a legacy\nJekyll build (`pages-build-deployment`, not a workflow file in this repo)\nwhenever the branch-based source is set, and that build failed on every\npush since Pages was first enabled \u2014 this repo has no `docs/` folder \u2014\nshowing as a real, if harmless, red X in the Actions tab on every push.",
       "fix": "`gh api -X PUT repos/SebassContreras/specloop/pages -f \"build_type=workflow\"`\n\u2014 switched the Pages source to \"GitHub Actions\" directly via the API.\nConfirmed via a follow-up `GET` that `build_type` is now `\"workflow\"`. The\nlegacy Jekyll build no longer fires on push."
+    },
+    {
+      "id": "014",
+      "name": "status-script-path-non-claude-harness",
+      "scope": "030",
+      "status": "resolved",
+      "date": "2026-09-19",
+      "found": "`skills/status/SKILL.md` Phase 0 (after `012`) runs the build script via\n`${CLAUDE_PLUGIN_ROOT}/skills/status/scripts/build_dashboard.py`, a placeholder only\nClaude Code substitutes. Under any other harness the literal text reaches the\nmodel unsubstituted, so the command has no valid path. Not caught earlier:\n`022`'s OpenCode audit (T003) exercised `start`, not `status`. Surfaced by\na 2026-09-18 cross-harness audit, whose proposed fix (`${CODEX_PLUGIN_ROOT}` /\n`${OPENCODE_PLUGIN_ROOT}`) was checked and found to be invented \u2014 those names\nappear in no doc consulted. The Agent Skills spec defines no placeholder for a\nskill's own directory; it says bundled files are referenced by relative path from\nthe skill root. OpenCode's and Codex CLI's skill docs say nothing on the point.",
+      "fix": "`skills/status/SKILL.md` Phase 0 keeps `${CLAUDE_PLUGIN_ROOT}` as the primary path\nand now adds a harness-neutral fallback for when it arrives unsubstituted: resolve\n`scripts/build_dashboard.py` relative to the directory the `SKILL.md` was loaded\nfrom, else search the standard skill directories, and run by absolute path with the\ntarget repo as the working directory. `CONTRIBUTING.md`'s dev note updated to match.\nNo new per-harness variables. Verified 2026-09-19: OpenCode 1.18.31 in an external\nfixture (own `.git`, `skills/` copied to `.agents/skills/`) auto-triggered `status`\nfrom \"where are we? give me the status of this project's roadmap\", ran the script by\nits absolute `.agents/skills/status/scripts/` path and wrote `planning/dashboard.html`\nwith a correct chat summary. Model `muse-spark-1.2-contributor-free`. The python3\nside finding became `015`. Confirmed from OpenCode's raw `--format json` events: its\n`skill` tool output carries \"Base directory for this skill: <abs path>\" plus\n\"Relative paths in this skill (e.g., scripts/, reference/) are relative to this\nbase directory\", so under OpenCode the first branch of the fallback (relative to the\nskill's own directory) is fed by the harness itself; the search list is only a\nsecond line. Regression check the same day: Claude Code 2.1.278 via `--plugin-dir`\n(fixture with no skills copy, so only the `${CLAUDE_PLUGIN_ROOT}` path could have\nresolved) still ran `status` end to end. Also probed with a throwaway plugin: Claude\nCode 2.1.278 substitutes both `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` in\nplugin skill content, so `fix/012`'s note that `${CLAUDE_SKILL_DIR}` is unsubstituted\nis stale as of this version (`012` left unedited as history). Codex CLI 0.155.0\nalso verified 2026-09-19 (same isolated-fixture setup, natural-language prompt, no\n`-s` override so the user's own `sandbox_mode = \"danger-full-access\"` applied): it\nauto-triggered `status`, read `.agents/skills/status/SKILL.md` itself, probed\n`python3` (Store stub, exit 1) then `python` (3.14.3), ran the script by the\nabsolute `.agents/skills/status/scripts/` path and produced the same 31998-byte\ndashboard as OpenCode and Claude Code, with a correct summary. Codex injects no\n\"base directory\" note \u2014 it resolved the path from where it had read the skill\nfile. A first attempt with `-s workspace-write` failed before reaching the skill's\nlogic: on Windows Codex's sandbox rejected every process spawn\n(`CreateProcessAsUserW failed`); a harness/OS limitation, not a skill defect, and\nthe skill's stop message was printed with the caveat that Python's availability\nwas unverified. Cursor still unverified."
+    },
+    {
+      "id": "015",
+      "name": "status-python3-windows-store-stub",
+      "scope": "030",
+      "status": "resolved",
+      "date": "2026-09-19",
+      "found": "`skills/status/SKILL.md` Phase 0 hard-codes `python3` and prescribes an exact stop\nmessage (\"requires python3, which was not found on PATH\") when it isn't found. On\nWindows, `python3` typically resolves to the Microsoft Store app-execution alias \u2014 a\nstub that exits with a localized \"Python was not found\" message instead of running.\nObserved 2026-09-19 during the `014` OpenCode verification (Windows 11, OpenCode\n1.18.31, model `muse-spark-1.2-contributor-free`): `python3 <script>` failed with the\nstub's message, and the model silently retried with `python <script>`, which worked,\ninstead of printing the prescribed stop message. So the skill's behavior on this case\nis undefined: the stop rule says to halt, the run recovered by improvising, and a\ndifferent model or harness could equally halt or loop. `build_dashboard.py` itself\nwas fine \u2014 the failure is in how the skill names the interpreter.",
+      "fix": "`skills/status/SKILL.md` Phase 0 now picks the interpreter before running the script:\n`python3 --version`, then `python --version`, using the first that prints `Python 3.x`.\nProbing the version (not an error string) is language-independent, so it handles the\nlocalized Store stub, and rejects `python` where it's Python 2. If neither qualifies,\nthe same prescribed stop message is printed, unchanged. `README.md` now says Python 3\nas `python3` or `python`. Verified 2026-09-19 on this Windows machine (`python3` =\nStore stub, `python` = 3.14.3): OpenCode 1.18.31 probed both, chose `python`, wrote\n`planning/dashboard.html`; Claude Code 2.1.278 loaded via `--plugin-dir` in a fixture\nwith no skills copy did the same, producing a byte-identical 31998-byte dashboard.\nNot exercised: a machine with neither interpreter (stop-message branch), and macOS/\nLinux. `planning/architecture.md`'s Fixed rule still says \"a missing `python3` on\n`PATH` is a hard failure\" \u2014 still true in spirit, literal wording left unedited\npending the user's go-ahead."
     }
   ]
 }</script>
