@@ -149,8 +149,9 @@ Create, only if missing:
   | ID  | Plan | Status | Depends on | Stage | Priority |
   |-----|------|--------|------------|-------|----------|
 
-  `Status`: `todo` · `in_progress` · `blocked` · `interrupted` · `done`. Written only
-  by `specloop:loop` — never hand-edit it.
+  `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays
+  `in_progress`; `interrupted` is a task state only). Written only by
+  `specloop:loop` after the row is created — never hand-edit it.
 
   `Stage`: `requirements` · `design_closed` · `tasks_ready` · `looping` — which skill
   a spec needs next. `—` until this skill finishes that spec's `requirements.md`.
@@ -296,8 +297,10 @@ or skills to be implemented" turn into ordered spec entries.
 4. Once confirmed, create one spec per item, in order: `planning/specs/NNN-name/` with stub
    `design.md`/`tasks.md`, and a `planning/roadmap.md` row. Leave `requirements.md` for
    Phase 7.
-5. Write a `## How this gets built, step by step` section below the roadmap table: the
-   specs in order, what each unlocks, and which skill to run next on each.
+5. Tell the user, in chat only, how this gets built step by step: the specs in order,
+   what each unlocks (its `Depends on`) and which skill to run next on each (its
+   `Stage`). Never write this into `planning/roadmap.md` — it carries no other content
+   (Phase 1), and prose there goes stale.
 6. Run Phase F's sweep against the goal: does the roadmap actually reach it? Anything
    in `done-when` no spec covers is a missing row.
 

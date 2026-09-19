@@ -24,44 +24,58 @@ leaked task ids in a skill) so none of that can quietly return.
 
 **What "verified" does not mean:**
 
-- **`skills/loop` as master under a non-Claude harness was never run.** The audits covered
-  skill discovery, auto-trigger, `when_to_use` tolerance and the `start` interview's opening
-  phase. Whether "your own harness's native way of spawning a sub-agent" reads correctly, or
-  exists, under Codex CLI, Copilot CLI, Cursor or `agy` is open.
+- **`skills/loop` as master under a non-Claude harness ran once, under `agy`, and only up to
+  the dispatch** (2026-09-19, throwaway fixture). The audits covered skill discovery,
+  auto-trigger, `when_to_use` tolerance and the `start` interview's opening phase; the `agy`
+  run then showed it reading the skill, config, roadmap and tasks, writing `Stage: looping` and
+  `in_progress`, and dispatching its native sub-agent (`invoke_subagent`) with the loop's
+  briefing — the task completed once an allow rule was in place. Its master turn then ended
+  (headless `-p`), and both continuation turns hit the account's quota (HTTP 429, about 7 days),
+  so verify, log and roll-up were never observed. Codex CLI, Copilot CLI and Cursor as masters:
+  still never run.
 - **Worker-style subprocess check** (the loop's `<cli> <args> "<briefing>"` form, one
   create-a-file task): `copilot` and `cursor-agent` wrote the file; `agy` exited 0 with
-  nothing written — its headless mode auto-denied the shell command the agent used. Google's
-  docs say `permissions.allow` in `~/.gemini/antigravity-cli/settings.json` lifts that; an open
-  issue (google-antigravity/antigravity-cli #548) says headless mode ignores it. Not tested
-  here. `--dangerously-skip-permissions` works but let the agent read outside the fixture in
-  the audit. So `agy` is documented as unreliable for unattended work, and is left out of this
-  repo's own `.specloop/loop.config.json` (its entry also needs this checkout's absolute path,
-  which doesn't belong in a tracked file). Only `copilot` and `cursor-agent` were added there,
-  by hand.
+  nothing written — its headless mode auto-denied the shell command the agent used. With
+  `permissions.allow` = `command(regex:...)` in `~/.gemini/antigravity-cli/settings.json` the
+  same task wrote the file, so allow rules *are* honored in headless mode (agy 1.2.7, Windows),
+  contrary to google-antigravity/antigravity-cli #548; a plain `command(<text>)` matches only
+  the whole command. Without rules a sub-agent died at its first denied command and the
+  master's next response degenerated into a repeated token. `--dangerously-skip-permissions`
+  works but let the agent read outside the fixture in the audit. `agy`'s entry in this repo's
+  own `.specloop/loop.config.json` uses a `{repoRoot}` placeholder that `skills/loop` replaces
+  with the repo's absolute path (decided 2026-09-19). The substitution itself was not
+  exercised: `agy` has a native sub-agent, so the loop never took the subprocess path — only
+  the substituted command form (absolute `--add-dir`) was, and it worked. `copilot`,
+  `cursor-agent` and `agy` were added to the config by hand.
 - The `claude`, `codex` and `opencode` subprocess forms were not re-run today.
 
-## Open judgement calls found in that pass — nothing decided, each needs the user
+## Judgement calls found in that pass — all resolved 2026-09-19
 
-Recorded, not fixed, because each picks between two things the user has stated, or edits a
-Fixed rule (which needs their go-ahead):
+Each picked between two things the user had stated, or edited a Fixed rule, so each was put
+to the user one by one:
 
-1. **Roadmap "carries no other content"** (Fixed rule, `015`) vs `skills/start` Phase 6
-   step 5, which still tells a target repo's roadmap to gain a `## How this gets built, step
-   by step` section (`001`'s stated objective) vs this repo's own `planning/roadmap.md`,
-   which carries a retired-specs paragraph the rule would call history.
-2. **Loop status roll-up.** `skills/loop` Phase 2 treats `interrupted` tasks as runnable, so
-   its roll-up bullet "any `interrupted` task → `interrupted`" can never fire; Phase 4's safe
-   stop leaves the spec `in_progress` with `interrupted` tasks; and nothing documents a way
-   out of a spec-level `blocked`. `skills/status`'s drift rule 5
-   (`stuck-task-but-status-not-blocked`) then flags states the loop legitimately produces.
-3. **`Stage` "each pipeline skill sets it exactly once"** (Fixed rule) omits `advance` and
-   `amend`, and `amend` writes `requirements` again.
-4. **`Status` "exactly one writer"** (Fixed rule) vs `start` creating every row.
-5. **`architecture.md` Fixed rules on harness context:** "`claude` auto-loads `CLAUDE.md`,
-   while `codex`/`opencode` auto-load `AGENTS.md`" and, further down, "relying on a CLI
-   auto-loading a memory file works for `claude` only" — every harness in the matrix read
-   `AGENTS.md` in the audits, so the second sentence contradicts the first and the evidence.
-   The rule it justifies (project context goes through the worker's prompt) still stands.
+1. **Resolved 2026-09-19 — roadmap "carries no other content"** (Fixed rule, `015`).
+   `skills/start` Phase 6 no longer writes a `## How this gets built` section (it gives that
+   walkthrough in chat), and the retired-specs paragraph left `planning/roadmap.md` (it lives
+   in the section further down and in `AGENTS.md`). `001`'s requirements and design carry an
+   amendment note.
+2. **Resolved 2026-09-19 — loop status roll-up.** `interrupted` is now a task state only (a
+   stopped spec stays `in_progress`; the dead roll-up bullet and the spec-level legend entries
+   are gone). `skills/loop` Phase 1 names every `blocked` spec and, if the user says the cause
+   is fixed, resets its blocked tasks to `todo` and the row to `in_progress`. Drift rule 5
+   (`stuck-task-but-status-not-blocked`) now fires only when a task is blocked and nothing
+   else is left to run.
+3. **Resolved 2026-09-19 — `architecture.md` Fixed rules** (user's go-ahead in the same
+   conversation). `Stage` no longer says "exactly once" and names `advance` and `amend` as
+   writers; `Status` says "exactly one writer once a row exists" (`start` only creates
+   rows); and the harness-context rules say every harness in the matrix reads `AGENTS.md`,
+   with the "works for `claude` only" sentence replaced by what the audits showed. The
+   rule they support (project context goes through the worker's prompt) still stands.
+4. **Resolved 2026-09-19 — `agy` in the tracked config.** Included, with `{repoRoot}` in place
+   of a machine-specific path; `skills/loop` (Phase 3, subprocess form) and
+   `skills/loop-setup`'s known-flags map define it, `check-skill-consistency` group `[15]`
+   fails if a config uses the placeholder and `skills/loop` doesn't. The substitution was not
+   exercised live (see the worker-check bullet above).
 
 ---
 

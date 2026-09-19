@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative only — see examples/README.md. specloop:loop-setup writes the real file to .specloop/loop.config.json in your target repo, from its guided Q&A answers, never hand-authored. Each worker's flag comes from the known-flags map (skills/loop-setup/SKILL.md's known-flags map) — never asked for a known CLI, only for one outside that map. The `agy` entry needs the repo's absolute path and its headless mode can't run shell commands — see that skill's notes on it.",
+  "_comment": "Illustrative only — see examples/README.md. specloop:loop-setup writes the real file to .specloop/loop.config.json in your target repo, from its guided Q&A answers, never hand-authored. Each worker's flag comes from the known-flags map (skills/loop-setup/SKILL.md's known-flags map) — never asked for a known CLI, only for one outside that map. In the `agy` entry, `{repoRoot}` is replaced by `specloop:loop` with the repo's absolute path; its headless mode can't run shell commands — see that skill's notes on it.",
   "workers": [
     {
       "cli": "claude",
@@ -38,7 +38,7 @@
       "cli": "agy",
       "args": [
         "--add-dir",
-        "/absolute/path/to/your/repo",
+        "{repoRoot}",
         "--mode",
         "accept-edits",
         "-p"

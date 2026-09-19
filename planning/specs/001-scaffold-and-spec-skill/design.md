@@ -130,9 +130,11 @@ elicitation questions into one bulk approval prompt and made the agent the autho
 the tech decisions. Both now: ask, record, then seed from what was recorded.
 
 Adds the MVP-cut question (milestone grouping), an explicit per-item dependency question
-instead of silently defaulting to the previous row, and a
-`## How this gets built, step by step` narrative — the objective's "clearly detail the
-step-by-step process" is not satisfied by a bare table. Ends with a sweep against
+instead of silently defaulting to the previous row, and a step-by-step
+walkthrough of how it gets built — the objective's "clearly detail the
+step-by-step process" is not satisfied by a bare table. *Amended 2026-09-19: the
+walkthrough is given in chat only; `015`'s rule keeps the roadmap to the table and its
+legends.* Ends with a sweep against
 `done-when`: anything the goal requires that no spec covers is a missing row.
 
 ### Phase 7 — Spec requirements Q&A

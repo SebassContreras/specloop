@@ -75,8 +75,9 @@ verified there without a run of that spec's four audit checks.
 - **`AGENTS.md` is the single source of project context; `CLAUDE.md` is a thin
   `@AGENTS.md` import.** They must never carry diverging copies of the same facts.
   This is required by CLI-agnosticism, not a preference: `claude` auto-loads
-  `CLAUDE.md`, while `codex`/`opencode` auto-load `AGENTS.md`. Scaffolding only one of
-  them makes the plugin Claude-only in its context layer.
+  `CLAUDE.md`, while every other harness in `README.md`'s support matrix auto-loads
+  `AGENTS.md`. Scaffolding only one of them makes the plugin Claude-only in its
+  context layer.
 - **The project type is established by the first interview question** and persisted in
   `planning/product.md`. Every downstream phase and skill branches on it: `start`'s
   question bank and seeding exemplars, `planning/architecture.md`'s section headers,
@@ -122,10 +123,12 @@ verified there without a run of that spec's four audit checks.
   before this rule.
 - **`Stage`** (`requirements` · `design_closed` · `tasks_ready` · `looping`, `—` once
   `done` or never tracked) records which skill a spec needs next. Unlike `Status`, it
-  has no single writer: each pipeline skill sets it exactly once, at its own
-  transition, and never touches another spec's row — `specloop:start` → `requirements`,
+  has no single writer: each pipeline skill sets it at its own transition, and never
+  touches another spec's row — `specloop:start` → `requirements`,
   `specloop:design-closing` → `design_closed`, `specloop:task-breakdown` →
-  `tasks_ready`, `specloop:loop` → `looping` on starting execution, **and again → `—`
+  `tasks_ready` (`specloop:advance` writes those same two values when it chains them),
+  `specloop:amend` → `requirements` again when it reopens a `design.md`,
+  `specloop:loop` → `looping` on starting execution, **and again → `—`
   when it rolls a spec's `Status` up to `done`, in the same edit**. See
   `planning/fix/002-stage-not-reset-on-done` for why that last transition is called
   out explicitly.
@@ -147,18 +150,20 @@ verified there without a run of that spec's four audit checks.
   specloop invention, while keeping the owner/status distinction spec-kit lacks.
 - **The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment** —
   it's how `skills/loop` builds a spec's directory path (`planning/specs/<id>-<name>/`).
-- **The roadmap's `Status` column has exactly one writer**: `skills/loop`, which
-  rolls it up from the spec's `tasks.md` when the spec's runnable tasks are exhausted.
-  Without a writer the column goes stale and the loop pins itself to a spec
-  that will never complete.
+- **The roadmap's `Status` column has exactly one writer once a row exists**:
+  `skills/loop`, which rolls it up from the spec's `tasks.md` when the spec's runnable
+  tasks are exhausted (and sets a `blocked` spec back to `in_progress` once the user
+  clears it). `specloop:start` only creates each row. Without a writer the column goes
+  stale and the loop pins itself to a spec that will never complete.
 - The loop (spec 002) is **CLI-agnostic** (not tied to Claude Code's
-  native `Workflow` tool): it must be able to invoke `claude`, `codex`, `opencode`, or
-  another CLI, configurable per repo/run.
+  native `Workflow` tool): it must be able to invoke any CLI in `README.md`'s
+  support matrix, or another one, configurable per repo/run.
 - **Every worker must get project context through its prompt**, not through ambient
   cwd: the prompt names the spec directory and the `contextFiles` to read before
-  working. Relying on a CLI auto-loading a memory file works for `claude` only, and
-  silently gives non-Claude workers no knowledge of the project's stack, conventions or
-  styles. Implemented in `skills/loop/SKILL.md`'s Phase 3 (`014`).
+  working. Relying on a CLI auto-loading a memory file is harness-specific (`claude`
+  reads `CLAUDE.md`, the rest `AGENTS.md`) and never reaches `planning/architecture.md`
+  or `planning/styles.md`, so a worker would silently miss the project's stack,
+  conventions and styles. Implemented in `skills/loop/SKILL.md`'s Phase 3 (`014`).
 - **No visual terminals, no standalone process at all.** The loop runs entirely
   inside the chat session running `skills/loop` — every batch of independent
   tasks runs as its own concurrent sub-agents, inline, in that same conversation
@@ -289,7 +294,9 @@ verified there without a run of that spec's four audit checks.
   session, never round-robin, with the rest there for portability and as where a
   quota-exhaustion worker switch can land — plus `logDir`, `contextFiles`) —
   written by `skills/start`'s and `skills/loop-setup`'s guided Q&A, never
-  hand-authored or hardcoded. A file still in the legacy single
+  hand-authored or hardcoded. An `args` element `{repoRoot}` is replaced by `skills/loop`
+  with the repo's absolute path when it launches a subprocess worker (only `agy` needs
+  it). A file still in the legacy single
   `workerCli`/`workerArgs` shape is read by `skills/loop` as equivalent to a
   one-element `workers` array — there's no load-time normalization code
   anymore, `skills/loop`'s own text says to treat it that way. See

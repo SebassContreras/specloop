@@ -33,7 +33,9 @@
 - **Roadmap seeding** from the recorded answers — not from inference. Technologies,
   architectures and skills that need setting up before the project's own features
   become ordered spec entries, with an explicit dependency question per item and an
-  MVP-cut question, followed by a `## How this gets built, step by step` narrative.
+  MVP-cut question, followed by a step-by-step walkthrough of how it gets built (given
+  in chat, not written into `roadmap.md` — amended 2026-09-19 to match `015`'s rule that
+  the roadmap carries only the table and its legends).
   Seeding is downstream of the Q&A, not a substitute for asking.
 - Interactive Q&A to progressively fill each spec's `requirements.md`, step by step
   (not all at once), in roadmap order, including `## Acceptance criteria`.

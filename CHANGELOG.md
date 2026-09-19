@@ -32,8 +32,9 @@ known-flags map so a known CLI's headless flags are never asked for, and
 `skills/status` finds its script under any of the six harnesses' skill
 directories. A worker-style check of the loop's subprocess form (one create-a-file
 task) passed for Copilot CLI and Cursor; Antigravity CLI's headless mode soft-denies
-shell commands and wrote nothing, so it is documented as unreliable for unattended
-work. `scripts/check-skill-consistency.mjs` gained two groups that keep the roster,
+shell commands and wrote nothing until allow rules were added to its settings (then it
+passed too), so it is documented as needing that setup.
+`scripts/check-skill-consistency.mjs` gained two groups that keep the roster,
 the flags map, the probe list and the skills' wording aligned.
 
 ### 033 — interview-to-loop-auto-continuation (partial)

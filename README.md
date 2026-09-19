@@ -166,12 +166,16 @@ without asking, so use them in throwaway or trusted repos only.
   event of `--output-format stream-json`).
 - **Limits:** headless mode soft-denies any shell command (exit 0, a notice on stderr), and the
   agent reaches for one even for simple tasks: a create-one-file check wrote nothing under
-  `--mode accept-edits`. Google's docs say a `permissions.allow` rule in
-  `~/.gemini/antigravity-cli/settings.json` lifts that; an
-  [open GitHub issue](https://github.com/google-antigravity/antigravity-cli/issues/548) says
-  headless mode ignores it, and it was not tested here. Avoid `--dangerously-skip-permissions`:
-  in the audit the agent then read files outside the repo. Treat `agy` as unreliable for
-  unattended work. Interactive mode was not audited.
+  `--mode accept-edits`. An allow rule in `~/.gemini/antigravity-cli/settings.json` lifts that:
+  `{"permissions": {"allow": ["command(regex:Get-ChildItem.*)"]}}` ran the command in headless
+  mode (agy 1.2.7, Windows), although an
+  [open GitHub issue](https://github.com/google-antigravity/antigravity-cli/issues/548) says it
+  doesn't. A plain `command(<text>)` must equal the whole command, arguments included; `regex:`
+  matches a prefix. With rules for the commands it needs, a create-one-file task succeeded both as a
+  subprocess and through its native sub-agent. Avoid `--dangerously-skip-permissions`: in the audit
+  the agent then read files outside the repo. In headless mode the master's turn ends right after
+  it dispatches a sub-agent, so it needs a further turn to collect the result (not verified: the
+  account's quota ran out first — HTTP 429, reset about 7 days out). Interactive mode was not audited.
 
 ### Any other harness
 

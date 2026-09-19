@@ -198,11 +198,15 @@ def detect_drift(specs):
             flag(sid, "done-but-tasks-incomplete",
                  f"Status done but task(s) {', '.join(unfinished)} not done")
 
-        # 5. Status isn't blocked while some [agent] task is stuck.
-        stuck = [t["id"] for t in agent_tasks if t["status"] in ("blocked", "interrupted")]
-        if status != "blocked" and stuck:
+        # 5. An [agent] task is blocked and nothing is left to run (no todo/interrupted/
+        #    in_progress [agent] task), so the roll-up should have said blocked. A blocked
+        #    task next to runnable ones, or interrupted tasks after a safe stop, is a normal
+        #    in_progress spec, not drift.
+        blocked = [t["id"] for t in agent_tasks if t["status"] == "blocked"]
+        left = [t for t in agent_tasks if t["status"] in ("todo", "interrupted", "in_progress")]
+        if status != "blocked" and blocked and not left:
             flag(sid, "stuck-task-but-status-not-blocked",
-                 f"Status {status} while task(s) {', '.join(stuck)} are blocked/interrupted")
+                 f"Status {status} while task(s) {', '.join(blocked)} are blocked and nothing else is left to run")
 
     return drift
 

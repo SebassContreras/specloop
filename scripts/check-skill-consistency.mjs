@@ -275,6 +275,15 @@ for (const [name, text] of Object.entries(skillTexts)) {
   );
   ok(!/\((?:Phase \d\/)?T\d{3}\)/.test(text), `${name}: no leaked internal task id like "(T005)"`);
 }
+// roadmap.md carries only the table and its legends (015): start must not tell a target repo to
+// append a prose section to it.
+ok(!/##\s*How this gets built/.test(start), "start doesn't write a prose section into roadmap.md");
+// `{repoRoot}` is a placeholder skills/loop substitutes at launch: loop-setup, the sample and the
+// tracked config may only carry it if skills/loop says how it is replaced.
+const usesRepoRoot = [loopSetup, sampleConfig, read('.specloop/loop.config.json')].some((t) =>
+  t.includes('{repoRoot}'),
+);
+ok(!usesRepoRoot || loop.includes('{repoRoot}'), 'a {repoRoot} placeholder is defined by skills/loop');
 
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);

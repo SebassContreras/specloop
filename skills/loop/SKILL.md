@@ -54,12 +54,19 @@ first), else the lowest-`Priority` `todo` row whose every `Depends on` entry
 is itself `done` **and** that has at least one runnable task (see Phase 2) —
 a `todo` spec with an empty or all-`human` `tasks.md` isn't eligible yet, so
 it can't block a later spec that actually has work. `—` in `Priority` sorts
-last. Once a spec resolves (Phase 2's roll-up reaches `done`, `blocked`, or
-`interrupted`, or its only remaining work is `[human]`), **come back to this
+last. Once a spec resolves (Phase 2's roll-up reaches `done` or `blocked`,
+or its only remaining work is `[human]`), **come back to this
 phase automatically and pick the next eligible spec** — keep going until
 none is eligible, rather than stopping after one. This is the default; the
 user can still tell you to stop at any point (Phase 4). If none is eligible
 when you reach this phase, say so plainly and stop.
+
+**A `blocked` row is never picked on its own** — nothing else in this skill moves a
+spec out of `blocked`. Whenever you reach this phase (including when none is
+eligible), name every `blocked` row and, for each of its `blocked` tasks, the task ID
+and its note. If the user says the cause is fixed or asks to retry, flip those tasks to
+`todo` and the row to `in_progress`, then run it from Phase 2. Never do this unasked,
+and never for a spec the user didn't clear.
 
 The first time you pick a `todo` row this session, write `looping` into its
 `Stage` cell (leave an `in_progress` resume's `Stage` alone — it's already
@@ -110,7 +117,6 @@ line is identified only by starting at column 0.
   re-run a `done` row.
 - If none remain: roll this spec's status up —
   - any `[agent]` task `blocked` → `blocked`
-  - else any `[agent]` task `interrupted` → `interrupted`
   - else every `[agent]` task `done` → `done`
   - else → `in_progress`
 
@@ -120,7 +126,7 @@ line is identified only by starting at column 0.
   **If the status you're writing is `done`, also write `—` into that same
   row's `Stage` cell** in the same edit — `Stage` tracks which skill a spec
   still needs, and a `done` spec needs none. Leave `Stage` untouched for every
-  other status (`blocked`/`interrupted`/`in_progress` all still need `loop`
+  other status (`blocked`/`in_progress` both still need `loop`
   again). Report any still-open `[human]` tasks by name, then go back to
   Phase 1 (it decides whether to continue to another spec or stop).
 
@@ -171,7 +177,10 @@ subprocess anyway) — never silently pick one.
    task in the batch (background processes, not one at a time) so
    independent tasks still run concurrently: `<cli> <args...> "<briefing>"`,
    configured `args` first, the whole briefing text last as one argument
-   (same convention the deleted `worker.ts` used). Give each subprocess a
+   (same convention the deleted `worker.ts` used). If an `args` element is the
+   literal `{repoRoot}`, replace it with this repo's absolute working-directory
+   path, as this OS writes it, kept as one argument (`agy` needs it for
+   `--add-dir`). Give each subprocess a
    bounded timeout (~30 minutes is what the deleted code used) and never
    feed it anything on stdin — a CLI not told it's headless (missing its
    non-interactive flag in `args`) will otherwise hang waiting for input
@@ -226,7 +235,9 @@ The user can just tell you to stop mid-run — a plain message in this same
 conversation, no separate stop-flag file needed, you're not a detached
 process. Flip every task still `in_progress` at that moment to `interrupted`
 in its `tasks.md` — with batching, that can be more than one task at once,
-not just a single in-flight row. Report what's left undone (interrupted,
+not just a single in-flight row. Leave the spec's own `Status` as it is
+(`in_progress`): a later run resumes it through Phase 1 and re-runs those
+`interrupted` tasks (Phase 2). Report what's left undone (interrupted,
 blocked, or still todo) so nothing is silently dropped.
 
 ## Style rules

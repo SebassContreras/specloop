@@ -66,17 +66,19 @@ Ask, one at a time, waiting for each reply:
    CLI, not a preference.** Use this map (each value is the whole `args` array):
    `claude` → `["-p"]`, `codex` → `["exec"]`, `opencode` → `["run"]`,
    `copilot` → `["--allow-all-tools", "-p"]`, `cursor-agent` →
-   `["--trust", "--force", "-p"]`, `agy` → `["--add-dir", "<absolute path of this
-   repo>", "--mode", "accept-edits", "-p"]`. For `agy`, write this repo's real absolute
-   path: a relative one doesn't work, and without `--add-dir` its headless mode loads
-   no project skills. That ties the entry to this one checkout, so say it won't carry
-   over to a teammate's clone. Say plainly, once, that `copilot` and `cursor-agent` need
+   `["--trust", "--force", "-p"]`, `agy` → `["--add-dir", "{repoRoot}", "--mode",
+   "accept-edits", "-p"]`. For `agy`, write `{repoRoot}` literally: `specloop:loop`
+   replaces it with the repo's absolute path when it launches the worker, so the entry
+   carries over to any checkout. `agy` needs it — a relative `--add-dir` doesn't work,
+   and without `--add-dir` its headless mode loads no project skills. Say plainly, once, that `copilot` and `cursor-agent` need
    those flags to run headless and that they let the worker write files and run
-   commands without asking. Say also that `agy` is the weak entry: its headless mode
+   commands without asking. Say also that `agy` needs setup: its headless mode
    auto-denies shell commands (exit 0, nothing written — a plain create-a-file task
-   failed that way in a check), the documented fix (`permissions.allow` in
-   `~/.gemini/antigravity-cli/settings.json`) is reported ignored in headless mode
-   (google-antigravity/antigravity-cli issue 548; not tested here), and
+   failed that way, and a sub-agent died at its first denied command), and it works
+   only once the user adds allow rules in `~/.gemini/antigravity-cli/settings.json`,
+   e.g. `{"permissions": {"allow": ["command(regex:Get-ChildItem.*)"]}}` (a plain
+   `command(<text>)` must match the whole command; `regex:` matches a prefix). The user
+   picks which commands to allow — never write those rules for them.
    `--dangerously-skip-permissions` let the agent read outside the repo in the audit —
    never add it for the user. Suggest an `agy` entry only if they will run the loop
    from an `agy` session. Only ask "what's its headless/non-interactive flag?"

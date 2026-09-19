@@ -4,7 +4,8 @@
     { "cli": "codex", "args": ["exec"] },
     { "cli": "opencode", "args": ["run"] },
     { "cli": "copilot", "args": ["--allow-all-tools", "-p"] },
-    { "cli": "cursor-agent", "args": ["--trust", "--force", "-p"] }
+    { "cli": "cursor-agent", "args": ["--trust", "--force", "-p"] },
+    { "cli": "agy", "args": ["--add-dir", "{repoRoot}", "--mode", "accept-edits", "-p"] }
   ],
   "logDir": ".specloop/logs",
   "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"]

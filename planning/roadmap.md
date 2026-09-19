@@ -32,26 +32,22 @@ we, what's next."
 | 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —           | —       |
 | 034 | dashboard-github-pages        | done        | 009, 026, 030      | —            | —        |
 
-`007` (orchestrator-unit-tests), `008` (ci-pipeline), `010` (loop-auto-continue),
-`011` (windows-path-safety), `013` (task-retry-backoff) and `021`
-(harness-worker-backend) were retired 2026-09-12, never past `requirements.md`: all
-six existed only for the deterministic `loop run` CLI (`framework/orchestrator/`),
-which was eliminated the same day in favor of `skills/loop` — the interactive
-session — as the only way to run the loop. See `planning/handoff.md` and
-`planning/architecture.md`'s Declined table.
-
-`Status`: `todo` · `in_progress` · `blocked` · `interrupted` · `done`. Written only by
-`skills/loop` (rolled up from each spec's own `tasks.md` — see its Phase 2) — never
+`Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
+`interrupted` is a task state only). Written only by
+`skills/loop` once a row exists (rolled up from each spec's own `tasks.md` — see its
+Phase 2; `specloop:start` creates the row) — never
 hand-edit it. `specloop:status` (`009`) gives back the standalone read-only check
 `loop status` used to be, plus a `Stage`/`Status` drift check nothing had before.
 
 `Stage`: `requirements` · `design_closed` · `tasks_ready` · `looping` — which skill a
 spec needs next, so nobody has to open its files to find out. `—` once `done`, or for
 a spec never tracked through the pipeline (`001`–`005`, foundational, predate this
-column). Unlike `Status`, no single writer: each pipeline skill sets it once, at its
-own transition (`specloop:start` → `requirements`, `specloop:design-closing` →
-`design_closed`, `specloop:task-breakdown` → `tasks_ready`, `specloop:loop` →
-`looping` — `loop-setup` only writes `.specloop/loop.config.json`, never this column).
+column). Unlike `Status`, no single writer: each pipeline skill sets it at its own
+transition (`specloop:start` → `requirements`, `specloop:design-closing` →
+`design_closed`, `specloop:task-breakdown` → `tasks_ready` — `specloop:advance` writes
+those two when it chains them, `specloop:amend` → `requirements` again when it reopens a
+`design.md` — `specloop:loop` → `looping`; `loop-setup` only writes
+`.specloop/loop.config.json`, never this column).
 
 `Priority`: a live, human-edited ordering number — lower runs first among specs
 `Depends on` doesn't already force an order. Edit the number directly to reorder; no
