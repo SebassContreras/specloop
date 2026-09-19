@@ -68,10 +68,16 @@ Nothing here restates that algorithm in prose — don't re-read
 `planning/roadmap.md` or any spec's `tasks.md` directly, in this phase or any
 later one, to compute or double-check anything the script already computed.
 
-**If `python3` isn't found on `PATH`,** detect this however the failure
-surfaces in this harness's command-execution — a nonzero/`127` exit code, a
-thrown exception, or `not recognized`/`not found` appearing in the output —
-and report exactly this, then stop:
+**Pick the interpreter before running the script.** Run `python3 --version`,
+and if that doesn't print `Python 3.x`, run `python --version`; use the first
+one that does as the command's interpreter (in place of `python3` above).
+Probing the version, rather than trusting the command's name or an error
+message, is deliberate: on Windows `python3` is often only the Microsoft Store
+alias, a stub that exits without running anything and prints a localized
+message, while a real Python 3 sits behind `python` — and on some older
+systems `python` is Python 2, which must not be used.
+
+**If neither prints `Python 3.x`,** report exactly this, then stop:
 
 ```
 specloop:status requires python3, which was not found on PATH. Install Python 3 and retry.

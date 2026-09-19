@@ -32,14 +32,19 @@ No new per-harness variables. Verified 2026-09-19: OpenCode 1.18.31 in an extern
 fixture (own `.git`, `skills/` copied to `.agents/skills/`) auto-triggered `status`
 from "where are we? give me the status of this project's roadmap", ran the script by
 its absolute `.agents/skills/status/scripts/` path and wrote `planning/dashboard.html`
-with a correct chat summary. One run, model `muse-spark-1.2-contributor-free`; it
-can't tell whether the path came from the harness's skill directory or the search
-list. Side finding, not fixed here: on this Windows machine `python3` is only the
-Microsoft Store stub and failed, and the model retried with `python` instead of
-printing the "requires python3" stop message the skill prescribes. Cursor and
-Codex CLI still unverified. Also unverified: `fix/012` says
-`${CLAUDE_SKILL_DIR}` is unsubstituted in skill text, but Claude Code's current
-skills docs say it is; left alone since `${CLAUDE_PLUGIN_ROOT}` is live-verified.
+with a correct chat summary. Model `muse-spark-1.2-contributor-free`. The python3
+side finding became `015`. Confirmed from OpenCode's raw `--format json` events: its
+`skill` tool output carries "Base directory for this skill: <abs path>" plus
+"Relative paths in this skill (e.g., scripts/, reference/) are relative to this
+base directory", so under OpenCode the first branch of the fallback (relative to the
+skill's own directory) is fed by the harness itself; the search list is only a
+second line. Regression check the same day: Claude Code 2.1.278 via `--plugin-dir`
+(fixture with no skills copy, so only the `${CLAUDE_PLUGIN_ROOT}` path could have
+resolved) still ran `status` end to end. Also probed with a throwaway plugin: Claude
+Code 2.1.278 substitutes both `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` in
+plugin skill content, so `fix/012`'s note that `${CLAUDE_SKILL_DIR}` is unsubstituted
+is stale as of this version (`012` left unedited as history). Cursor and Codex CLI
+still unverified.
 
 ## Date
 
