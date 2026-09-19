@@ -15,9 +15,10 @@ verified there without a run of that spec's four audit checks.
 
 ## Plugin components
 
-- **Bootstrap Skill** (`001`, `skills/start/`): scaffold the folder structure, then run
-  the full interview — project type, goal/purpose, technologies/architecture/tools,
-  recommended skills, styles/preferences — writing each answer to disk as it lands, and
+- **Bootstrap Skill** (`001`, `skills/start/`): interview first — project type,
+  goal/purpose — then scaffold the folder structure and continue with
+  technologies/architecture/tools, recommended skills, styles/preferences, writing each
+  answer to disk as it lands (the ledger before the scaffold exists), and
   seeding the roadmap from all of it. Invocable from inside any target repo, with a
   single entry point ("I need to set up X"). Also writes the `.specloop/` loop folder's
   static files (`loop.config.json`, `logs/.gitkeep`, `.gitignore`).

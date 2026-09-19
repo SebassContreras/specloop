@@ -17,12 +17,15 @@ branches everything downstream (see `planning/architecture.md`'s fixed rules).
 
 **One trigger** — "I need to set up X" — does the initial scaffold:
 
-1. Scaffolds a fixed documentation structure in the target repo:
+1. Asks what kind of project this is, what the goal is, and who it serves — each
+   answer recorded in `.specloop/interview.md` as it lands, the only file written
+   before the first question is answered.
+2. Then scaffolds a fixed documentation structure in the target repo:
    `CLAUDE.md` + `AGENTS.md` + `planning/product.md` + `planning/architecture.md` +
    `planning/roadmap.md` + `planning/specs/NNN-name/{requirements,design,tasks}.md`, plus
    `planning/styles.md` (its visual sections only when the project has a visual surface),
-   plus the `.specloop/` loop folder's static files (config + log dir + ignore rules).
-2. Asks what kind of project this is, what the goal is, and who it serves.
+   plus the `.specloop/` loop folder's static files (config + log dir + ignore rules),
+   filling in what (1) collected.
 3. Asks about technologies, architecture, and tools — branched by project type, with
    the answers written into `planning/architecture.md` as a decision register. Its section
    headers are keyed to the project type, so a marketing project gets

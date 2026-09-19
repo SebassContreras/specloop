@@ -72,6 +72,17 @@ vs. stub). Ledger-first matters because file existence can't distinguish "finish
 
 ### Phase 1 — Scaffold
 
+**Amended 2026-09-19 (`planning/fix/016`)**: Phase 1 is written in two halves. The first
+creates only the ledger (`.specloop/interview.md`) before the first question; the rest
+waits until Phase 2 ends, so the run opens with a question rather than a burst of file
+writes, and `planning/architecture.md`'s type-keyed headers are written once
+`project-type` is actually known. It used to scaffold everything up front, which left
+`architecture.md`'s "asked in Phase 2, just before this file is written" contradicting
+its own phase order — different models resolved that differently. Nothing is lost by
+waiting: the ledger holds every answer in the user's own words, and a resumed run
+(Phase 0) finishes the second half. Phase numbers stay put on purpose — `design-closing`,
+`advance` and `scripts/check-skill-consistency.mjs` point at "Phase 1's" header template.
+
 Creates only what's missing, using specloop's own `planning/*.md` as the structural
 reference (headers only — content comes from the Q&A). `AGENTS.md` carries the content;
 `CLAUDE.md` is a one-line `@AGENTS.md` import, so the two cannot drift apart. Also

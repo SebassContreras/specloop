@@ -217,12 +217,13 @@ Only one link in this chain is automatic — `/specloop:start` chains straight i
 `/specloop:advance` once every seeded spec's requirements are filled; everything
 else is still one at a time, deliberately, never auto-triggered:
 
-1. **`/specloop:start`** — "I need to set up X". Scaffolds `AGENTS.md` + `CLAUDE.md` (a one-line
-   import for Claude Code) + `planning/{product,architecture,roadmap}.md` + `.specloop/`, then runs the interview:
-   project type → goal/audience/MVP → technologies, architecture and tools →
-   recommended skills/plugins already available in your session → styles and
-   preferences. Each answer is written to disk as it lands, the roadmap is seeded from
-   all of it, and each spec's `requirements.md` is filled in roadmap order.
+1. **`/specloop:start`** — "I need to set up X". Interviews you first — project type →
+   goal/audience/MVP — then scaffolds `AGENTS.md` + `CLAUDE.md` (a one-line import for
+   Claude Code) + `planning/{product,architecture,roadmap}.md` + `.specloop/`, and
+   carries on: technologies, architecture and tools → recommended skills/plugins
+   already available in your session → styles and preferences. Each answer is written
+   to disk as it lands, the roadmap is seeded from all of it, and each spec's
+   `requirements.md` is filled in roadmap order.
 
    The interview is exhaustive by contract, not by script: it draws from a
    per-project-type question bank, tracks coverage in `.specloop/interview.md`, follows

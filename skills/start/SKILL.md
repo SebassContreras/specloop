@@ -47,7 +47,9 @@ are just where answers land.
 - **Maintain `.specloop/interview.md`** as you go — one row per dimension:
   `| dimension | status | answer summary or skip reason |`. Write it after every
   answer. This is what makes an interrupted interview resumable and an explicit skip
-  distinguishable from an oversight.
+  distinguishable from an oversight. Until Phase 1's second half has run, the ledger is
+  the only file on disk, so put the user's answer in their own words in the last column,
+  not a paraphrase — it is what the scaffold is later written from.
 - **Follow up on anything named but unspecified.** If the user says "the dashboard",
   "the integration", "our brand guidelines", that noun is a new open dimension. Ask.
 - **A skip is recorded, never silently dropped.** "Don't care" / "later" / "not
@@ -85,9 +87,12 @@ are just where answers land.
 1. Check which of this skill's owned files already exist.
 2. If `.specloop/interview.md` exists, read it — this is a resumed interview. Report
    what's already covered and continue from the first `open` dimension rather than
-   restarting.
+   restarting. A ledger with no `planning/` structure beside it means Phase 2 was cut
+   short: finish it, then run Phase 1's second half as usual. A `planning/handoff.md`
+   alone doesn't count as the scaffold — the ledger decides.
 3. Otherwise decide by content:
-   - **No `planning/` structure** → Phase 1 → 2 → 3 → 4 → 5 → 6 → 7.
+   - **No `planning/` structure** → Phase 1's first half (the ledger) → 2 → Phase 1's
+     second half (the rest of the scaffold) → 3 → 4 → 5 → 6 → 7.
    - **Structure exists, `planning/product.md`'s "What this is" has real content** →
      skip to Phase 7 (next spec's requirements). Offer to revisit Phases 3–5 if the
      user says a decision has changed.
@@ -97,14 +102,28 @@ are just where answers land.
 **Never overwrite a file that already has real (non-stub) content without explicit
 confirmation first.**
 
-## Phase 1 — Scaffold
+## Phase 1 — Scaffold (ledger first, the rest after Phase 2)
 
-Create, only if missing:
+Written in two halves, so the interview leads and nothing is written on speculation —
+the user's first sight of the run is a question, not a wall of new files:
+
+1. **First half — before the first question.** Create only `.specloop/interview.md`,
+   the ledger from the interview contract: one row per Phase A dimension, all `open`.
+   Write nothing else yet.
+2. **Second half — when Phase 2 ends** (each of its dimensions `covered` or `skipped`,
+   and Phase F's sweep clean). Create everything below, only if missing, then write
+   Phase 2's answers from the ledger into their files (see Phase 2). `project-type` is
+   known by now, which is what `planning/architecture.md`'s header set needs.
+
+The ledger already holds every answer, so a session that stops before the second half
+loses nothing; a resumed run (Phase 0) finishes it when Phase 2 ends.
+
+Second half — create, only if missing:
 
 - **`AGENTS.md`** — the single source of project context, and the file the loop's
   workers actually read. Sections: "Project" (one-line goal, audience, project type),
   "Doc map", "Stack & conventions", "Style", "Rules for agents". Content stays
-  `TBD — fill via Q&A` until the phases below fill it.
+  `TBD — fill via Q&A` except "Project", which Phase 2's answers fill.
 - **`CLAUDE.md`** — a thin import, so the two can never diverge:
   ```markdown
   # <project>
@@ -115,8 +134,9 @@ Create, only if missing:
   matrix read `AGENTS.md` directly. Every harness therefore sees one set of facts. Never write project content into
   `CLAUDE.md` itself.
 - **`planning/product.md`** — headers only: "What this is", "Who uses it", "Out of scope".
-- **`planning/architecture.md`** — headers keyed to `project-type` (asked in Phase 2,
-  just before this file is written), content filled by Phase 3's Q&A:
+- **`planning/architecture.md`** — headers keyed to `project-type` (answered in Phase 2,
+  before this file is written; if it ended `skipped`, use the `other` set), content
+  filled by Phase 3's Q&A:
 
   ```markdown
   # Architecture
@@ -137,8 +157,8 @@ Create, only if missing:
   - **research** → `Sources`, `Method`, `Output`
   - **other** → `Tools`, `Inputs/Outputs` (mirrors Phase B's `B-other` generic dimensions)
 
-  `design-closing`/`task-breakdown` tolerate this file staying header-only (no
-  `project-type` answered yet, or Phase 3 skipped) — never gate on it having content.
+  `design-closing`/`task-breakdown` tolerate this file staying header-only (Phase 3
+  skipped, or `project-type` left `skipped`) — never gate on it having content.
 - **`planning/roadmap.md`**:
   ```markdown
   # Roadmap
@@ -185,12 +205,18 @@ Create, only if missing:
 ## Phase 2 — Type & vision Q&A (first run only)
 
 Question-bank Phase A. Start with `project-type` — it branches everything downstream,
-so it must be answered first. Write the answer into `planning/product.md` *and*
-`AGENTS.md`'s "Project" section; every later phase reads it from there.
+so it must be answered first. Record each answer in the ledger as it lands; the
+scaffold doesn't exist yet (Phase 1's first half wrote only the ledger).
 
 Then work through `goal`, `audience`, `mvp`, `done-when`, `constraints-hard`,
 `stakeholders`, `automatability`, following up as the contract requires. Close with
 Phase F's sweep.
+
+Then run Phase 1's second half, and write what this phase collected out of the ledger:
+`goal` into `planning/product.md`'s "What this is", `audience` into "Who uses it", what
+the `mvp` answer excludes into "Out of scope", and `project-type`, `goal` and `audience`
+into `AGENTS.md`'s "Project" section; every later phase reads them from there. The other
+dimensions stay in the ledger, which `design-closing` reads directly.
 
 ## Phase 3 — Technologies, architecture & tools Q&A
 

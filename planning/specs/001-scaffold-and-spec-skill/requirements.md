@@ -40,7 +40,8 @@
 - Interactive Q&A to progressively fill each spec's `requirements.md`, step by step
   (not all at once), in roadmap order, including `## Acceptance criteria`.
 - Single entry point: the user says "I need to set up X" and the plugin runs
-  scaffold → type/vision → tech → skills → styles → seeding → spec requirements.
+  type/vision → scaffold → tech → skills → styles → seeding → spec requirements
+  (amended 2026-09-19 — the scaffold used to come first; see `planning/fix/016`).
 
 ## Who/what it serves
 
