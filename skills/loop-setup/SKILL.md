@@ -50,8 +50,9 @@ whose answer won't be exercised yet.
 Ask, one at a time, waiting for each reply:
 
 1. **Worker CLI** — "Which CLI(s) might ever run this loop — `claude`,
-   `codex`, `opencode`, `copilot`, `cursor-agent`, `agy`, or another command on PATH? List every one you might
-   use, even from a different machine or harness later — the loop always
+   `codex`, `opencode`, `copilot`, `cursor-agent`, `agy`, or another command
+   on PATH? List every one you might use, even from a different machine or
+   harness later — the loop always
    picks whichever entry matches the session actually running it, never
    splits work across the others." → `workers`, an array of `{ "cli": "...",
    "args": [...] }`. More than one entry is for portability (a different
@@ -68,11 +69,17 @@ Ask, one at a time, waiting for each reply:
    `["--trust", "--force", "-p"]`, `agy` → `["--add-dir", "<absolute path of this
    repo>", "--mode", "accept-edits", "-p"]`. For `agy`, write this repo's real absolute
    path: a relative one doesn't work, and without `--add-dir` its headless mode loads
-   no project skills. Say plainly, once, that `copilot` and `cursor-agent` need those
-   flags to run headless and that they let the worker write files and run commands
-   without asking, and that `agy`'s headless mode edits files but auto-denies shell
-   commands unless the user allows them in its own settings, so an `agy` worker can't
-   run tests. Only ask "what's its headless/non-interactive flag?"
+   no project skills. That ties the entry to this one checkout, so say it won't carry
+   over to a teammate's clone. Say plainly, once, that `copilot` and `cursor-agent` need
+   those flags to run headless and that they let the worker write files and run
+   commands without asking. Say also that `agy` is the weak entry: its headless mode
+   auto-denies shell commands (exit 0, nothing written — a plain create-a-file task
+   failed that way in a check), the documented fix (`permissions.allow` in
+   `~/.gemini/antigravity-cli/settings.json`) is reported ignored in headless mode
+   (google-antigravity/antigravity-cli issue 548; not tested here), and
+   `--dangerously-skip-permissions` let the agent read outside the repo in the audit —
+   never add it for the user. Suggest an `agy` entry only if they will run the loop
+   from an `agy` session. Only ask "what's its headless/non-interactive flag?"
    for a CLI not in that map. Mention this once, plainly: `specloop:loop`
    always uses whichever entry's provider matches the session running it,
    and prefers that harness's own native sub-agent mechanism over this CLI
@@ -93,7 +100,7 @@ Ask, one at a time, waiting for each reply:
    ```json
    {
      "workers": [
-       { "cli": "<answer>", "args": ["<headless flag>"] }
+       { "cli": "<answer>", "args": ["<headless flags, from the map above>"] }
      ],
      "logDir": ".specloop/logs",
      "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],

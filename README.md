@@ -25,10 +25,11 @@ after it.
   `tasks.md`. That session *is* the master; there's no separate process to
   start or watch.
 - **Worker / harness** — the harness is the agent CLI itself (Claude Code,
-  OpenCode, Codex CLI, GitHub Copilot CLI, Cursor, Antigravity CLI); a worker is one instance of it running a single
-  task. The loop always runs tasks through its own harness's native sub-agent
-  tool first — other configured harnesses exist for portability, not for
-  splitting load, unless you explicitly ask it to send work to one.
+  OpenCode, Codex CLI, GitHub Copilot CLI, Cursor, Antigravity CLI); a worker
+  is one instance of it running a single task. The loop always runs tasks
+  through its own harness's native sub-agent tool first — other configured
+  harnesses exist for portability, not for splitting load, unless you
+  explicitly ask it to send work to one.
 - **`.specloop/`** — the loop's own state/config folder inside the target repo:
   `loop.config.json`, the interview's coverage log, and run logs.
 
@@ -39,9 +40,9 @@ Everything below builds on these five terms.
 Skills, in the open [Agent Skills](https://github.com/agentskills/agentskills)
 format, verified on six agent CLIs: Claude Code, OpenCode, Codex CLI, GitHub Copilot CLI,
 Cursor and Antigravity CLI. Install and usage for each is under [Install](#install); the
-state per harness is in the [support matrix](#support-matrix) (audit tracked in
-`planning/roadmap.md`'s `022`). Claude Code also gets a plugin for convenient installation;
-every other harness reads the `skills/` folder directly.
+[support matrix](#support-matrix) has the state per harness and says what "verified" does
+and doesn't cover (audit tracked in `planning/roadmap.md`'s `022`). Claude Code also gets a
+plugin for convenient installation; every other harness reads the `skills/` folder directly.
 
 ## Demo
 
@@ -163,9 +164,14 @@ without asking, so use them in throwaway or trusted repos only.
   `--add-dir` is required, with an **absolute** path (`.` did not work): without it `agy -p`
   loads only its built-in skills. Continue with `--conversation <id>` (the id is in the `init`
   event of `--output-format stream-json`).
-- **Limits:** in headless mode it edits files but auto-denies shell commands unless you allow
-  them in its own settings, so it can't run tests. Avoid `--dangerously-skip-permissions`: in the
-  audit the agent then read files outside the repo. Interactive mode was not audited.
+- **Limits:** headless mode soft-denies any shell command (exit 0, a notice on stderr), and the
+  agent reaches for one even for simple tasks: a create-one-file check wrote nothing under
+  `--mode accept-edits`. Google's docs say a `permissions.allow` rule in
+  `~/.gemini/antigravity-cli/settings.json` lifts that; an
+  [open GitHub issue](https://github.com/google-antigravity/antigravity-cli/issues/548) says
+  headless mode ignores it, and it was not tested here. Avoid `--dangerously-skip-permissions`:
+  in the audit the agent then read files outside the repo. Treat `agy` as unreliable for
+  unattended work. Interactive mode was not audited.
 
 ### Any other harness
 
@@ -180,9 +186,16 @@ Per-harness state, the only place it is listed (`planning/specs/022-cross-agent-
 `documented` is interim — the harness's own docs name where it scans for skills, nothing
 more; a row ends as `verified` (the four audit checks passed) or `discarded` (with a reason).
 
+**What `verified` covers:** the four checks — skills are discovered, a plain request activates the
+right one unprompted (`start` and `status` were the two tried), the `when_to_use` frontmatter key is
+tolerated, and `start`'s interview holds one question per turn while writing each answer to disk
+first. That interview was audited through its opening phase. **Not covered:** its later phases,
+`advance`, and `skills/loop` as the master under the five non-Claude harnesses (the loop's live run,
+`024`, was under Claude Code).
+
 | Harness | State | Skills scan path (project · global) | Evidence |
 | --- | --- | --- | --- |
-| Claude Code | verified | `.claude/skills/`, or `--plugin-dir` | native host |
+| Claude Code | verified | `.claude/skills/`, or `--plugin-dir` · `~/.claude/skills/` | native host; live `claude --plugin-dir` runs: `001` T030 (interview), `006` T010 (pipeline), `024` (loop) |
 | OpenCode | verified | `.opencode/skills/`, `.agents/skills/`, `.claude/skills/` · `~/.config/opencode/skills/`, `~/.agents/skills/` | `022` T003 |
 | Codex CLI | verified | `.agents/skills/` · `~/.agents/skills/` | `022` T002 (agent-driven run, all four checks) |
 | Cursor | verified | `.agents/skills/`, `.cursor/skills/` · `~/.agents/skills/`, `~/.cursor/skills/` | [skills](https://cursor.com/docs/skills), [CLI](https://cursor.com/docs/cli/overview) (command `cursor-agent`, also `agent`); `022` T001 (agent-driven run, all four checks; the CLI does load skills) |

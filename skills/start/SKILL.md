@@ -73,8 +73,8 @@ are just where answers land.
 - **The user can stop at any point** — "that's enough for now", "let's pause", "stop
   here", or similar. Before actually stopping, ask whether to write `planning/handoff.md`.
   If yes, write a point-in-time note in the shape of this repo's own `planning/handoff.md`
-  template: what's covered per the ledger, what's still `open`/`skipped` and why, and the
-  how to resume (start your harness in this repo and invoke `start` — under Claude Code,
+  template: what's covered per the ledger, what's still `open`/`skipped` and why, and how
+  to resume (start your harness in this repo and invoke `start` — under Claude Code,
   `claude --plugin-dir <path-to-specloop>` then `/specloop:start`; the ledger picks up at the
   first `open` dimension). Never stop silently: a bare `open`
   row in the ledger says *that* something is unanswered, not *why*, which is what a
@@ -150,7 +150,7 @@ Create, only if missing:
   |-----|------|--------|------------|-------|----------|
 
   `Status`: `todo` · `in_progress` · `blocked` · `interrupted` · `done`. Written only
-  by the orchestrator — never hand-edit it.
+  by `specloop:loop` — never hand-edit it.
 
   `Stage`: `requirements` · `design_closed` · `tasks_ready` · `looping` — which skill
   a spec needs next. `—` until this skill finishes that spec's `requirements.md`.
@@ -161,7 +161,7 @@ Create, only if missing:
   Carries no other content — no history, no separate ordering list; that's what goes
   stale (see `planning/architecture.md`'s roadmap Fixed rules if the reasoning is ever
   unclear). The `Plan` cell must be byte-identical to its folder's post-`NNN-` segment
-  — the orchestrator concatenates the two into a filesystem path. Verify this after
+  — `specloop:loop` concatenates the two into a filesystem path. Verify this after
   every row you write. `Stage` and `Priority` are trailing columns the row parser
   ignores positionally (safe to ship with or without values in them). Leave `Stage`
   `—` when you create a spec's row; once this skill finishes writing that spec's real
@@ -252,14 +252,16 @@ Then write `.specloop/loop.config.json` from Phase 4's CLI answers:
 ```json
 {
   "workers": [
-    { "cli": "<answer>", "args": ["<headless flag>"] }
+    { "cli": "<answer>", "args": ["<headless flags, from loop-setup's known-flags map>"] }
   ],
   "logDir": ".specloop/logs",
   "contextFiles": ["AGENTS.md", "planning/architecture.md", "planning/styles.md"],
   "language": "<BCP 47 / ISO 639-1 two-letter code from the tone dimension, e.g. \"es\", \"pt\" — omit the field entirely if English>"
 }
 ```
-One entry per worker CLI the user named — more than one is for portability across
+One entry per worker CLI the user named, its `args` the whole array from
+`skills/loop-setup/SKILL.md`'s known-flags map (Phase 1, step 1). More than one is for
+portability across
 whichever harness ends up running `specloop:loop` (it always picks the entry
 matching its own session, never splits work across the rest). `language` comes
 from Phase 5's `tone` dimension ("what tone... and in

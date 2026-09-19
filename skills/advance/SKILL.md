@@ -87,7 +87,7 @@ Phase 0's stub check):
      settles. Derive from `interview.md`'s Phase B/D answers and
      `planning/architecture.md`'s existing "Resolved"/decision register: if
      the spec's requirements don't raise a new stack question, the answer is
-     "none" and the Phase 2 append step (T005) has nothing to add.
+     "none" and the append step (step 8 below) has nothing to add.
    - **Risks / open questions** — anything genuinely undecided that should be
      flagged as deferred rather than guessed at. Derive from the spec's own
      `## Hard constraints` and any dimension `interview.md` marked `open` for
@@ -106,12 +106,11 @@ Phase 0's stub check):
      says something like "not yet defined" / "TBD" / "blocked" for that exact
      question.
    - `requirements.md`'s own `## Hard constraints` explicitly flags the thing
-     this question is asking about as unresolved/blocking — e.g. `029`'s
-     worktree-isolation spec: its Hard constraints flag the roadmap-write
-     merge story as "Blocking, unresolved," and no answer exists anywhere in
-     the spec to derive Approach or Sequencing from. Ask live (or, per Phase
-     0's refusal check, refuse the spec outright if the whole design can't
-     proceed).
+     this question is asking about as unresolved/blocking — e.g. a constraint
+     that reads "Blocking, unresolved" about a design decision, with no
+     answer anywhere in the spec to derive Approach or Sequencing from. Ask
+     live (or, per Phase 0's refusal check, refuse the spec outright if the
+     whole design can't proceed).
    - `.specloop/interview.md` marks the relevant dimension `open` rather than
      `covered`/`skipped`.
    - The sources in step 1 give two plausible but conflicting answers for the
@@ -150,19 +149,19 @@ Phase 0's stub check):
    - <derived answer 5, as bullets — section omitted if empty>
    ```
 
-   Do not write this draft to disk yet — writing + the Phase 2 coverage gate
-   happen on "yes" (T005).
+   Do not write this draft to disk yet — the coverage gate and the write
+   happen on "yes" (steps 7–9).
 5. Show the user this real draft — the actual Approach/Deliverables/
    Sequencing/Open-questions text, not a shortened synthesis — for **this
    spec specifically**, with three options:
    - **yes** — accept, proceed to write it (coverage gate + disk write +
-     `Stage: design_closed`, handled in T005), then continue into this
+     `Stage: design_closed`, steps 7–9), then continue into this
      spec's task-breakdown pass (Phase 2).
    - **changes** — the user describes what to change; revise the draft and
      re-show it under the same three options.
    - **defer** — skip this spec for now, move to the next spec in the
      worklist; the deferred spec is picked up on a later `specloop:advance`
-     run (Phase 3/T008).
+     run (Phase 3).
 6. On **defer**, skip straight to step 11 (move to the next spec) without
    running steps 7–10 for this spec.
 7. **On yes**, run `design-closing` Phase 2's coverage gate against this
@@ -234,11 +233,11 @@ For each spec needing this pass — reached via Phase 1 step 10 (just closed to
    status/notes yet) for **this spec specifically**, with the same three
    options as Phase 1:
    - **yes** — accept; writing `tasks.md` and `Stage: tasks_ready` happens
-     next (T007).
+     next (steps 7–8).
    - **changes** — the user says what to add/remove/reorder/re-own; revise
      and re-show under the same three options.
    - **defer** — skip this spec for now, move to the next spec in the
-     worklist; picked up on a later `specloop:advance` run (Phase 3/T008).
+     worklist; picked up on a later `specloop:advance` run (Phase 3).
 6. On **defer**, skip straight to step 10 (move to the next spec) without
    running steps 7–9 for this spec.
 7. **On yes**, write `tasks.md` to disk using `task-breakdown` Phase 3's
@@ -250,7 +249,7 @@ For each spec needing this pass — reached via Phase 1 step 10 (just closed to
 9. Unlike a direct `specloop:task-breakdown` invocation (which stops after
    this, per its own Phase 4, and explicitly says "do not begin executing
    any task"), `specloop:advance` also stops here for this spec — running
-   the list is the loop orchestrator's job (`002`/`specloop:loop`), never
+   the list is `specloop:loop`'s job, never
    this skill's, exactly as `task-breakdown` Phase 4 already states. Tell
    the user `tasks.md` is populated and ready, and name any `[human]` tasks
    in it that the loop will skip.

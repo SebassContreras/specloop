@@ -8,8 +8,8 @@ isn't concrete enough on its own.
   closed `design.md` → populated `tasks.md`) for a toy "hello CLI" feature, shown
   at every stage of the pipeline `specloop:start` → `specloop:design-closing` →
   `specloop:task-breakdown` produces. Read it top to bottom to see the fixed
-  contracts (`Approach` / `Components / files touched` / `Open questions` in
-  `design.md`; the checkbox/owner/status checklist in `tasks.md`) filled with
+  contracts (`Approach` / `Deliverables` / `Sequencing` / `Open questions / deferred`
+  in `design.md`; the checkbox/owner/status checklist in `tasks.md`) filled with
   real, small content instead of the placeholders `SKILL.md` describes in prose.
 - [`marketing-content-spec/`](marketing-content-spec/) — the same pipeline for a
   **non-software** target project (a toy product-launch announcement), showing the

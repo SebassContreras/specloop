@@ -271,9 +271,9 @@ verified there without a run of that spec's four audit checks.
   execution-mode fields (the earlier `context`/`background` flags were removed, see
   `001` T32/`002` T19/`003` T10/`004` T12). `when_to_use` is additive beyond the base
   Agent Skills spec's fields (`name`/`description`/`license`/`compatibility`/
-  `metadata`); whether every target harness tolerates an unrecognized frontmatter key
-  is exactly what `022-cross-agent-skill-compat`'s audit needs to confirm, not assumed
-  here.
+  `metadata`); all six harnesses in `README.md`'s support matrix loaded every skill
+  carrying it with no error or warning (`022-cross-agent-skill-compat`'s audit, its
+  `when_to_use` tolerance check), so it stays.
 - **`planning/fix/`** (`023-fix-log`, entry authoring moved to `specloop:fix` per
   `027`) — a flat log for anything a developer finds wrong after the fact, parallel
   in spirit to `planning/specs/` but not in shape: one flat file per numbered entry

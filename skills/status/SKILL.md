@@ -54,8 +54,10 @@ variable name. Instead resolve `scripts/build_dashboard.py` against the
 directory this `SKILL.md` was loaded from (the Agent Skills format's own
 convention: bundled files are relative to the skill root), and if this
 harness never told you that directory, look for `status/scripts/build_dashboard.py`
-under `.agents/skills/`, `.opencode/skills/` and `.claude/skills/` in the
-target repo, then under `~/.agents/skills/` and `~/.config/opencode/skills/`.
+under `.agents/skills/`, `.opencode/skills/`, `.claude/skills/`, `.github/skills/`
+and `.cursor/skills/` in the target repo, then under `~/.agents/skills/`,
+`~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.copilot/skills/` and
+`~/.cursor/skills/`.
 Run the script by its absolute path, still with the target repo's root as the
 working directory. If none of those exist, say so and stop — same as any
 other script failure below.

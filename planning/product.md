@@ -6,10 +6,9 @@ Skills, in the open cross-tool **Agent Skills** format, that unify how any new p
 gets started: they interview the user, turn the answers into a roadmap that can be
 built step by step, and then work through that roadmap unsupervised. Distributed today
 as a **Claude Code Plugin** for convenient installation (`claude --plugin-dir`) — not a
-statement that the skills only run there. See `planning/architecture.md`'s Container
-section and `022-cross-agent-skill-compat` for what full parity across other
-Agent-Skills-compatible tools (Cursor, Codex CLI, OpenCode, ...) still
-requires.
+statement that the skills only run there: `README.md`'s support matrix lists the six
+agent CLIs verified so far and what that covers (`022-cross-agent-skill-compat`), and
+`planning/architecture.md`'s Container section has the reasoning.
 
 "Any project" is literal — an app, a website, a marketing or content project, an
 operations/research project, or anything else that can be automated and needs a
@@ -21,15 +20,16 @@ branches everything downstream (see `planning/architecture.md`'s fixed rules).
 1. Scaffolds a fixed documentation structure in the target repo:
    `CLAUDE.md` + `AGENTS.md` + `planning/product.md` + `planning/architecture.md` +
    `planning/roadmap.md` + `planning/specs/NNN-name/{requirements,design,tasks}.md`, plus
-   `planning/styles.md` when the project has a visual surface, plus the `.specloop/`
-   loop folder's static files (config + log dir + ignore rules).
+   `planning/styles.md` (its visual sections only when the project has a visual surface),
+   plus the `.specloop/` loop folder's static files (config + log dir + ignore rules).
 2. Asks what kind of project this is, what the goal is, and who it serves.
 3. Asks about technologies, architecture, and tools — branched by project type, with
    the answers written into `planning/architecture.md` as a decision register. Its section
    headers are keyed to the project type, so a marketing project gets
    channels/tools/data-sources rather than container/stack.
-4. Recommends Claude Code skills based on the answers given in (3) — confirmed before
-   anything is installed, never installed silently.
+4. Recommends helper skills/plugins available in the session running the interview,
+   based on the answers given in (3) — confirmed before anything is installed, never
+   installed silently.
 5. Asks for styles and preferences (colors, typography, tone, code conventions) and
    records them where worker agents actually read them.
 6. Seeds the roadmap from all of the above, then fills each spec's requirements
@@ -67,8 +67,9 @@ chained automatically):
     sub-agents, anything sharing a file runs one at a time. It **always uses its
     own harness's native sub-agent tool first**, matched to its own provider —
     never splitting work across the other configured CLIs (`claude`, `codex`,
-    `opencode`, ...), which exist for portability across whichever harness ends
-    up running the loop, not for load-splitting — and hands every worker the
+    `opencode`, `copilot`, `cursor-agent`, `agy`, ...), which exist for
+    portability across whichever harness ends up running the loop, not for
+    load-splitting — and hands every worker the
     project's context files so its output respects the decisions made in
     steps 3–5. The user can also explicitly send a different spec/task to a
     different configured provider to run alongside the master's own work —

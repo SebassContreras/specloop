@@ -47,9 +47,10 @@ this roster, drawn from the official Agent Skills adopters list (agentskills.io)
 filtered to clients that can be driven from a terminal. Non-CLI clients on that list
 (IDE extensions, desktop apps, cloud platforms) stay out — see Out of scope.
 
-- **Already audited:** Claude Code, OpenCode (`T003`), Codex CLI (`T002`) and GitHub
-  Copilot CLI (`T026`); the last two by agent-driven runs recorded 2026-09-19.
-- **Still to audit:** Cursor (`cursor-agent`, `T001`) and Antigravity CLI (`agy`, `T013`).
+- **Audited, all six `verified` (closed 2026-09-19):** Claude Code, OpenCode (`T003`),
+  Codex CLI (`T002`), GitHub Copilot CLI (`T026`), Cursor (`cursor-agent`, `T001`) and
+  Antigravity CLI (`agy`, `T013`); all but the first two by agent-driven runs recorded
+  2026-09-19.
 
 Every roster entry is audited against the same four-dimension matrix, and ends in one of
 two final states only: `verified` or `discarded` (with a stated reason).

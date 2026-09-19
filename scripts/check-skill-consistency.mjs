@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Static cross-reference check over the four SKILL.md files and the question bank.
+ * Static cross-reference check over the SKILL.md files and the question bank.
  *
  * A skill's "implementation" is its instructions, so it has no compiler and no unit
  * tests — the failure mode is a skill that promises something no other file delivers.
@@ -36,7 +36,13 @@ const taskBreakdown = read('skills/task-breakdown/SKILL.md');
 const loopSetup = read('skills/loop-setup/SKILL.md');
 const loop = read('skills/loop/SKILL.md');
 const questionBank = read('skills/start/references/question-bank.md');
-const allSkills = [start, designClosing, taskBreakdown, loopSetup, loop, questionBank];
+const advance = read('skills/advance/SKILL.md');
+const amend = read('skills/amend/SKILL.md');
+const fix = read('skills/fix/SKILL.md');
+const status = read('skills/status/SKILL.md');
+const readme = read('README.md');
+const sampleConfig = read('examples/loop.config.sample.json');
+const allSkills = [start, designClosing, taskBreakdown, loopSetup, loop, questionBank, advance, amend, fix];
 
 group('[1] Files referenced by a skill actually exist');
 const refs = new Set();
@@ -48,6 +54,9 @@ for (const src of allSkills) {
 for (const ref of [...refs].sort()) {
   ok(existsSync(ref.replace(/\/$/, '')), `referenced: ${ref}`);
 }
+// status cites its script skill-relative (`scripts/build_dashboard.py`, per the Agent Skills
+// convention), so it can't go through the repo-relative loop above.
+ok(existsSync('skills/status/scripts/build_dashboard.py'), 'status: its skill-relative script exists');
 
 group('[2] Templates start writes match what downstream skills parse');
 for (const h of CANONICAL_HEADERS) {
@@ -216,6 +225,56 @@ ok(
   normalize(designClosing).includes("skills/start/skill.md` phase 1's"),
   'design-closing points at start Phase 1 as the template source, rather than restating an independent one',
 );
+
+group('[14] The harness roster (README support matrix) is carried through every file that lists it');
+// Worker command per matrix harness. A matrix row with no entry here fails on purpose:
+// add its command below, then align the files this group names. Every path the matrix
+// gives for where a harness scans for skills must also be in status's script-probe list,
+// or `status` can't find its own script when specloop was installed under that path.
+const HARNESS_CLI = {
+  'Claude Code': 'claude',
+  OpenCode: 'opencode',
+  'Codex CLI': 'codex',
+  'GitHub Copilot CLI': 'copilot',
+  Cursor: 'cursor-agent',
+  'Antigravity CLI': 'agy',
+};
+const matrix = readme.match(/### Support matrix[\s\S]*?(?=\n## )/);
+const matrixRows = [
+  ...(matrix ? matrix[0] : '').matchAll(
+    /^\| ([^|]+?) \| (?:verified|discarded|documented|pending) \| ([^|]*) \|/gm,
+  ),
+].map((m) => ({ name: m[1], paths: m[2] }));
+ok(matrixRows.length > 0, `README's support matrix has ${matrixRows.length} harness row(s)`);
+for (const { name } of matrixRows) {
+  const cli = HARNESS_CLI[name];
+  ok(!!cli, `${name}: has a worker command in this script's HARNESS_CLI map`);
+  if (!cli) continue;
+  ok(loopSetup.includes(`\`${cli}\` →`), `${name}: \`${cli}\` has an entry in loop-setup's known-flags map`);
+  ok(loop.includes(`\`${cli}\``), `${name}: \`${cli}\` is named in skills/loop's Phase 3`);
+  ok(questionBank.includes(`\`${cli}\``), `${name}: \`${cli}\` is named in question-bank's worker-cli row`);
+  ok(readme.includes(`\`${cli}\``), `${name}: \`${cli}\` is named in README`);
+  ok(sampleConfig.includes(`"cli": "${cli}"`), `${name}: examples/loop.config.sample.json has a \`${cli}\` worker`);
+}
+const scanPaths = [
+  ...new Set(matrixRows.flatMap((r) => [...r.paths.matchAll(/`([^`]*skills\/)`/g)].map((m) => m[1]))),
+];
+ok(scanPaths.length > 0, `README's support matrix names ${scanPaths.length} skills scan path(s)`);
+for (const p of scanPaths) {
+  ok(status.includes(p), `status's script-probe list names the matrix path ${p}`);
+}
+
+group('[15] No stale or leaked wording in skill text');
+// The loop is a chat session, not a process (002); a task id like "(T005)" in a skill points
+// at a tasks.md the target repo never sees.
+const skillTexts = { start, designClosing, taskBreakdown, loopSetup, loop, advance, amend, fix, status, questionBank };
+for (const [name, text] of Object.entries(skillTexts)) {
+  ok(
+    !/orchestrator/i.test(text.replace(/no separate orchestrator/g, '')),
+    `${name}: no "orchestrator" wording`,
+  );
+  ok(!/\((?:Phase \d\/)?T\d{3}\)/.test(text), `${name}: no leaked internal task id like "(T005)"`);
+}
 
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);

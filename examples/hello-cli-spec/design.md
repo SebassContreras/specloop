@@ -10,11 +10,16 @@ install for this spec" requirement. Argument parsing is a plain `process.argv`
 slice; no argument-parsing library, since there's exactly one optional positional
 argument.
 
-## Components / files touched
+## Deliverables
 
 - `bin/hello.mjs` — the whole implementation: read `process.argv.slice(2)`,
   validate arg count, print the greeting, set `process.exitCode`.
 - `package.json` — add a `bin.hello` entry pointing at `bin/hello.mjs`.
+
+## Sequencing
+
+`bin/hello.mjs` first, then the `package.json` entry that points at it, then a manual
+smoke test — nothing here depends on another spec beyond `roadmap.md`'s `Depends on`.
 
 ## Open questions / deferred
 

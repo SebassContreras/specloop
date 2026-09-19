@@ -10,10 +10,31 @@ version is actually tagged.
 
 ## Unreleased
 
-> Pre-existing gap, not from this session: `016`/`017`/`022` are `done` in
+> Pre-existing gap, not from this session: `016`/`017` are `done` in
 > `planning/roadmap.md` but have no entry below — left as-is rather than backfilled
-> here, since auditing/writing three unrelated historical entries is out of scope
+> here, since auditing/writing two unrelated historical entries is out of scope
 > for today's changes.
+
+### 022 — cross-agent-skill-compat
+
+Every harness on the spec's roster — six agent CLIs — passed the same four audit
+checks: skills are discovered, a plain-language request activates the right one
+without naming it, the `when_to_use` frontmatter key is tolerated, and `start`'s
+interview holds one question per turn while writing each answer to disk first
+(audited through its opening phase). Runs were agent-driven and non-interactive,
+except OpenCode's (a live session), in isolated fixtures with their own `.git`;
+the evidence per harness is in the spec's `tasks.md`. `README.md` gains an install
+and usage section per harness and a support matrix — the only place per-harness
+state is listed, including what "verified" does not cover (`start`'s later phases,
+`advance`, and `skills/loop` as the master outside Claude Code). `skills/start`'s
+helper-skills step no longer hardcodes Claude Code, `skills/loop-setup` carries a
+known-flags map so a known CLI's headless flags are never asked for, and
+`skills/status` finds its script under any of the six harnesses' skill
+directories. A worker-style check of the loop's subprocess form (one create-a-file
+task) passed for Copilot CLI and Cursor; Antigravity CLI's headless mode soft-denies
+shell commands and wrote nothing, so it is documented as unreliable for unattended
+work. `scripts/check-skill-consistency.mjs` gained two groups that keep the roster,
+the flags map, the probe list and the skills' wording aligned.
 
 ### 033 — interview-to-loop-auto-continuation (partial)
 

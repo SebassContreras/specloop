@@ -17,7 +17,7 @@ Entry point. Everything else lives under `planning/`:
   per file, added via `specloop:fix` (`skills/fix/`) — its only writer, and the
   format's only documentation. Not a spec, not loop-runnable.
 
-Current state (2026-09-14): `001`–`006`, `009`, `014`–`018`, `020`, `022`–`024`,
+Current state (2026-09-19): `001`–`006`, `009`, `014`–`018`, `020`, `022`–`024`,
 `027` are `done` (`023` too, omitted from this list before now — a pre-existing gap,
 not new).
 `001`/`003`/`004` are working skills under `skills/`; `002` is now a single
@@ -40,12 +40,10 @@ native sub-agent path being asynchronous, not a live stream). A few branches
 stayed stub-only or unexercised (genuine-failure/quota-suspicion with a real CLI,
 a roadmap-level `in_progress` resume, harness-synergy wording under a
 non-Claude-Code harness) — see `planning/handoff.md`'s "Not verified" section.
-`022`'s acceptance criteria only required one
-non-Claude-Code harness verified — OpenCode passed a live audit 2026-09-08, so
-`planning/architecture.md`'s Container section named it (since 2026-09-19 that
-state lives in `README.md`'s support matrix, and `022` was amended to audit many
-more harnesses); Cursor and Codex CLI audits (`022` T001/T002) are now part of that
-wider audit. **`018`
+`022` (cross-agent-skill-compat) closed 2026-09-19: every harness on its roster
+(six agent CLIs) passed the spec's four audit checks. `README.md`'s support matrix
+is the only place per-harness state lives, and says what "verified" does not cover
+(the loop as master outside Claude Code); the evidence is in `022`'s `tasks.md`. **`018`
 (project-style-preferences) closed 2026-09-13** — its capture/storage/delivery
 turned out to already be built (`001` T024/T025, `014`), just never traced back to
 close the spec; closed via a live verification under OpenCode against an external

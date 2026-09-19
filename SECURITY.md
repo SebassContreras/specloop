@@ -32,6 +32,14 @@ native sub-agent tool). A prompt- or config-driven command-injection issue
 there is the most likely class of real vulnerability — review any change to
 `skills/loop`'s Phase 3 (worker invocation) with that in mind.
 
+Some of the headless worker flags in `skills/loop-setup`'s known-flags map let a worker act
+without asking — `copilot`'s `--allow-all-tools` and `cursor-agent`'s `--trust --force`
+approve every tool call, shell commands and file writes included. A worker's briefing is
+built from repo-sourced text (task text, `requirements.md`, `design.md`), so hostile text
+in a repo the loop runs against can steer such a worker into running commands (prompt
+injection). Run the loop only against repos you trust, and treat any change that widens
+what a worker may do without asking as security-relevant.
+
 The skills themselves (`skills/*/SKILL.md`) are Q&A instructions run by an
 interactive agent inside the target repo — they write files, never execute
 arbitrary shell commands outside of running a user-configured worker, and

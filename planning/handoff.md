@@ -1,10 +1,75 @@
-# Handoff — 2026-09-13
+# Handoff — 2026-09-19
 
-Supersedes 2026-09-12 on three points: **`018`** and **`009`** are `done`, and
-**`026`** exists (filed and design-closed, not yet built). Everything else below
-(2026-09-12 and 2026-09-11 history) still holds. Branch: `main`.
+Supersedes 2026-09-13 on two points: **`022`** is closed (below), and **"Next, picking
+this back up"** is stale — `026`, `012`, `030`, `032`, `033`, `034` and others have
+shipped since; `planning/roadmap.md` and `AGENTS.md`'s current-state paragraph are the
+live source for what's next. Everything below still holds except where a line says
+otherwise. Branch: `main`.
 
-## Repo-wide alignment pass, same session
+## `022` closed 2026-09-19 — six harnesses verified, and what that doesn't cover
+
+Every harness on the roster passed the spec's four audit checks. The state per harness
+lives only in `README.md`'s support matrix, the evidence in `022`'s `tasks.md`. The README
+also gained an install/usage section per harness, and `skills/loop-setup` a known-flags map
+for their headless commands.
+
+A same-day alignment pass then swept the skills and docs for stale harness lists and
+contradictions (`README.md`, `AGENTS.md`, `planning/product.md`, `skills/{start,advance,
+task-breakdown,status,loop-setup}`, the examples, `SECURITY.md`): wording that predated the
+interactive loop (`orchestrator`), task ids leaked into skill text, `status`'s script-probe
+list missing three harnesses' skill directories, an example `design.md` with non-canonical
+headers. `scripts/check-skill-consistency.mjs` gained group `[14]` (the roster, flags map,
+sample config and probe list against the matrix) and `[15]` (no `orchestrator` wording or
+leaked task ids in a skill) so none of that can quietly return.
+
+**What "verified" does not mean:**
+
+- **`skills/loop` as master under a non-Claude harness was never run.** The audits covered
+  skill discovery, auto-trigger, `when_to_use` tolerance and the `start` interview's opening
+  phase. Whether "your own harness's native way of spawning a sub-agent" reads correctly, or
+  exists, under Codex CLI, Copilot CLI, Cursor or `agy` is open.
+- **Worker-style subprocess check** (the loop's `<cli> <args> "<briefing>"` form, one
+  create-a-file task): `copilot` and `cursor-agent` wrote the file; `agy` exited 0 with
+  nothing written — its headless mode auto-denied the shell command the agent used. Google's
+  docs say `permissions.allow` in `~/.gemini/antigravity-cli/settings.json` lifts that; an open
+  issue (google-antigravity/antigravity-cli #548) says headless mode ignores it. Not tested
+  here. `--dangerously-skip-permissions` works but let the agent read outside the fixture in
+  the audit. So `agy` is documented as unreliable for unattended work, and is left out of this
+  repo's own `.specloop/loop.config.json` (its entry also needs this checkout's absolute path,
+  which doesn't belong in a tracked file). Only `copilot` and `cursor-agent` were added there,
+  by hand.
+- The `claude`, `codex` and `opencode` subprocess forms were not re-run today.
+
+## Open judgement calls found in that pass — nothing decided, each needs the user
+
+Recorded, not fixed, because each picks between two things the user has stated, or edits a
+Fixed rule (which needs their go-ahead):
+
+1. **Roadmap "carries no other content"** (Fixed rule, `015`) vs `skills/start` Phase 6
+   step 5, which still tells a target repo's roadmap to gain a `## How this gets built, step
+   by step` section (`001`'s stated objective) vs this repo's own `planning/roadmap.md`,
+   which carries a retired-specs paragraph the rule would call history.
+2. **Loop status roll-up.** `skills/loop` Phase 2 treats `interrupted` tasks as runnable, so
+   its roll-up bullet "any `interrupted` task → `interrupted`" can never fire; Phase 4's safe
+   stop leaves the spec `in_progress` with `interrupted` tasks; and nothing documents a way
+   out of a spec-level `blocked`. `skills/status`'s drift rule 5
+   (`stuck-task-but-status-not-blocked`) then flags states the loop legitimately produces.
+3. **`Stage` "each pipeline skill sets it exactly once"** (Fixed rule) omits `advance` and
+   `amend`, and `amend` writes `requirements` again.
+4. **`Status` "exactly one writer"** (Fixed rule) vs `start` creating every row.
+5. **`architecture.md` Fixed rules on harness context:** "`claude` auto-loads `CLAUDE.md`,
+   while `codex`/`opencode` auto-load `AGENTS.md`" and, further down, "relying on a CLI
+   auto-loading a memory file works for `claude` only" — every harness in the matrix read
+   `AGENTS.md` in the audits, so the second sentence contradicts the first and the evidence.
+   The rule it justifies (project context goes through the worker's prompt) still stands.
+
+---
+
+*Everything below is 2026-09-13 and earlier. It supersedes 2026-09-12 on three points —
+`018` and `009` are `done`, and `026` was filed then (built since) — and still holds except
+where a line says otherwise.*
+
+## Repo-wide alignment pass, 2026-09-13
 
 Every time something shipped today, swept the rest of the repo for the same
 "reflected everywhere" gap the Fixed rules warn about, rather than assuming one
@@ -135,6 +200,9 @@ server-side into the JSON too. `Stage: design_closed`, `Priority: 11` (ahead of
 `012`'s `13`). Not yet task-broken or built.
 
 ## Next, picking this back up
+
+> Superseded 2026-09-19: `026`, `012`, `030`, `032`, `033`, `034` and others have shipped
+> since. Read `planning/roadmap.md` for what's next; this section is the 2026-09-13 record.
 
 No `todo` spec has a populated `tasks.md` right now, so `/specloop:loop` has
 nothing to run. By `Priority`, the next candidate is **`026`
@@ -324,9 +392,10 @@ reliable self-usage signal to the model running inside it.
   live-confirmed.
 - **The harness-synergy branch's exact wording under a harness other than
   Claude Code** — this session can only run Claude Code, so whether "your
-  own harness's native way of spawning a sub-agent" reads correctly to an
-  OpenCode or Codex CLI session is still open, same gap `022`'s own audit
-  already tracks for Cursor/Codex CLI generally.
+  own harness's native way of spawning a sub-agent" reads correctly to a
+  session under any other harness is still open. `022`'s audits (closed
+  2026-09-19) covered skill loading and the interview under five non-Claude
+  harnesses, not the loop as master — see the `022` section at the top.
 - `007`–`013`/`021`'s prior "todo" status meant literally nothing was ever
   designed against them — their retirement carries no implementation risk,
   but if anyone was relying on their `requirements.md` text for something

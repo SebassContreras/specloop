@@ -11,8 +11,8 @@ This repo follows the spec-driven workflow it also ships as a plugin (dogfooding
   (`skills/loop/SKILL.md`) — instructions for whatever agent runs it, no
   separate code or package to build. One exception: `skills/status/scripts/
   build_dashboard.py` (`030`), a deterministic, judgment-free helper script —
-  the only skill with an external runtime dependency (`python3`, standard
-  library only).
+  the only skill with an external runtime dependency (Python 3 as `python3`
+  or `python`, standard library only).
 
 ## Code conventions
 
