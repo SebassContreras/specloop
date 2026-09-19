@@ -120,11 +120,8 @@ more; a row ends as `verified` (the four audit checks passed) or `discarded` (wi
 | Hermes Agent | documented | `.hermes/skills/`, `.agents/skills/` · `~/.hermes/skills/` | [docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) (command `hermes`) |
 | Autohand Code CLI | documented | `.autohand/skills/` · `~/.autohand/skills/` — no `.agents/skills/` | [docs](https://docs.autohand.ai/working-with-autohand-code/agent-skills.html) (command `autohand`) |
 | Deep Code | documented | `.deepcode/skills/`, `.agents/skills/` · `~/.deepcode/skills/`, `~/.agents/skills/` | [docs](https://deepcode.vegamo.cn/en/docs/configuration/agent-skills), [repo](https://github.com/lessweb/deepcode-cli) (command `deepcode`) |
-| nanobot | documented | `~/.nanobot/workspace/skills/` only — no project-level directory found | [docs](https://nanobot.wiki/docs/0.1.5/use-nanobot/skills), [repo](https://github.com/HKUDS/nanobot) (command `nanobot`, `-m`) |
 | Workshop | pending | not found | official docs reached name no CLI command or skills path; step 1 unresolved — `T020` |
-| Tabnine CLI | documented | `.tabnine/agent/skills/`, `.agents/skills/` · `~/.tabnine/agent/skills/`, `~/.agents/skills/` | [docs](https://docs.tabnine.com/main/getting-started/tabnine-cli/features/agent-skills) |
 | Letta Code | documented | `.agents/skills/` · `~/.letta/skills/` | [docs](https://docs.letta.com/letta-code/skills/) (command `letta`) |
-| Kiro | documented | `.kiro/skills/` · `~/.kiro/skills/` | [docs](https://kiro.dev/docs/skills/) |
 | GitHub Copilot CLI | documented | `.github/skills/`, `.claude/skills/`, `.agents/skills/` · `~/.copilot/skills/`, `~/.agents/skills/` | [docs](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) |
 | Junie CLI | documented | `.junie/skills/`, `.agents/skills/` · `~/.junie/skills/`, `~/.agents/skills/` | [docs](https://junie.jetbrains.com/docs/agent-skills.html) |
 

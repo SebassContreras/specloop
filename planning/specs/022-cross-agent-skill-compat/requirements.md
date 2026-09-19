@@ -51,9 +51,10 @@ filtered to clients that can be driven from a terminal. Non-CLI clients on that 
   run recorded 2026-09-19).
 - **High-usage:** Cursor (`cursor-agent`), Gemini CLI.
 - **Open-source terminal agents:** Mistral Vibe, pi, Hermes Agent, Autohand Code CLI,
-  Deep Code, nanobot, Workshop.
-- **Commercial / enterprise:** Tabnine, Letta Code, Kiro, GitHub Copilot, Junie. The official list does not confirm a CLI for several of these, so confirming
-  that a CLI exists is the first step for each, not an assumption.
+  Deep Code, Workshop.
+- **Commercial:** Letta Code, GitHub Copilot, Junie. The official list does not
+  confirm a CLI for several of these, so confirming that a CLI exists is the first step
+  for each, not an assumption.
 
 Every roster entry is audited against the same four-dimension matrix, and ends in one of
 two final states only: `verified` or `discarded` (with a stated reason).
@@ -124,6 +125,16 @@ these extend, not replace, them):*
   tier closed to new signups, pay-as-you-go from $5), so they can't be tested here.
   Removed rather than `discarded` at the user's direction; re-add through an amendment
   if access ever exists.
+- Kiro and nanobot — removed from the roster 2026-09-19 at the user's direction, as not
+  practically testable: Kiro's free tier only works interactively (API-key/headless auth
+  is paid-only) and no Windows install was found; nanobot only scans a global
+  `~/.nanobot/workspace/skills/`, with no per-project directory to isolate a fixture in.
+  Re-add through an amendment if that changes.
+- Tabnine — removed from the roster 2026-09-19 at the user's direction: its CLI needs
+  a team admin to enable Tabnine Agents and an installer host (`TABNINE_HOST`) from a
+  team/enterprise deployment, sits on a paid plan (~$59/user/month, per third-party
+  sources) with no personal signup path found, and no headless flags were found in its
+  docs. Re-add through an amendment if a team account ever exists.
 - Any harness not on the roster above; the roster only grows or shrinks through an
   amendment.
 
