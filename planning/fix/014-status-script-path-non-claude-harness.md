@@ -43,8 +43,19 @@ second line. Regression check the same day: Claude Code 2.1.278 via `--plugin-di
 resolved) still ran `status` end to end. Also probed with a throwaway plugin: Claude
 Code 2.1.278 substitutes both `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` in
 plugin skill content, so `fix/012`'s note that `${CLAUDE_SKILL_DIR}` is unsubstituted
-is stale as of this version (`012` left unedited as history). Cursor and Codex CLI
-still unverified.
+is stale as of this version (`012` left unedited as history). Codex CLI 0.155.0
+also verified 2026-09-19 (same isolated-fixture setup, natural-language prompt, no
+`-s` override so the user's own `sandbox_mode = "danger-full-access"` applied): it
+auto-triggered `status`, read `.agents/skills/status/SKILL.md` itself, probed
+`python3` (Store stub, exit 1) then `python` (3.14.3), ran the script by the
+absolute `.agents/skills/status/scripts/` path and produced the same 31998-byte
+dashboard as OpenCode and Claude Code, with a correct summary. Codex injects no
+"base directory" note — it resolved the path from where it had read the skill
+file. A first attempt with `-s workspace-write` failed before reaching the skill's
+logic: on Windows Codex's sandbox rejected every process spawn
+(`CreateProcessAsUserW failed`); a harness/OS limitation, not a skill defect, and
+the skill's stop message was printed with the caveat that Python's availability
+was unverified. Cursor still unverified.
 
 ## Date
 
