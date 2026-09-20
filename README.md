@@ -67,22 +67,18 @@ Captured material lives in .github/assets/ (planning/specs/019):
   under the other harnesses in the support matrix below.</sub>
 </p>
 
-<table>
-  <tr>
-    <td width="33%" valign="top">
-      <img src=".github/assets/claude-project-type-menu.png" alt="The interview's first question, project type, as a selectable menu"><br>
-      <sub>The first question is the project type. It branches everything after it.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <img src=".github/assets/claude-web-search-options.png" alt="Ranked options with sources after answering I don't know"><br>
-      <sub>"I don't know" on a technical choice triggers a web search and ranked options with sources.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <img src=".github/assets/claude-decision-recorded.png" alt="The chosen option written to the interview ledger and architecture.md"><br>
-      <sub>The decision lands in the interview ledger and <code>planning/architecture.md</code>.</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src=".github/assets/claude-web-search-options.png" alt="Ranked options with sources after answering I don't know" width="700"><br>
+  <sub>Answering "I don't know" to a technical choice makes it search the web and rank
+  options with sources. It records only the one you pick.</sub>
+</p>
+
+<p align="center">
+  <img src=".github/assets/dashboard.png" alt="The specloop dashboard for this repo's own roadmap" width="700"><br>
+  <sub>The dashboard <code>/specloop:status</code> generates, here for this repo's own
+  roadmap: progress per spec, dependencies and the next spec to run.
+  <a href="https://sebasscontreras.github.io/specloop/">Live version</a>.</sub>
+</p>
 
 ## Install
 
