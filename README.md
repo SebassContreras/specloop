@@ -54,17 +54,35 @@ flowchart LR
 ```
 
 <!--
-Captured material, dropped into .github/assets/ once generated (planning/specs/019):
-- demo-interview.gif / demo-interview.png — a real /specloop:start session.
-- a real /specloop:loop session demo, still to be captured — see 019's tasks.md.
+Captured material lives in .github/assets/ (planning/specs/019):
+- demo-interview-claude.gif and claude-*.png — a real /specloop:start session under Claude Code.
+- the same interview under Codex CLI and OpenCode, and a real /specloop:loop session demo,
+  still to be added — see 019's tasks.md.
 -->
 
 <p align="center">
-  <img src=".github/assets/demo-interview.gif" alt="specloop:start interview" width="700"><br>
-  <sub>A live <code>/specloop:start</code> interview, running under OpenCode — one
-  question at a time, written to disk as it lands. Also runs under the other harnesses in
-  the support matrix below.</sub>
+  <img src=".github/assets/demo-interview-claude.gif" alt="A /specloop:start interview running under Claude Code" width="700"><br>
+  <sub>A real <code>/specloop:start</code> interview under Claude Code, shortened. It asks
+  one question at a time and writes each answer to disk as it lands. The same skills run
+  under the other harnesses in the support matrix below.</sub>
 </p>
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <img src=".github/assets/claude-project-type-menu.png" alt="The interview's first question, project type, as a selectable menu"><br>
+      <sub>The first question is the project type. It branches everything after it.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <img src=".github/assets/claude-web-search-options.png" alt="Ranked options with sources after answering I don't know"><br>
+      <sub>"I don't know" on a technical choice triggers a web search and ranked options with sources.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <img src=".github/assets/claude-decision-recorded.png" alt="The chosen option written to the interview ledger and architecture.md"><br>
+      <sub>The decision lands in the interview ledger and <code>planning/architecture.md</code>.</sub>
+    </td>
+  </tr>
+</table>
 
 ## Install
 
