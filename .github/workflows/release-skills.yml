@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check the dashboard script compiles
-        run: python3 -m py_compile skills/status/scripts/build_dashboard.py
+        run: python3 -c "import ast; ast.parse(open('skills/status/scripts/build_dashboard.py', encoding='utf-8').read())"
 
       - name: Build deterministic skills archive
         run: |
@@ -40,7 +40,7 @@ jobs:
           grep -qx 'skills/status/SKILL.md' archive-files.txt
           grep -qx 'skills/status/scripts/build_dashboard.py' archive-files.txt
           grep -qx 'skills/status/references/template.html' archive-files.txt
-          if grep -E '^(planning|examples|scripts|test|\.github)/' archive-files.txt; then
+          if grep -E '(^(planning|examples|scripts|test|\.github)/|__pycache__|\.pyc$)' archive-files.txt; then
             echo "archive contains repo-only paths" >&2
             exit 1
           fi
