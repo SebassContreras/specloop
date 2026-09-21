@@ -13,6 +13,10 @@ function Show-Usage {
 Usage: install.ps1 [-Global | -Local] [-Version VERSION] [-Force]
 
 Install specloop skills from the GitHub release tarball.
+
+Skills go to .agents/skills (read by OpenCode, Codex, Cursor, Copilot, Antigravity)
+and, when a .claude directory exists, to .claude/skills (read by Claude Code).
+An existing install is left alone unless -Force is given.
 "@
 }
 
@@ -60,26 +64,17 @@ try {
         throw "The release archive does not contain a skills tree."
     }
 
-    $destinations = [System.Collections.Generic.List[string]]::new()
-    if ($scope -eq "local") {
-        $destinations.Add((Join-Path (Get-Location) ".agents/skills"))
-    } else {
-        $destinations.Add((Join-Path $HOME ".agents/skills"))
-        if (Test-Path (Join-Path (Get-Location) ".claude")) {
-            $destinations.Add((Join-Path $HOME ".claude/skills"))
-        }
-        if (Test-Path (Join-Path (Get-Location) ".opencode")) {
-            $destinations.Add((Join-Path $HOME ".config/opencode/skills"))
-        }
-        if (Test-Path (Join-Path (Get-Location) ".cursor")) {
-            $destinations.Add((Join-Path $HOME ".cursor/skills"))
-        }
-        if (Test-Path (Join-Path (Get-Location) ".github")) {
-            $destinations.Add((Join-Path $HOME ".copilot/skills"))
-        }
+    $base = if ($scope -eq "local") { (Get-Location).Path } else { $HOME }
+    $destinations = @((Join-Path $base ".agents/skills"))
+    if (Test-Path (Join-Path $base ".claude")) {
+        $destinations += (Join-Path $base ".claude/skills")
     }
 
     foreach ($destination in $destinations) {
+        if ((Test-Path (Join-Path $destination "status/SKILL.md") -PathType Leaf) -and -not $Force) {
+            Write-Host "Already installed in $destination (use -Force to overwrite)"
+            continue
+        }
         New-Item -ItemType Directory -Path $destination -Force | Out-Null
         Copy-Item -Path (Join-Path $skillsSource "*") -Destination $destination -Recurse -Force
         Write-Host "Installed skills in $destination"

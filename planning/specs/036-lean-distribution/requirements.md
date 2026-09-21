@@ -6,7 +6,7 @@ Raised 2026-09-21 — que instalar specloop no obligue a clonar todo el repo (6.
 
 - Artefacto lean `specloop-skills.tar.gz` (solo `skills/` + `.claude-plugin/plugin.json`) publicado en GitHub Releases por un workflow en tag — sin `planning/`, `examples/`, `scripts/`, `test/`, `.github/assets`.
 - `install.sh` (bash) + `install.ps1` (PowerShell) en la raíz que descargan el tarball y lo colocan en `.agents/skills` / `.claude/skills` (detecta harness, flags `--global` vs `--local`, `--version`, idempotente, sin `pip`/`npm`).
-- `.claude-plugin/marketplace.json` (y opcional `.agents/plugins/marketplace.json`) para installs nativos `claude plugin marketplace add SebassContreras/specloop` / `copilot plugin marketplace add` / `npx codex-marketplace add` — formato verificado contra `code.claude.com/docs/en/plugin-marketplaces` y `docs.github.com/en/copilot/.../plugins-marketplace`, no adivinado.
+- `.claude-plugin/marketplace.json` (y opcional `.agents/plugins/marketplace.json`) para installs nativos `claude plugin marketplace add SebassContreras/specloop` / `copilot plugin marketplace add` (Codex y el resto: solo installer, sin flujo de marketplace verificado) — formato verificado contra `code.claude.com/docs/en/plugin-marketplaces` y `docs.github.com/en/copilot/.../plugins-marketplace`, no adivinado.
 - `README.md` Install actualizado a 3 columnas: Marketplace / Installer `curl|tar` / Manual `cp -r` (este último sigue funcionando verbatim como fallback).
 
 ## Who/what it serves

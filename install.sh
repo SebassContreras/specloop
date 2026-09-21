@@ -6,6 +6,10 @@ usage() {
 Usage: install.sh [--global | --local] [--version VERSION] [--force]
 
 Install specloop skills from the GitHub release tarball.
+
+Skills go to .agents/skills (read by OpenCode, Codex, Cursor, Copilot, Antigravity)
+and, when a .claude directory exists, to .claude/skills (read by Claude Code).
+An existing install is left alone unless --force is given.
 EOF
 }
 
@@ -71,31 +75,29 @@ mkdir -p "$extracted"
 
 echo "Downloading $url"
 curl -fsSL "$url" -o "$archive"
-tar -xzf "$archive" -C "$extracted" --strip-components=1
+tar -xzf "$archive" -C "$extracted"
+source_dir="$extracted/skills"
 
-if [[ ! -f "$extracted/status/SKILL.md" ]]; then
+if [[ ! -f "$source_dir/status/SKILL.md" ]]; then
   echo "The release archive does not contain a skills tree" >&2
   exit 1
 fi
 
-destinations=()
 if [[ "$scope" == "local" ]]; then
-  destinations+=("$PWD/.agents/skills")
+  base="$PWD"
 else
-  destinations+=("${HOME:?}/.agents/skills")
-  [[ -d "$PWD/.claude" ]] && destinations+=("${HOME:?}/.claude/skills")
-  [[ -d "$PWD/.opencode" ]] && destinations+=("${HOME:?}/.config/opencode/skills")
-  [[ -d "$PWD/.cursor" ]] && destinations+=("${HOME:?}/.cursor/skills")
-  [[ -d "$PWD/.github" ]] && destinations+=("${HOME:?}/.copilot/skills")
+  base="${HOME:?}"
 fi
 
+destinations=("$base/.agents/skills")
+[[ -d "$base/.claude" ]] && destinations+=("$base/.claude/skills")
+
 for destination in "${destinations[@]}"; do
-  mkdir -p "$destination"
-  if ((force)); then
-    cp -Rf "$extracted/." "$destination/"
-  else
-    # Copying the same relative tree again is intentionally idempotent.
-    cp -R "$extracted/." "$destination/"
+  if [[ -f "$destination/status/SKILL.md" && $force -eq 0 ]]; then
+    echo "Already installed in $destination (use --force to overwrite)"
+    continue
   fi
+  mkdir -p "$destination"
+  cp -R "$source_dir/." "$destination/"
   echo "Installed skills in $destination"
 done

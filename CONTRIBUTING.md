@@ -27,6 +27,8 @@ comment/commit rules. Existing history predates this and isn't rewritten.
   manifest's JSON syntax.
 - `claude plugin validate .` — validates the marketplace manifest and plugin
   layout when the Claude CLI is available.
+- `version` is set in both `.claude-plugin/plugin.json` (Claude Code reads this one) and
+  the `.claude-plugin/marketplace.json` entry (Copilot CLI requires it) — bump both together.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
 - Any other harness: copy `skills/` to `.agents/skills/` in a scratch repo (see the

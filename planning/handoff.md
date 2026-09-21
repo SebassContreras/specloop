@@ -16,18 +16,19 @@ CONTRIBUTING now document marketplace, `.tar` installer, and manual-copy paths;
 in `planning/architecture.md` records its supersession by `036` with the user's
 2026-09-21 go-ahead.
 
-The PowerShell installer passed a controlled empty-fixture test, including nested
-`status/references` and `status/scripts`, repeated-install hash equality, and
-absence of `planning/`/`.github/assets`. `claude plugin validate .` passed with one
-non-blocking missing marketplace-description warning. Bash execution was not
-completed because the Windows Bash service returned `E_ACCESSDENIED`; GNU tar
-deterministic flags were not available in Windows `tar.exe` and still need CI/Linux
-verification. Global-path testing was intentionally not redirected into a fixture.
+A review pass on 2026-09-21 found and fixed real defects (see `036` T009): the marketplace
+`source` was `./skills` (must be `./`, the plugin root), `install.sh` copied the plugin JSON
+into `.agents/skills`, `--force` did nothing, local installs skipped `.claude/skills` (Claude
+Code doesn't read `.agents/skills`), and the release workflow called `gh release upload`
+without creating the release. Verified locally: `claude` and `copilot` marketplace add +
+install (9 skills each, reverted), `install.sh` and `install.ps1` in fixtures against a local
+archive, and two GNU tar builds with identical SHA-256. `npx codex-marketplace add` was
+removed from the README — never verified, and `035` says Codex has no marketplace.
+Both marketplace flows clone the whole repo, so only the installer is actually lean.
 
-There are no branches or worktrees beyond `main`; the completed changes are being
-committed on `main`. After push, create a `v0.x.y` tag and verify the GitHub Actions
-release assets and the Bash installer on Linux. `019` remains `in_progress` with
-human-only showcase work; no agent-runnable spec is currently next.
+Still unverified: the real download from a GitHub Release (nothing existed before the first
+tag), and the workflow itself on GitHub Actions. There are no branches or worktrees beyond
+`main`. `019` remains `in_progress` with human-only showcase work.
 
 Supersedes 2026-09-13 on two points: **`022`** is closed (below), and **"Next, picking
 this back up"** is stale — `026`, `012`, `030`, `032`, `033`, `034` and others have

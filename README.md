@@ -90,10 +90,13 @@ that folder from the repo you want to bootstrap — your **target** repo, not th
 For native marketplace installation:
 
 ```bash
-claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop
-copilot plugin marketplace add SebassContreras/specloop
-npx codex-marketplace add SebassContreras/specloop
+claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop@specloop
+copilot plugin marketplace add SebassContreras/specloop && copilot plugin install specloop@specloop
 ```
+
+Both clone the whole repository (assets and planning docs included). For a lean install,
+use the installer below. Codex CLI, Cursor, OpenCode and Antigravity CLI have no
+verified marketplace flow here; they use the installer.
 
 ### Installer
 
@@ -109,15 +112,17 @@ or in PowerShell:
 irm https://raw.githubusercontent.com/SebassContreras/specloop/main/install.ps1 | iex
 ```
 
-The installer places skills in `.agents/skills/` by default. The six verified harnesses
-use these one-line install paths:
+The installer places skills in `.agents/skills/` (and in `.claude/skills/` when a `.claude/`
+directory exists) and skips a folder that already has them — pass `--force` (`-Force` in
+PowerShell) to overwrite, `--global` (`-Global`) for your home directory. With `curl | bash`
+the flags go after `bash -s --`. The six verified harnesses use these one-line install paths:
 
 | Harness | One-liner |
 | --- | --- |
-| Claude Code | `claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop` |
+| Claude Code | `claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop@specloop` |
 | OpenCode | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
 | Codex CLI | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
-| GitHub Copilot CLI | `copilot plugin marketplace add SebassContreras/specloop` |
+| GitHub Copilot CLI | `copilot plugin marketplace add SebassContreras/specloop && copilot plugin install specloop@specloop` |
 | Cursor | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
 | Antigravity CLI | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
 

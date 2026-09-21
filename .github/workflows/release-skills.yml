@@ -15,6 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check the dashboard script compiles
+        run: python3 -m py_compile skills/status/scripts/build_dashboard.py
+
       - name: Build deterministic skills archive
         run: |
           set -euo pipefail
@@ -30,10 +33,28 @@ jobs:
             .claude-plugin/marketplace.json \
             | gzip -n > specloop-skills.tar.gz
 
+      - name: Check archive contents
+        run: |
+          set -euo pipefail
+          tar -tzf specloop-skills.tar.gz > archive-files.txt
+          grep -qx 'skills/status/SKILL.md' archive-files.txt
+          grep -qx 'skills/status/scripts/build_dashboard.py' archive-files.txt
+          grep -qx 'skills/status/references/template.html' archive-files.txt
+          if grep -E '^(planning|examples|scripts|test|\.github)/' archive-files.txt; then
+            echo "archive contains repo-only paths" >&2
+            exit 1
+          fi
+          rm archive-files.txt
+
       - name: Generate checksum
         run: sha256sum specloop-skills.tar.gz > specloop-skills.tar.gz.sha256
 
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${GITHUB_REF_NAME}" specloop-skills.tar.gz specloop-skills.tar.gz.sha256 --clobber
+        run: |
+          set -euo pipefail
+          if ! gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release create "${GITHUB_REF_NAME}" --verify-tag --generate-notes
+          fi
+          gh release upload "${GITHUB_REF_NAME}" specloop-skills.tar.gz specloop-skills.tar.gz.sha256 --clobber
