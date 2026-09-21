@@ -90,13 +90,14 @@ that folder from the repo you want to bootstrap — your **target** repo, not th
 For native marketplace installation:
 
 ```bash
-claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop@specloop
+claude plugin marketplace add SebassContreras/specloop --sparse .claude-plugin skills && claude plugin install specloop@specloop
 copilot plugin marketplace add SebassContreras/specloop && copilot plugin install specloop@specloop
 ```
 
-Both clone the whole repository (assets and planning docs included). For a lean install,
-use the installer below. Codex CLI, Cursor, OpenCode and Antigravity CLI have no
-verified marketplace flow here; they use the installer.
+`--sparse` makes Claude Code check out only `.claude-plugin/` and `skills/` (about 260 KB
+instead of the whole repo with its demo GIFs). Without it, or with Copilot CLI, which has
+no equivalent option, the whole repository is cloned. Codex CLI, Cursor, OpenCode and
+Antigravity CLI have no verified marketplace flow here; they use the installer.
 
 ### Installer
 
@@ -119,7 +120,7 @@ the flags go after `bash -s --`. The six verified harnesses use these one-line i
 
 | Harness | One-liner |
 | --- | --- |
-| Claude Code | `claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop@specloop` |
+| Claude Code | `claude plugin marketplace add SebassContreras/specloop --sparse .claude-plugin skills && claude plugin install specloop@specloop` |
 | OpenCode | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
 | Codex CLI | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
 | GitHub Copilot CLI | `copilot plugin marketplace add SebassContreras/specloop && copilot plugin install specloop@specloop` |
