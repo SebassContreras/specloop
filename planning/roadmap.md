@@ -29,8 +29,10 @@ we, what's next."
 | 030 | dashboard-build-script        | done        | 009, 026           | —            | 16       |
 | 031 | markdown-convention-retrofit  | done        | —                  | —            | 20       |
 | 032 | automate-markdown-convention-check | done   | 031                | —            | —        |
-| 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —           | —       |
+| 033 | interview-to-loop-auto-continuation | done | 001, 002, 003, 004 | —            | —        |
 | 034 | dashboard-github-pages        | done        | 009, 026, 030      | —            | —        |
+| 035 | wshobson-agents-research      | done        | 001, 022           | —            | 21       |
+| 036 | lean-distribution             | done        | 035, 001, 005      | —            | 22       |
 
 `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
 `interrupted` is a task state only). Written only by

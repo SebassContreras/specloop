@@ -1,0 +1,15 @@
+{
+  "name": "specloop",
+  "owner": {
+    "name": "SebassContreras",
+    "url": "https://github.com/SebassContreras"
+  },
+  "plugins": [
+    {
+      "name": "specloop",
+      "source": "./skills",
+      "description": "Turns an interview into a roadmap you can build step by step, then runs it.",
+      "version": "0.1.0"
+    }
+  ]
+}

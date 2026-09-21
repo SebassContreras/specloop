@@ -1,4 +1,33 @@
-# Handoff — 2026-09-19
+# Handoff — 2026-09-21
+
+## 036 closed 2026-09-21 — lean distribution implemented
+
+`035` (`wshobson-agents-research`) completed its six research tasks and produced
+`planning/specs/035-wshobson-agents-research/research.md`. It verified the upstream
+architecture, registries, capability degradation, installation flows, quality gates,
+and the scale-based recommendation for specloop.
+
+`036` (`lean-distribution`) then implemented the agreed lean surface: committed
+`.claude-plugin/marketplace.json`, root `install.sh` and `install.ps1`, and the
+tag-triggered `.github/workflows/release-skills.yml` that builds and uploads a
+deterministic `specloop-skills.tar.gz` plus SHA-256 checksum. README and
+CONTRIBUTING now document marketplace, `.tar` installer, and manual-copy paths;
+`.gitignore` excludes the local archive. The historical marketplace Declined row
+in `planning/architecture.md` records its supersession by `036` with the user's
+2026-09-21 go-ahead.
+
+The PowerShell installer passed a controlled empty-fixture test, including nested
+`status/references` and `status/scripts`, repeated-install hash equality, and
+absence of `planning/`/`.github/assets`. `claude plugin validate .` passed with one
+non-blocking missing marketplace-description warning. Bash execution was not
+completed because the Windows Bash service returned `E_ACCESSDENIED`; GNU tar
+deterministic flags were not available in Windows `tar.exe` and still need CI/Linux
+verification. Global-path testing was intentionally not redirected into a fixture.
+
+There are no branches or worktrees beyond `main`; the completed changes are being
+committed on `main`. After push, create a `v0.x.y` tag and verify the GitHub Actions
+release assets and the Bash installer on Linux. `019` remains `in_progress` with
+human-only showcase work; no agent-runnable spec is currently next.
 
 Supersedes 2026-09-13 on two points: **`022`** is closed (below), and **"Next, picking
 this back up"** is stale — `026`, `012`, `030`, `032`, `033`, `034` and others have

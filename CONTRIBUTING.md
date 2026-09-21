@@ -23,7 +23,10 @@ comment/commit rules. Existing history predates this and isn't rewritten.
 
 ## Local dev
 
-- `claude plugin validate .` — checks the plugin manifest/skills.
+- `cat .claude-plugin/marketplace.json | jq` — validates the marketplace
+  manifest's JSON syntax.
+- `claude plugin validate .` — validates the marketplace manifest and plugin
+  layout when the Claude CLI is available.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
 - Any other harness: copy `skills/` to `.agents/skills/` in a scratch repo (see the

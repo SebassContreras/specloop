@@ -84,8 +84,46 @@ Captured material lives in .github/assets/ (planning/specs/019):
 
 specloop is a folder of skills (`skills/`). Installing it means making your agent CLI see
 that folder from the repo you want to bootstrap — your **target** repo, not this one.
-Claude Code has a plugin shortcut; every other harness reads the folder from
-`.agents/skills/`. To copy it there, in bash or Git Bash:
+
+### Marketplace
+
+For native marketplace installation:
+
+```bash
+claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop
+copilot plugin marketplace add SebassContreras/specloop
+npx codex-marketplace add SebassContreras/specloop
+```
+
+### Installer
+
+From the target repo, download the lean release (skills plus the plugin metadata) with:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh | bash
+```
+
+or in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/SebassContreras/specloop/main/install.ps1 | iex
+```
+
+The installer places skills in `.agents/skills/` by default. The six verified harnesses
+use these one-line install paths:
+
+| Harness | One-liner |
+| --- | --- |
+| Claude Code | `claude plugin marketplace add SebassContreras/specloop && claude plugin install specloop` |
+| OpenCode | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
+| Codex CLI | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
+| GitHub Copilot CLI | `copilot plugin marketplace add SebassContreras/specloop` |
+| Cursor | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
+| Antigravity CLI | `curl -fsSL https://raw.githubusercontent.com/SebassContreras/specloop/main/install.sh \| bash` |
+
+### Manual copy
+
+The fallback remains a direct copy of the unchanged `skills/` folder:
 
 ```
 mkdir -p .agents && cp -r /path/to/specloop/skills .agents/skills
@@ -97,6 +135,9 @@ or in PowerShell:
 New-Item -ItemType Directory -Force .agents | Out-Null
 Copy-Item -Recurse C:\path\to\specloop\skills .agents\skills
 ```
+
+This preserves backward compatibility with `cp -r /path/to/specloop/skills .agents/skills`
+and with Claude Code's existing `claude --plugin-dir /path/to/specloop` install.
 
 Then pick your harness below. You don't need a command name to start: in every non-Claude
 harness audited, a plain request activated the right skill unprompted — "I need to set up

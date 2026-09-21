@@ -1,5 +1,6 @@
 node_modules/
 dist/
+specloop-skills.tar.gz
 __pycache__/
 *.pyc
 # test/ holds throwaway repos used to exercise the skills end-to-end —

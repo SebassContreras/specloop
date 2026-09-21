@@ -1,0 +1,31 @@
+# 036 — lean-distribution — Design
+
+## Approach
+
+Híbrido lean (recomendación de `035`): 1 JSON de marketplace + 1 installer `curl|tar`, sin pipeline de adapters.
+
+**Marketplace:** Un solo `.claude-plugin/marketplace.json` en la raíz del repo (formato `code.claude.com/docs/en/plugin-marketplaces`: `{name, owner, plugins: [{name, description, version, source}]}` verificado por fetch antes de escribir — `source` apunta a `./skills` relativo, no a URL absoluta). Copilot lo lee también desde `.claude-plugin/` (`docs.github.com` confirma fallback), Codex vía `npx codex-marketplace add` lee el mismo. No se crean `plugins/*/.codex-plugin/plugin.json` separados porque specloop es 1 plugin, no 94 — evita duplicar manifests. La fila Declined `planning/architecture.md:359` se actualiza a `Superseded by 036 (2026-09-21, user go-ahead)` con fecha, no se borra sin traza (`AGENTS.md: Never edit Declined without go-ahead`).
+
+**Installer:** `install.sh` (bash, `set -euo pipefail`) + `install.ps1` (PowerShell) en la raíz, sin dependencias más allá de `curl`/`tar`/`unzip` (bash) y `Invoke-WebRequest`/`Expand-Archive` (ps). Flags: `--global` (a `~/.agents/skills` / `~/.claude/skills` / `~/.config/opencode/skills` según harness detectado) vs default `--local` (a `.agents/skills` en cwd), `--version v0.x.y` (default `latest` vía `releases/latest/download`), `--force` para sobrescribir, idempotente (re-run no duplica). Detecta harness por presencia de `.claude/`, `.opencode/`, `.cursor/`, `.github/` pero siempre escribe a `.agents/skills/` como mínimo garantizado por `022` (todos lo leen). Preserva `skills/status/{references/template.html,scripts/build_dashboard.py}` relativo — el tarball no aplana.
+
+**Release:** `.github/workflows/release-skills.yml` dispara en `push: tags: v*` (no en cada push a `main` como `034`): `tar -czf specloop-skills.tar.gz skills/ .claude-plugin/plugin.json .claude-plugin/marketplace.json` (sin `planning/`, `examples/`, `scripts/`, `.github/assets`), `gh release upload` + checksum. Job falla loud si `tar` o `build_dashboard.py --help` falla (no `continue-on-error`). Determinismo: `tar` con `sort` y sin timestamp (como `030`).
+
+## Deliverables
+
+- Nuevos: `.claude-plugin/marketplace.json`, `install.sh`, `install.ps1`, `.github/workflows/release-skills.yml`.
+- Modificados: `planning/architecture.md` (Declined row), `README.md` (Install 3 columnas + one-liners por harness), `CONTRIBUTING.md` (validación `marketplace.json`), `.gitignore` si hace falta excluir tarball local.
+- Artefacto en Releases: `specloop-skills.tar.gz` (y `.sha256`).
+
+## Sequencing
+
+1. `035` `done` primero — provee formatos verificados de `marketplace.json` (no adivinar).
+2. Escribir `marketplace.json` y validar con `claude plugin validate .` antes del installer — el installer lo empaqueta.
+3. Escribir `install.sh`/`install.ps1` y probar en fixture vacío (`bash install.sh` + `pwsh install.ps1`) verificando descubrimiento en 6 paths de `022`.
+4. Workflow de release último — depende de que el tarball layout esté congelado.
+5. Docs (`README.md`, `architecture.md`) al final, con sweep `grep` por `AGENTS.md: After changing cross-cutting mechanism...`.
+
+## Open questions / deferred
+
+- ¿Publicar también `.agents/plugins/marketplace.json` para Codex nativo o basta con que Codex lea `.claude-plugin/marketplace.json`? `035` lo aclara; default es solo `.claude-plugin/` y se añade el segundo solo si `035` encuentra que Codex no hace fallback.
+- ¿Soporte `npx specloop-install` (npm) además de `curl|bash`? Deferred a `037` si hay demanda — `curl` cubre el 95% sin publicar en npm.
+- Full adapters `wshobson/agents` si specloop crece a 5+ plugins — deferred, no se decide aquí.
