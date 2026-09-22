@@ -33,6 +33,7 @@ we, what's next."
 | 034 | dashboard-github-pages        | done        | 009, 026, 030      | —            | —        |
 | 035 | wshobson-agents-research      | done        | 001, 022           | —            | 21       |
 | 036 | lean-distribution             | done        | 035, 001, 005      | —            | 22       |
+| 037 | readme-onboarding             | todo        | 019, 022, 030, 036 | requirements | 23       |
 
 `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
 `interrupted` is a task state only). Written only by
