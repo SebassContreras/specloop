@@ -2074,23 +2074,23 @@
       "dependsOn": [
         "001"
       ],
-      "stage": "tasks_ready",
+      "stage": "\u2014",
       "priority": "17",
       "nextEligible": false,
       "counts": {
-        "todo": 3,
+        "todo": 0,
         "in_progress": 0,
         "blocked": 0,
         "interrupted": 0,
-        "done": 12
+        "done": 15
       },
       "tasks": [
         {
           "id": "T001",
           "owner": "human",
-          "status": "todo",
+          "status": "done",
           "text": "Cursor: install specloop's skills, confirm discovery of `skills/<name>/SKILL.md`, confirm auto-trigger from a natural-language request matching a skill's `description` (unmodified frontmatter), confirm the harness tolerates the `when_to_use` key, and run `/specloop:start` far enough to confirm the one-question-at-a-time write-as-you-go loop survives a full phase. Record pass/fail per `design.md`'s audit matrix.",
-          "note": ""
+          "note": "Agent-driven run, 2026-09-19 \u2014 all four checks pass. Cursor CLI 2026.09.18-9a7762b (`cursor-agent`), account tier Free, model Auto; isolated fixtures with their own `.git` and a `skills/` copy in `.agents/skills/`; `cursor-agent -p` with `--trust` (required in headless mode) and `--force` (so it can write files and run commands in the throwaway fixture; not tested without it), conversation continued with `create-chat` + `--resume <id>`; account signed in by the owner. Discovery: pass \u2014 asked which skills it sees, it listed all nine from `.agents/skills/` (and also loads the user's `~/.claude/skills` and Cursor's built-ins, one of which is also named `loop`). This settles the open question from step 1: the CLI does load skills. Auto-trigger: pass \u2014 \"where are we? give me the status of this project's roadmap\" made it read `.agents/skills/status/SKILL.md` unprompted, probe `python3` then `python`, run the script by its absolute `.agents/skills/` path and print a correct summary of the same 31998-byte dashboard as the other harnesses; \"I need to set up a new project and get it organized from scratch.\" activated `start`, neither naming a skill. `when_to_use` tolerance: pass \u2014 all nine skills load, no warning on stderr or in any output (Cursor exposes no skill debug log, so this is the absence of errors). Multi-turn write-as-you-go: pass \u2014 15 turns; it scaffolded on turn 1 like Codex/OpenCode; every final message held one question except turn 5, which asked one dimension two ways (\"how will you know the whole project is finished? What's observably true then?\"); in every turn that had an answer to record, the edits to `.specloop/interview.md` (and `product.md`/`AGENTS.md`) came before the next question; it opened follow-up dimensions on its own for named-but-unspecified nouns (`local-json-location`, `book-fields`) and asked them before the closing sweep; Phase A ran to completion including the sweep and moved to Phase B. Also confirmed: \"pause\" made it ask whether to write `planning/handoff.md` and write nothing; \"keep going\" resumed at the right dimension; \"no s\u00e9\" on `runtime` triggered a web search and five ranked options, leaving the dimension `open` (unlike Codex and Copilot it did not note the options in the ledger row). Cost: no usage counter is exposed; about 20 prompts on the Free tier with no quota message and empty stderr. Not exercised: Phases C onward, running without `--force`, and a real person's cadence. Evidence saved outside the repo in the owner's harness guide."
         },
         {
           "id": "T002",
@@ -2165,9 +2165,9 @@
         {
           "id": "T013",
           "owner": "human",
-          "status": "todo",
+          "status": "done",
           "text": "Antigravity CLI (`agy`): the four checks from `T001`, per `design.md` item 1a (isolated fixture with its own `.git`; non-interactive run if it loads a full `SKILL.md`, otherwise an interactive run). Record the evidence as a note here and set its README matrix row to `verified`, or `discarded` with the reason (no CLI, no skills support, or not obtainable/runnable here).",
-          "note": "Basic readiness only, 2026-09-19: `agy` 1.2.7 installed, signed in with a Google account, and `agy -p \"Reply with the single word OK and nothing else.\" --output-format text` returned `OK` (exit 0) from a temp directory. Headless before signing in prints a Google URL and fails after 60 s (\"authentication timed out\"), so the first sign-in needs an interactive run. The four checks have not been run."
+          "note": "Agent-driven run, 2026-09-19 \u2014 all four checks pass, with two harness-specific findings. Antigravity CLI 1.2.7 (`agy`), signed in with a Google account by the owner; isolated fixtures with their own `.git` and a `skills/` copy in `.agents/skills/`; `agy -p` with `--add-dir <fixture>` (required, see Discovery), `--sandbox`, and either `--mode accept-edits` (turns 2\u201313) or `--dangerously-skip-permissions` (turn 1 and one status run); conversation continued with `--conversation <id>` taken from the `init` event. Discovery: pass with `--add-dir` \u2014 asked, without tools, for the skills already injected into its context, `agy -p` alone lists only its 2 built-ins, and with `--add-dir <fixture>` it lists all nine from `.agents/skills/` plus the built-ins; its docs say workspace customizations are found by walking from the cwd up to the repo root, but in `-p` mode the workspace has to be declared. Auto-trigger: pass \u2014 with `--add-dir`, \"where are we? give me the status of this project's roadmap\" made it read `.agents/skills/status/SKILL.md` first, probe `python3` then `python`, run the script by its absolute path and print a correct summary of the same 31998-byte dashboard as the other harnesses; \"I need to set up a new project and get it organized from scratch.\" activated `start`, neither naming a skill (a first status run without `--add-dir` produced the same dashboard, but only after the agent searched the filesystem for context, so it is not counted as discovery). `when_to_use` tolerance: pass \u2014 all nine skills injected, no skill-related warning in agy's own log, empty stderr. Multi-turn write-as-you-go: pass \u2014 13 turns; one question per turn (turns 4 and 5 asked one dimension in two sentences); each answer was recorded in `.specloop/interview.md` (and `product.md`/`AGENTS.md`) before the next question through Phase A; a \"pause\" made it ask whether to write `planning/handoff.md` and write nothing; \"keep going\" resumed at the right dimension; \"no s\u00e9\" on `runtime` triggered `search_web` and four ranked options, leaving the dimension open. Deviations from the other harnesses: it did not record the closing sweep or create Phase B rows in the ledger (no `runtime` row). Isolation warning: with `--dangerously-skip-permissions`, `--sandbox` did not stop reads outside the workspace, and in two runs the agent explored outside the fixture (home directory, other repos, its own past conversation transcripts, another audit's evidence, shell history); those runs were discarded and redone, the driver now flags any tool path outside the fixture and defaults to `--mode accept-edits`, and all 13 recorded turns had zero outside accesses. Cost: about 703k input / 21k output tokens for the interview and 181k / 15k for `status` (per-response usage summed; input re-sends context), no quota message. Not exercised: Phases C onward, interactive mode (whether the cwd counts as the workspace there), and a real person's cadence. Evidence saved outside the repo in the owner's harness guide. Follow-up 2026-09-19 (agy 1.2.7, after the audit, throwaway fixture): as a loop master it read `skills/loop`, the config, roadmap and task files, wrote `Stage: looping` and `[status:in_progress]`, and dispatched a native sub-agent (`invoke_subagent`, role \"Task Runner\") with the loop's briefing; without an allow rule that sub-agent died at its first shell command (`Get-ChildItem`, denied) and the master's next response degenerated into one repeated token. With `permissions.allow` = `command(regex:...)` in `~/.gemini/antigravity-cli/settings.json` the same task wrote `hello.txt`, both through the subprocess form with the absolute path substituted and through the sub-agent, so allow rules are honored in headless mode (a plain `command(<text>)` matched only the whole command). In `-p` the master's turn ended right after the dispatch, and the two continuation turns failed with HTTP 429 (`Individual quota reached`, reset in about 161 h), so closing the task (verify, log, roll-up) and the `{repoRoot}` substitution were not exercised (agy used its native sub-agent, never the subprocess path)."
         },
         {
           "id": "T026",
@@ -2186,9 +2186,9 @@
         {
           "id": "T029",
           "owner": "agent",
-          "status": "todo",
+          "status": "done",
           "text": "Acceptance verification against `requirements.md`: no README matrix row is `pending` or `documented`; every `verified` row cites its evidence note; every `discarded` row states a reason; the matrix is the only per-harness list; `node scripts/check-skill-consistency.mjs` and `node scripts/check-markdown-conventions.mjs` pass.",
-          "note": ""
+          "note": "Verified 2026-09-19. Matrix: 6 rows, all `verified`, none `pending`/`documented`, no `discarded` row (a harness that couldn't be run here was removed from the roster by amendment, not kept as `discarded`). Every row cites evidence \u2014 `T003`, `T002`, `T001`, `T013`, `T026`, and Claude Code via `001` T030, `006` T010 and `024` (its row said only \"native host\" until this pass). The matrix is the only per-harness state list: `architecture.md`'s Container section points at it, and README's install sections, `skills/loop-setup`'s known-flags map, `examples/loop.config.sample.json` and `skills/status`'s script-probe list carry commands, flags and paths, not state; `scripts/check-skill-consistency.mjs` group `[14]` now fails when any of them drifts from the matrix. Both scripts pass. Same-day alignment pass found and fixed: `status`'s script-probe list lacked the Copilot, Cursor and Claude-global paths (an install under `.github/skills/` or `.cursor/skills/` couldn't have found its script); wording that predated the interactive loop (`orchestrator`) and leaked task ids in `skills/start`, `advance` and `task-breakdown`; the example `design.md` used non-canonical headers; the README's `agy` limits were too optimistic. Worker-style check (the loop's `<cli> <args> \"<briefing>\"` form, one create-a-file task): `copilot` and `cursor-agent` wrote the file; `agy` exited 0 with nothing written, since headless mode auto-denied the shell command the agent used \u2014 documented in `README.md` and `skills/loop-setup`. Not exercised anywhere: `skills/loop` as master under a non-Claude harness."
         }
       ]
     },
@@ -2906,27 +2906,300 @@
           "note": "exit code 1 confirmed, no continue-on-error, build precedes deploy, deploy needs:build"
         }
       ]
+    },
+    {
+      "id": "035",
+      "plan": "wshobson-agents-research",
+      "status": "done",
+      "dependsOn": [
+        "001",
+        "022"
+      ],
+      "stage": "\u2014",
+      "priority": "21",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 6
+      },
+      "tasks": [
+        {
+          "id": "T001",
+          "owner": "agent",
+          "status": "done",
+          "text": "Fetch y mapear arquitectura de distribuci\u00f3n de wshobson/agents: `plugins/` source-of-truth, `tools/adapters/{base,capabilities,codex,cursor,opencode,antigravity,copilot,pi}.py` + `tools/generate.py`, `Makefile` targets (`make generate HARNESS=...`, `make generate-all`, `make validate/garden`), verificado por fetch de raw URLs",
+          "note": "Added and verified `research.md` with the upstream architecture map and raw-URL ledger."
+        },
+        {
+          "id": "T002",
+          "owner": "agent",
+          "status": "done",
+          "text": "Documentar registries commitados vs gitignored: `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`, `plugins/*/.codex-plugin/plugin.json`, `.cursor-plugin/` vs `.codex/`, `.opencode/`, `.antigravity/`, `.pi/` \u2014 con regla lean \"small JSONs committed, large trees gitignored\" y `!.agents/plugins/` exception",
+          "note": "Appended verified registry, ignore, and `.pi/` exception findings to `research.md`."
+        },
+        {
+          "id": "T003",
+          "owner": "agent",
+          "status": "done",
+          "text": "Extraer matriz de capacidades y degradaci\u00f3n mec\u00e1nica por harness: 8KB cap Codex \u2192 `references/details.md`, `tools:` mappings (`sandbox_mode`/`permission:`/agy-native), `TodoWrite`/`Task`/`AGENTS.md` 150 l\u00edneas/32KiB \u2014 desde `tools/adapters/capabilities.py` y `docs/harnesses.md`",
+          "note": "Appended the verified capability matrix and mechanical degradation rules to `research.md`."
+        },
+        {
+          "id": "T004",
+          "owner": "agent",
+          "status": "done",
+          "text": "Documentar flujos de instalaci\u00f3n: `gh skill install` / `npx skills add` (sin clone, bare `name==dir`, tracking `main` vs release) vs `gh repo clone + make install-*` (con clone, symlinks globales) \u2014 con trade-off one-step-URL de `docs/harnesses.md: Native install`",
+          "note": "Appended verified skills-only and clone-plus-generation installation flows to `research.md`."
+        },
+        {
+          "id": "T005",
+          "owner": "agent",
+          "status": "done",
+          "text": "Mapear quality gates: `tools/validate_generated.py` (TOML, cap 8KB, frontmatter `name==dir`), `tools/doc_gardener.py` (STALE_ARTIFACT, DEAD_LINK, SKILL_OVER_CODEX_CAP, MARKETPLACE_ORPHAN), `make smoke-test` y `plugin-eval` 3 capas",
+          "note": "Appended verified quality-gate contracts and the 404 discrepancy for the historical Python paths to `research.md`."
+        },
+        {
+          "id": "T006",
+          "owner": "agent",
+          "status": "done",
+          "text": "Escribir `research.md` con clasificaci\u00f3n reutilizable vs overkill justificada por escala (9 skills vs 94 plugins): s\u00ed traer (micro-registry 1-3 JSONs, guard 8KB 10 l\u00edneas stdlib, `name==dir`, `validate`/`garden` ligero) vs no traer (7 adapters ~3k LOC, venv `uv`, `make install-*` \u00d74, `plugin-eval` completo) \u2014 con recomendaci\u00f3n h\u00edbrida lean (`.claude-plugin/marketplace.json` + `install.sh` `curl|tar`) para `036`",
+          "note": "Appended the scale-based classification and hybrid lean recommendation for `036` to `research.md`."
+        }
+      ]
+    },
+    {
+      "id": "036",
+      "plan": "lean-distribution",
+      "status": "done",
+      "dependsOn": [
+        "035",
+        "001",
+        "005"
+      ],
+      "stage": "\u2014",
+      "priority": "22",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 9
+      },
+      "tasks": [
+        {
+          "id": "T001",
+          "owner": "agent",
+          "status": "done",
+          "text": "Crear `.claude-plugin/marketplace.json` con formato verificado (`code.claude.com/docs/en/plugin-marketplaces`, no adivinado): `{name, owner, plugins: [{name: \"specloop\", source: \"./skills\", description, version}]}` \u2014 validar con `claude plugin validate .` y `claude plugin marketplace list` en fixture",
+          "note": "Added `.claude-plugin/marketplace.json`; JSON validation passed, but the `claude` CLI is unavailable in this environment."
+        },
+        {
+          "id": "T002",
+          "owner": "agent",
+          "status": "done",
+          "text": "Actualizar `planning/architecture.md:359` Declined row `marketplace.json listing` a `Superseded by 036 (2026-09-21, user go-ahead)` con fecha y referencia a `035` \u2014 no borrar sin traza, con `AGENTS.md: Never edit Declined without go-ahead`",
+          "note": "Updated only the historical Declined row; original rationale preserved."
+        },
+        {
+          "id": "T003",
+          "owner": "agent",
+          "status": "done",
+          "text": "Escribir `install.sh` (bash `set -euo pipefail`): flags `--global`/`--local` (default local), `--version`, `--force`, idempotente; detecta harness pero siempre escribe a `.agents/skills/` (garantizado `022`); usa `curl -fsSL` + `tar -xz --strip-components=1`; sin `pip`/`npm`; preserva `skills/status/{references/,scripts/}` relativo",
+          "note": "Added root `install.sh`; Bash syntax could not be run because Bash is unavailable on this Windows environment."
+        },
+        {
+          "id": "T004",
+          "owner": "agent",
+          "status": "done",
+          "text": "Escribir `install.ps1` (PowerShell): paridad con `install.sh` \u2014 `Invoke-WebRequest`/`Expand-Archive`, mismos flags, mismos paths (`~/.agents/skills`, `~/.claude/skills`, `~/.config/opencode/skills`), idempotente",
+          "note": "Added `install.ps1`; PowerShell parser validation passed."
+        },
+        {
+          "id": "T005",
+          "owner": "agent",
+          "status": "done",
+          "text": "Crear `.github/workflows/release-skills.yml`: trigger `push: tags: v*`, steps `tar -czf specloop-skills.tar.gz skills/ .claude-plugin/plugin.json .claude-plugin/marketplace.json` (excluye `planning/`, `examples/`, `scripts/`, `.github/assets`), `gh release upload` + `.sha256`; sin `continue-on-error`; determin\u00edstico (sort, sin timestamp) como `030`",
+          "note": "Added deterministic tag-triggered release workflow with archive, checksum, and GitHub Release upload."
+        },
+        {
+          "id": "T006",
+          "owner": "agent",
+          "status": "done",
+          "text": "Actualizar `README.md` Install a 3 columnas: Marketplace (`claude/copilot/codex marketplace add`), Installer (`curl -fsSL .../install.sh | bash` y `irm .../install.ps1 | iex`), Manual (`cp -r`) \u2014 con one-liners por harness de `022` y nota de backward compat",
+          "note": "README now documents Marketplace, tar installer, manual copy, six harness paths, and backward compatibility."
+        },
+        {
+          "id": "T007",
+          "owner": "agent",
+          "status": "done",
+          "text": "Actualizar `CONTRIBUTING.md` y `.gitignore` (si hace falta): validaci\u00f3n `cat .claude-plugin/marketplace.json | jq` + `claude plugin validate .`, excluir `specloop-skills.tar.gz` local",
+          "note": "Added marketplace validation guidance and ignored the local release archive."
+        },
+        {
+          "id": "T008",
+          "owner": "agent",
+          "status": "done",
+          "text": "Verificar en fixtures vac\u00edos: `bash install.sh` y `pwsh install.ps1` dejan `skills/` descubrible por 6 harnesses (`022` paths), sin `planning/` ni `.github/assets`; segundo run byte-identical; `marketplace.json` le\u00eddo por `claude plugin marketplace add` en fixture local",
+          "note": "PowerShell fixture and idempotency passed; `claude plugin validate .` passed with one warning. Bash/global paths and GNU tar determinism remain environment-limited (Windows Bash access denied; global writes intentionally not redirected)."
+        },
+        {
+          "id": "T009",
+          "owner": "agent",
+          "status": "done",
+          "text": "Corregir defectos hallados al repasar T001\u2013T008 y verificar de verdad el marketplace y el installer",
+          "note": "`source: \"./skills\"` \u2192 `\"./\"` (probado: `claude plugin marketplace add` + `install` trae 9 skills; `copilot plugin marketplace add` + `install`, 9 skills; ambos revertidos). `install.sh` copiaba `plugin.json`/`marketplace.json` dentro de `.agents/skills` por `--strip-components=1`; ahora extrae y copia `skills/`. `--force` no hac\u00eda nada; ahora sin \u00e9l se salta una instalaci\u00f3n existente. Local solo escrib\u00eda `.agents/skills`, que Claude Code no lee; ahora a\u00f1ade `.claude/skills` si existe `.claude/`. El workflow usaba `gh release upload` sin crear el release, y `build_dashboard.py --help` regeneraba el dashboard; ahora crea el release y usa `ast.parse` (no `py_compile`, que dej\u00f3 un `.pyc` en el primer release) + chequeo de contenido. README: quitado `npx codex-marketplace add` (no verificado). Probado: `install.sh` y `install.ps1` en fixtures con archivo local (9 skills, sin `planning/`, re-run sin cambios), build del tar dos veces con GNU tar 1.35, mismo SHA-256."
+        }
+      ]
+    },
+    {
+      "id": "037",
+      "plan": "readme-onboarding",
+      "status": "todo",
+      "dependsOn": [
+        "019",
+        "022",
+        "030",
+        "036"
+      ],
+      "stage": "requirements",
+      "priority": "23",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 0
+      },
+      "tasks": []
+    },
+    {
+      "id": "038",
+      "plan": "auto-release-on-skill-change",
+      "status": "done",
+      "dependsOn": [
+        "036"
+      ],
+      "stage": "\u2014",
+      "priority": "24",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 5
+      },
+      "tasks": [
+        {
+          "id": "T001",
+          "owner": "agent",
+          "status": "done",
+          "text": "Write `scripts/next-version.mjs` (Conventional Commits \u2192 semver, 0.x rule, forced level, input validation)",
+          "note": "Verified locally: fix\u21920.1.1, feat\u21920.2.0, breaking 0.x\u21920.2.0, breaking 1.x\u21922.0.0, feat 1.x\u21921.3.0, forced patch, bad version/level rejected; real range v0.1.0..HEAD \u2192 0.2.0."
+        },
+        {
+          "id": "T002",
+          "owner": "agent",
+          "status": "done",
+          "text": "Make `.github/workflows/release-skills.yml` callable via `workflow_call` with a `tag` input",
+          "note": "Tag push trigger kept; checkout ref and `TAG` fall back to the pushed tag."
+        },
+        {
+          "id": "T003",
+          "owner": "agent",
+          "status": "done",
+          "text": "Write `.github/workflows/auto-release.yml` (path filter, dispatch, concurrency, manifest-agreement check, bump, atomic push, reusable release call)",
+          "note": "YAML parses; both `jq` edits diffed locally (only the `version` line changes)."
+        },
+        {
+          "id": "T004",
+          "owner": "agent",
+          "status": "done",
+          "text": "Update `CONTRIBUTING.md` and the `CHANGELOG.md` preamble",
+          "note": ""
+        },
+        {
+          "id": "T005",
+          "owner": "agent",
+          "status": "done",
+          "text": "Verify on GitHub: dispatch `auto-release` \u2192 `v0.2.0` commit, tag, release with both assets; manifests at `0.2.0`",
+          "note": "Run 35845620618: `chore(release): v0.2.0` commit + tag, release with `specloop-skills.tar.gz` + `.sha256`; `releases/latest/download` serves 0.2.0 (9 skills, `advance` Phase 0.5). The releases API listed 0 assets for a few minutes after upload \u2014 eventual consistency, not a failed upload."
+        }
+      ]
+    },
+    {
+      "id": "039",
+      "plan": "advance-cross-harness-verification",
+      "status": "todo",
+      "dependsOn": [
+        "022",
+        "033"
+      ],
+      "stage": "requirements",
+      "priority": "26",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 0
+      },
+      "tasks": []
+    },
+    {
+      "id": "040",
+      "plan": "pin-actions-by-sha",
+      "status": "todo",
+      "dependsOn": [
+        "038",
+        "034"
+      ],
+      "stage": "requirements",
+      "priority": "25",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 0
+      },
+      "tasks": []
+    },
+    {
+      "id": "041",
+      "plan": "advance-skill-split",
+      "status": "todo",
+      "dependsOn": [
+        "033"
+      ],
+      "stage": "requirements",
+      "priority": "27",
+      "nextEligible": false,
+      "counts": {
+        "todo": 0,
+        "in_progress": 0,
+        "blocked": 0,
+        "interrupted": 0,
+        "done": 0
+      },
+      "tasks": []
     }
   ],
   "totals": {
-    "todo": 7,
+    "todo": 4,
     "in_progress": 1,
     "blocked": 0,
     "interrupted": 0,
-    "done": 263
+    "done": 286
   },
-  "drift": [
-    {
-      "specId": "022",
-      "rule": "stage-not-reset-on-done",
-      "message": "Status done, Stage tasks_ready \u2014 expected \u2014"
-    },
-    {
-      "specId": "022",
-      "rule": "done-but-tasks-incomplete",
-      "message": "Status done but task(s) T029 not done"
-    }
-  ],
+  "drift": [],
   "fixes": [
     {
       "id": "001",
@@ -3062,6 +3335,33 @@
       "date": "2026-09-19",
       "found": "`skills/status/SKILL.md` Phase 0 hard-codes `python3` and prescribes an exact stop\nmessage (\"requires python3, which was not found on PATH\") when it isn't found. On\nWindows, `python3` typically resolves to the Microsoft Store app-execution alias \u2014 a\nstub that exits with a localized \"Python was not found\" message instead of running.\nObserved 2026-09-19 during the `014` OpenCode verification (Windows 11, OpenCode\n1.18.31, model `muse-spark-1.2-contributor-free`): `python3 <script>` failed with the\nstub's message, and the model silently retried with `python <script>`, which worked,\ninstead of printing the prescribed stop message. So the skill's behavior on this case\nis undefined: the stop rule says to halt, the run recovered by improvising, and a\ndifferent model or harness could equally halt or loop. `build_dashboard.py` itself\nwas fine \u2014 the failure is in how the skill names the interpreter.",
       "fix": "`skills/status/SKILL.md` Phase 0 now picks the interpreter before running the script:\n`python3 --version`, then `python --version`, using the first that prints `Python 3.x`.\nProbing the version (not an error string) is language-independent, so it handles the\nlocalized Store stub, and rejects `python` where it's Python 2. If neither qualifies,\nthe same prescribed stop message is printed, unchanged. `README.md` now says Python 3\nas `python3` or `python`. Verified 2026-09-19 on this Windows machine (`python3` =\nStore stub, `python` = 3.14.3): OpenCode 1.18.31 probed both, chose `python`, wrote\n`planning/dashboard.html`; Claude Code 2.1.278 loaded via `--plugin-dir` in a fixture\nwith no skills copy did the same, producing a byte-identical 31998-byte dashboard.\nNot exercised: a machine with neither interpreter (stop-message branch), and macOS/\nLinux. `planning/architecture.md`'s Fixed rule still says \"a missing `python3` on\n`PATH` is a hard failure\" \u2014 still true in spirit, literal wording left unedited\npending the user's go-ahead."
+    },
+    {
+      "id": "016",
+      "name": "scaffold-written-before-first-question",
+      "scope": "001",
+      "status": "resolved",
+      "date": "2026-09-19",
+      "found": "`skills/start` wrote the whole scaffold (`AGENTS.md`, `CLAUDE.md`, `planning/*`,\n`.specloop/`) before asking the first interview question. Seen in a real OpenCode run\n(model: Muse Spark 1.2 Free) recorded for `019`'s demo: files appeared before the user\nhad answered anything. The skill text was ambiguous rather than wrong \u2014 Phase 1\n(scaffold) precedes Phase 2 (`project-type`), yet Phase 1's `planning/architecture.md`\nbullet says the type is \"asked in Phase 2, just before this file is written\", which\nonly makes sense if the question comes first. Models resolved the contradiction\ndifferently, so behaviour depended on the model.",
+      "fix": "`skills/start/SKILL.md`: Phase 1 is now two halves \u2014 the ledger\n(`.specloop/interview.md`) before the first question, everything else once Phase 2 ends,\nwith Phase 2's answers written from the ledger into `planning/product.md` and\n`AGENTS.md`'s \"Project\". Phase 0 resumes a ledger with no `planning/` beside it. Phase\nnumbers unchanged (`design-closing`, `advance` and `scripts/check-skill-consistency.mjs`\nreference \"Phase 1's\" header template). Updated the docs that asserted the old order:\n`README.md`, `planning/product.md`, `planning/architecture.md`, `001`'s\n`requirements.md` and `design.md`. `scripts/check-skill-consistency.mjs` and\n`scripts/check-markdown-conventions.mjs` pass.\n\nVerified live under OpenCode 1.18.31 (Muse Spark 1.2 Free) in a fresh fixture: with the\nfirst question on screen the only file on disk was `.specloop/interview.md`; all eight\nPhase A answers landed in the ledger verbatim; nothing else was written until the\nclosing sweep was answered, at which point `AGENTS.md`, `CLAUDE.md`, `planning/*` and\n`.specloop/{.gitignore,logs/.gitkeep}` appeared, with `product.md` and `AGENTS.md`'s\n\"Project\" filled from the ledger and `architecture.md` carrying the software header set\n(`Container`/`Stack`/`Conventions`). Not covered: a cold resume from a brand-new session\nwith only a ledger on disk (the run continued the same session via `--continue`), and\nany harness other than OpenCode."
+    },
+    {
+      "id": "017",
+      "name": "open-questions-asked-as-fake-option-menus",
+      "scope": "001",
+      "status": "resolved",
+      "date": "2026-09-19",
+      "found": "Under OpenCode 1.18.31 (model: Muse Spark 1.2 Free) `skills/start` asked open-ended\ninterview questions (`goal`, `audience`, `mvp`) through the harness's `question` tool.\nThat tool takes a header, the question text and a list of options, and adds its own\n\"Type your own answer\"; with no real alternatives to offer, the model filled the list\nwith filler (\"Type your answer\", \"Describe audience\", \"Skip for now\"). The first option\nis preselected, so a stray Enter recorded `skipped` for `goal`, `audience` and `mvp`.\n`SKILL.md` said nothing about how to ask, so the delivery was left to the model.",
+      "fix": "`skills/start/SKILL.md`, interview contract: ask in plain chat text by default; never\ncall a structured-question tool for an open-ended dimension (it needs a list of options,\nan open question has none, and whatever goes there is filler beside the free-text choice\nthe harness already adds); use it only for a closed choice with 2-6 real alternatives\n(`project-type`, a yes/no confirmation), every option an actual answer and none a skip;\nnever preselect a skip. Worded harness-neutrally (the skill runs under six harnesses).\nRationale added to `001`'s `design.md`.\n\nVerified live under OpenCode 1.18.31 (Muse Spark 1.2 Free), question tool still allowed.\nA first wording (\"use it only for a closed choice\") did not hold: `goal` still came as a\nmenu, with filler \"Answer in own words\" instead of \"Type your answer\". The firmer wording\nabove made `project-type` and `goal` plain chat questions, and the ledger recorded both\nanswers verbatim. One run per wording, on one model, so this is evidence, not a\nguarantee. Independently of the skill, OpenCode's own config does it at harness level:\n`{\"permission\": {\"question\": \"deny\"}}` in the project's `opencode.json` made every\nquestion plain text (tested; the docs only show the `allow` value).\n\nNot done: the same rule for `design-closing`, `amend`, `loop-setup` and `fix`, which\nalso ask one question at a time and were left unchanged."
+    },
+    {
+      "id": "018",
+      "name": "advance-cannot-draft-requirements",
+      "scope": "033",
+      "status": "resolved",
+      "date": "2026-09-23",
+      "found": "In a target project whose project interview had finished, the seeded specs sat at\n`Stage: \u2014` with no `requirements.md`. `specloop:advance` refused them (\"run\n`specloop:start` first\"), and `specloop:start` Phase 7 insisted on answering 7\nquestions per spec, one at a time \u2014 about 77 questions for 11 specs. When the user\nsaid \"no s\u00e9\", \"sigue solo\" or \"use industry standards\", the agent still refused. The\nFixed rule \"never infer a choice to close the dimension\" had no exception, and the\nhelp-me-decide protocol classes `what`/`serves` as non-researchable. The user had to\nforce the automatic close. A handoff whose resume line said \"answer its requirements\nquestions one at a time\" reinforced it. Side bug: rewriting a ledger answer (Spanish\nto English) appended a second `001.what` row instead of replacing it.",
+      "fix": "- **`skills/advance/SKILL.md`, new Phase 0.5:** drafts a seeded spec's\n  `requirements.md` from the finished interview, `product.md`, `architecture.md`,\n  `styles.md` and sibling specs.\n  - **How it decides:** gaps are filled with the current industry standard,\n    confirmed with a brief web search that cites a primary source. Every line not\n    from the user is marked `_(standard: \u2026)_`, `_(standard, unverified \u2026)_` (no\n    search tool), or `_(judgement, no standard)_`. It asks live only for facts no\n    standard can decide.\n  - **Approval:** it shows the full draft for yes/changes/defer and writes nothing\n    before the user says yes. Ledger rows are replaced, never duplicated.\n  - **Dependencies:** drafting isn't gated on `Depends on`; design/tasks still\n    are. Specs with unfinished dependencies stop at `Stage: requirements` in a\n    new report group.\n  - **\"Sigue solo\":** applies to the whole run. Standard-answerable questions are\n    decided rather than asked, and closing-sweep questions are skipped.\n  - **Report:** new groups for refused specs and roadmap gaps. Every\n    standard/judgement line is listed for review.\n- **`skills/start`:** Phase 7 opens with a one-time choice between answering the\n  requirements and letting advance draft them. The \"never infer\" rule names Phase\n  0.5 as the one exception. A handoff names both resume paths.\n- **Other files:** the Fixed rule in `planning/architecture.md` (user's go-ahead\n  2026-09-23), `question-bank.md`, `product.md`, `roadmap.md`'s Stage legend,\n  README, and the design-closing/amend/loop-setup refusal pointers. `status`\n  suggests `advance` for a not-done spec at `Stage: \u2014`.\n- **Guard:** `scripts/check-skill-consistency.mjs` group [16].\n- **Verification:** skill-architect evals in `test/advance-evals/` (local-only).\n  Happy path, \"sigue solo\", no web search, no interview, changes loop, and\n  routing all pass. The two that failed at first were re-run after the fix."
     }
   ]
 }</script>

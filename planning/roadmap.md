@@ -35,6 +35,9 @@ we, what's next."
 | 036 | lean-distribution             | done        | 035, 001, 005      | —            | 22       |
 | 037 | readme-onboarding             | todo        | 019, 022, 030, 036 | requirements | 23       |
 | 038 | auto-release-on-skill-change  | done        | 036                | —            | 24       |
+| 039 | advance-cross-harness-verification | todo        | 022, 033           | requirements | 26       |
+| 040 | pin-actions-by-sha            | todo        | 038, 034           | requirements | 25       |
+| 041 | advance-skill-split           | todo        | 033                | requirements | 27       |
 
 `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
 `interrupted` is a task state only). Written only by
