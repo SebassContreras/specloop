@@ -1,0 +1,84 @@
+name: auto-release
+
+# Every push to main that touches skills/ cuts a new version (038): bumps
+# .claude-plugin/{plugin,marketplace}.json, tags it, and publishes the release.
+# A tag pushed with GITHUB_TOKEN never triggers another workflow, so the release
+# job calls release-skills.yml directly instead of waiting for its tag trigger.
+
+on:
+  push:
+    branches: [main]
+    paths: ["skills/**"]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Bump level (auto = derived from Conventional Commits)"
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.bump.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Bump version, commit and tag
+        id: bump
+        env:
+          BUMP: ${{ inputs.bump || 'auto' }}
+        run: |
+          set -euo pipefail
+          current=$(jq -r .version .claude-plugin/plugin.json)
+          listed=$(jq -r '.plugins[] | select(.name == "specloop") | .version' .claude-plugin/marketplace.json)
+          if [ "$current" != "$listed" ]; then
+            echo "plugin.json ($current) and marketplace.json ($listed) disagree" >&2
+            exit 1
+          fi
+          last_tag=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+          messages=$(git log --format='%B%x00' "${last_tag:+$last_tag..}HEAD" -- skills/)
+          if [ -z "$messages" ] && [ "$BUMP" = auto ]; then
+            echo "No skills/ change since ${last_tag:-the first commit}; nothing to release."
+            exit 0
+          fi
+          next=$(printf '%s' "$messages" | node scripts/next-version.mjs "$current" "$BUMP")
+          if git rev-parse -q --verify "refs/tags/v$next" >/dev/null; then
+            echo "tag v$next already exists" >&2
+            exit 1
+          fi
+
+          jq --arg v "$next" '.version = $v' .claude-plugin/plugin.json > plugin.json.tmp
+          mv plugin.json.tmp .claude-plugin/plugin.json
+          jq --arg v "$next" '(.plugins[] | select(.name == "specloop") | .version) = $v' \
+            .claude-plugin/marketplace.json > marketplace.json.tmp
+          mv marketplace.json.tmp .claude-plugin/marketplace.json
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -am "chore(release): v$next"
+          git tag -a "v$next" -m "v$next"
+          git push --atomic origin HEAD:main "v$next"
+          echo "tag=v$next" >> "$GITHUB_OUTPUT"
+          echo "Released v$next (from $current, bump: $BUMP)."
+
+  release:
+    needs: version
+    if: needs.version.outputs.tag != ''
+    uses: ./.github/workflows/release-skills.yml
+    with:
+      tag: ${{ needs.version.outputs.tag }}
+    permissions:
+      contents: write

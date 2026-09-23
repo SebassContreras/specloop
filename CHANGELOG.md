@@ -4,9 +4,10 @@
 owns what has actually shipped, in delivery order — one entry per spec once its
 `tasks.md` is fully `done`, not one entry per commit.
 
-No version has been tagged/released yet (see `.claude-plugin/plugin.json`'s
-`0.1.0`) — everything below is `Unreleased`. Add a dated section here once a
-version is actually tagged.
+Versions are tagged and released automatically on every push to `main` touching
+`skills/` (`038`); each release's notes on GitHub list its commits. This file stays
+one entry per finished spec and doesn't track version numbers — `Unreleased` below
+means "not grouped by version", not "not shipped".
 
 ## Unreleased
 

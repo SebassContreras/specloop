@@ -4,9 +4,18 @@ on:
   push:
     tags:
       - "v*"
+  # auto-release.yml (038) calls this directly: its tag push can't trigger it.
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -14,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Check the dashboard script compiles
         run: python3 -c "import ast; ast.parse(open('skills/status/scripts/build_dashboard.py', encoding='utf-8').read())"
@@ -54,7 +65,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if ! gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release create "${GITHUB_REF_NAME}" --verify-tag --generate-notes
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --generate-notes
           fi
-          gh release upload "${GITHUB_REF_NAME}" specloop-skills.tar.gz specloop-skills.tar.gz.sha256 --clobber
+          gh release upload "$TAG" specloop-skills.tar.gz specloop-skills.tar.gz.sha256 --clobber
