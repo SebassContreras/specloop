@@ -16,6 +16,17 @@ means "not grouped by version", not "not shipped".
 > here, since auditing/writing two unrelated historical entries is out of scope
 > for today's changes.
 
+### 038 — auto-release-on-skill-change
+
+Every push to `main` touching `skills/` now cuts a release on its own:
+`.github/workflows/auto-release.yml` bumps `.claude-plugin/plugin.json` and
+`marketplace.json` from the Conventional Commit types since the last tag (`feat` →
+minor, breaking → major, minor below 1.0, else patch — `scripts/next-version.mjs`),
+commits `chore(release): vX.Y.Z`, tags it and publishes the `036` archive through
+`release-skills.yml`, now a reusable workflow (a tag pushed with `GITHUB_TOKEN` can't
+trigger it). First run: `v0.2.0`, shipping `planning/fix/018` (`advance` drafts
+missing requirements).
+
 ### 022 — cross-agent-skill-compat
 
 Every harness on the spec's roster — six agent CLIs — passed the same four audit

@@ -147,6 +147,13 @@ case worktree isolation would have served. Both recorded in
 `planning/architecture.md`'s Declined table; full reasoning there, not
 repeated here.
 
+**`038` (auto-release-on-skill-change) closed 2026-09-23** — every push to
+`main` touching `skills/` bumps both plugin manifests, tags and releases on its
+own (`.github/workflows/auto-release.yml`); never bump `version` by hand, and
+`git pull` after such a push to get its `chore(release)` commit. First release
+`v0.2.0` shipped `planning/fix/018`: `specloop:advance` now drafts missing
+`requirements.md` from the interview (its Phase 0.5).
+
 ## Style
 
 Technical and direct, English. Terse and structural — no filler, no

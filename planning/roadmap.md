@@ -34,7 +34,7 @@ we, what's next."
 | 035 | wshobson-agents-research      | done        | 001, 022           | —            | 21       |
 | 036 | lean-distribution             | done        | 035, 001, 005      | —            | 22       |
 | 037 | readme-onboarding             | todo        | 019, 022, 030, 036 | requirements | 23       |
-| 038 | auto-release-on-skill-change  | in_progress | 036                | looping      | 24       |
+| 038 | auto-release-on-skill-change  | done        | 036                | —            | 24       |
 
 `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
 `interrupted` is a task state only). Written only by
