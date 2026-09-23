@@ -143,6 +143,7 @@ Fixed order, terse — one line per item, not prose:
 
    | `stage` | Suggested next skill |
    |---|---|
+   | `—` | `specloop:advance` to draft its `requirements.md` from the interview (or `specloop:start` to answer them one by one) |
    | `requirements` | `specloop:advance` (or `specloop:design-closing` directly, for just this one spec) |
    | `design_closed` | `specloop:advance` (or `specloop:task-breakdown` directly, for just this one spec) |
    | `tasks_ready` | `specloop:loop-setup` if `.specloop/loop.config.json` doesn't exist yet, else `specloop:loop` |
@@ -152,7 +153,7 @@ Fixed order, terse — one line per item, not prose:
    `.specloop/loop.config.json` exists in the target repo — since that file
    isn't part of the JSON; every other row needs only the JSON's `stage`
    field. A spec whose `stage` is `—` and `status` is `done` needs no
-   action — it's already excluded by the `status != "done"` filter above.
+   action (the `—` row above is only for specs not yet `done`) — it's already excluded by the `status != "done"` filter above.
 
 Skip a numbered section header only if this skill is also emitting the
 section immediately after it with no gap — otherwise keep all five headers

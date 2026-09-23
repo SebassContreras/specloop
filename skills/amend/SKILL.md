@@ -47,7 +47,8 @@ asking the next — never batch questions into a single message.
 2. If `design.md` is chosen but it's still the `TBD` stub, say there's nothing
    closed to reopen and point at `specloop:design-closing` instead — refuse that
    choice. If `requirements.md` is chosen but it's still headers with no real
-   content, point at `specloop:start` instead — refuse that choice too. Either
+   content, point at `specloop:start` (or `specloop:advance`, which drafts it)
+   instead — refuse that choice too. Either
    refusal still allows the other artifact if it does have real content.
 3. **Explicit confirm step.** State plainly what's about to change (spec ID, which
    file(s), that each already holds answered/closed content) and that this is a

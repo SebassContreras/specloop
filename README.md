@@ -48,7 +48,7 @@ plugin for convenient installation; every other harness reads the `skills/` fold
 
 ```mermaid
 flowchart LR
-    A["/specloop:start"] -->|"auto-chains, once<br/>the interview ends"| ADV["/specloop:advance<br/>(design-closing + task-breakdown,<br/>per spec)"]
+    A["/specloop:start"] -->|"auto-chains, once<br/>the interview ends"| ADV["/specloop:advance<br/>(requirements drafting +<br/>design-closing + task-breakdown,<br/>per spec)"]
     ADV -->|"tasks.md"| D["/specloop:loop-setup"]
     D -->|".specloop/loop.config.json"| E["/specloop:loop"]
 ```
@@ -275,7 +275,7 @@ the skills carry no `specloop:` prefix: say what you want in plain words (see
 [Install](#install)), or invoke the skill by its bare name (`start`, `advance`, `status`,
 ...) if your harness offers that.
 Only one link in this chain is automatic — `/specloop:start` chains straight into
-`/specloop:advance` once every seeded spec's requirements are filled; everything
+`/specloop:advance` once the interview ends; everything
 else is still one at a time, deliberately, never auto-triggered:
 
 1. **`/specloop:start`** — "I need to set up X". Interviews you first — project type →
@@ -284,7 +284,8 @@ else is still one at a time, deliberately, never auto-triggered:
    carries on: technologies, architecture and tools → recommended skills/plugins
    already available in your session → styles and preferences. Each answer is written
    to disk as it lands, the roadmap is seeded from all of it, and each spec's
-   `requirements.md` is filled in roadmap order.
+   `requirements.md` is filled in roadmap order — by answering its questions, or,
+   if you'd rather not, by letting `/specloop:advance` draft it (below).
 
    The interview is exhaustive by contract, not by script: it draws from a
    per-project-type question bank, tracks coverage in `.specloop/interview.md`, follows
@@ -295,10 +296,13 @@ else is still one at a time, deliberately, never auto-triggered:
    Project deliverables (`README.md`, `CONTRIBUTING.md`, `LICENSE`, CI config) are
    specs the roadmap decides, not files this skill assumes.
 
-   Once every seeded spec's requirements are filled, this chains straight into
+   Once the requirements are answered, or you choose drafting instead, this chains straight into
    `/specloop:advance` (below) — no separate invocation needed for that first pass.
 2. **`/specloop:advance`** — auto-chained from step 1, or run directly any time to
-   pick up a spec deferred earlier. For every spec still short of `tasks_ready`, it
+   pick up a spec deferred earlier. It first drafts any seeded spec's missing
+   `requirements.md` from the interview, deciding what the interview left open by
+   current industry standard (checked with a short web search, each such line
+   marked with its source). Then, for every spec still short of `tasks_ready`, it
    closes `design.md` then `tasks.md` in turn, deriving its answers from what the
    interview already established rather than re-asking, showing you the real draft
    for a yes/changes/defer, and asking live only when something genuinely can't be

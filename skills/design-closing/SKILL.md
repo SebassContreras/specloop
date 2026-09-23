@@ -34,8 +34,9 @@ before asking the next — never batch questions into a single message.
    gating on only one makes this skill refuse on every spec written before the
    template changed. `## Dependencies`/`## Owner split` may be missing on specs
    written before those two sections existed — don't refuse solely for that.
-   Tell the user requirements need filling first (via `specloop:start`) — never guess
-   at requirements content here.
+   Tell the user requirements need filling first (via `specloop:start`, or
+   `specloop:advance`, which drafts them from the interview for approval) — never
+   guess at requirements content here.
 3. Read `planning/product.md` for the **project type**, and `AGENTS.md` +
    `planning/architecture.md` (if they have real content) for stack/convention context.
    Design answers must stay consistent with them. If `.specloop/interview.md` exists,

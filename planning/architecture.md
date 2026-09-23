@@ -30,7 +30,9 @@ verified there without a run of that spec's four audit checks.
 - **Task-breakdown Skill** (`003`, `skills/task-breakdown/`): run separately per spec
   once its `design.md` is closed, drafts + confirms + writes `tasks.md`, marking each
   task agent-runnable or human-only.
-- **Advance Skill** (`033`, `skills/advance/`): chains `design-closing` then
+- **Advance Skill** (`033`, `skills/advance/`): drafts any seeded spec's missing
+  `requirements.md` from the finished interview (Phase 0.5 — gaps decided by
+  web-verified industry standard, marked inline), then chains `design-closing` then
   `task-breakdown` per spec, for every spec still short of `tasks_ready` — deriving
   their Q&A answers from the interview's own answers rather than re-asking, showing
   the real draft for a yes/changes/defer, and asking live only when a question
@@ -98,7 +100,13 @@ verified there without a run of that spec's four audit checks.
   model's own knowledge if
   no web-search tool is available) or not (a fact about the user's own project —
   ask a narrower question instead of manufacturing options); either way it never
-  infers a choice to close the dimension.
+  infers a choice to close the dimension. The one sanctioned exception is outside the
+  interview: `specloop:advance`'s Phase 0.5 drafts a seeded spec's `requirements.md`
+  from the finished interview, deciding what it doesn't settle by current industry
+  standard confirmed with a brief web search (each such line marked
+  `_(standard: …)_`, `_(standard, unverified …)_` without a search tool, or
+  `_(judgement, no standard)_` for a value no standard backs), and
+  writes nothing the user hasn't seen as a full draft (2026-09-23, user's go-ahead).
 - **A change to a cross-cutting mechanism must be reflected everywhere it's
   documented or checked, not just the file most directly touched.** The interview
   contract, the checklist grammar and similar mechanisms are each described in
@@ -125,7 +133,8 @@ verified there without a run of that spec's four audit checks.
 - **`Stage`** (`requirements` · `design_closed` · `tasks_ready` · `looping`, `—` once
   `done` or never tracked) records which skill a spec needs next. Unlike `Status`, it
   has no single writer: each pipeline skill sets it at its own transition, and never
-  touches another spec's row — `specloop:start` → `requirements`,
+  touches another spec's row — `specloop:start` → `requirements` (or
+  `specloop:advance`'s Phase 0.5, when it drafts the file instead),
   `specloop:design-closing` → `design_closed`, `specloop:task-breakdown` →
   `tasks_ready` (`specloop:advance` writes those same two values when it chains them),
   `specloop:amend` → `requirements` again when it reopens a `design.md`,

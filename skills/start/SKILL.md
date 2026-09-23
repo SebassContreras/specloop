@@ -63,7 +63,10 @@ are just where answers land.
   confirmation), where every option is an actual answer and none is a skip. Never
   preselect a skip: a stray Enter would record a `skipped` the user didn't ask for.
 - **Never infer an answer to close a dimension.** Leave it `open` and ask again in the
-  sweep. `TBD` on disk is always better than a guess.
+  sweep. `TBD` on disk is always better than a guess. This binds the interview itself;
+  the one sanctioned derivation is `specloop:advance`'s Phase 0.5, which drafts a spec's
+  `requirements.md` from the finished interview plus web-verified industry standards
+  and shows it for the user's yes/changes/defer — never written unseen.
 - **Help the user decide when they're unsure.** If the answer shows genuine
   uncertainty — "no sé", "not sure", "no tengo idea", in any phase, not gated to a
   specific command — judge whether the dimension is one researched options can
@@ -86,7 +89,10 @@ are just where answers land.
   template: what's covered per the ledger, what's still `open`/`skipped` and why, and how
   to resume (start your harness in this repo and invoke `start` — under Claude Code,
   `claude --plugin-dir <path-to-specloop>` then `/specloop:start`; the ledger picks up at the
-  first `open` dimension). Never stop silently: a bare `open`
+  first `open` dimension). If the project interview is finished and only per-spec
+  requirements remain, say so and name both resume paths — `specloop:advance` drafts
+  them (Phase 0.5 there), `specloop:start` asks them one by one — plus which one the
+  user chose, if they did. Never stop silently: a bare `open`
   row in the ledger says *that* something is unanswered, not *why*, which is what a
   resuming session or person actually needs.
 
@@ -195,7 +201,8 @@ Second half — create, only if missing:
   ignores positionally (safe to ship with or without values in them). Leave `Stage`
   `—` when you create a spec's row; once this skill finishes writing that spec's real
   `requirements.md` (end of Phase 7 for it), write `requirements` into its `Stage`
-  cell — the next skill in the pipeline (`design-closing`) advances it from there.
+  cell (`specloop:advance`'s Phase 0.5 writes the same value when it drafts one
+  instead) — the next skill in the pipeline (`design-closing`) advances it from there.
   Leave `Priority` `—` until Phase 6 asks the user to rank the seeded specs, then fill
   it from that ranking. Never invent a priority the user hasn't actually given; a spec
   with no stated priority stays `—`, not a guessed number.
@@ -342,6 +349,14 @@ or skills to be implemented" turn into ordered spec entries.
 
 Question-bank Phase E, for the next unfilled spec.
 
+Before the first seeded spec, ask once: answer each spec's requirements here, one
+question at a time, or let `specloop:advance` draft them from the interview (Phase
+R there — web-verified industry standards fill the gaps, every draft shown for
+yes/changes/defer). If the user picks drafting — or at any point says to carry on
+without them ("sigue solo", "decide tú", "don't ask me each spec") — stop Phase 7
+and go to Phase 8. A brand-new spec added on a later invocation (step 1 below) still
+runs this Q&A unless the user asks for a draft instead.
+
 1. If this spec's folder doesn't exist yet — a brand-new spec added on a later
    invocation, not one Phase 6 already seeded — ask what it should be called →
    kebab-case → folder `planning/specs/NNN-name/` (`NNN` = highest existing `ID` + 1,
@@ -401,12 +416,17 @@ Question-bank Phase E, for the next unfilled spec.
 
 ## Phase 8 — Report, then auto-chain into specloop:advance
 
+Reached either once every seeded spec's requirements Q&A has ended, or straight from
+Phase 7's opening choice when the user picked drafting — seeded specs still at
+`Stage: —` go through `specloop:advance`'s Phase 0.5 first.
+
 1. Tell the user what exists now. List any dimension left `open` or `skipped` so
    nothing disappears quietly.
 2. State that `specloop:advance` now runs automatically to close design and
    tasks (`specloop:design-closing` then `specloop:task-breakdown`) for every
-   seeded spec, deriving its answers from what the interview already
-   established and asking live only when something can't be inferred — and
+   seeded spec (drafting any missing `requirements.md` first), deriving its
+   answers from what the interview already established and asking live only when
+   something can't be inferred — and
    that it's separately re-invocable later for any spec deferred along the
    way.
 3. Report that `specloop:loop-setup` finishes configuring the loop when a spec

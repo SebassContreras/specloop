@@ -7,7 +7,10 @@ time, in the user's own vocabulary, skipping what the conversation has already a
 **A dimension is "covered" when the user has actually answered it, "skipped" when they
 declined it (record the reason), and "open" otherwise.** Every dimension below must end
 in one of those three states in `.specloop/interview.md` before a phase may terminate.
-Never infer an answer to close a dimension.
+Never infer an answer to close a dimension. (The one sanctioned derivation is
+`specloop:advance`'s Phase 0.5: a spec's requirements drafted from the finished
+interview plus web-verified industry standards, shown to the user for
+yes/changes/defer.)
 
 ---
 

@@ -285,5 +285,18 @@ const usesRepoRoot = [loopSetup, sampleConfig, read('.specloop/loop.config.json'
 );
 ok(!usesRepoRoot || loop.includes('{repoRoot}'), 'a {repoRoot} placeholder is defined by skills/loop');
 
+group("[16] advance's requirements drafting (Phase 0.5) is documented consistently");
+// The one sanctioned exception to "never infer a choice": every file that states that rule, or
+// lists who writes `Stage: requirements`, must also name the exception.
+ok(/^## Phase 0\.5 — /m.test(advance), 'advance has a "## Phase 0.5" section');
+for (const [name, text] of Object.entries({ start, questionBank, architecture })) {
+  ok(text.includes("specloop:advance`'s Phase 0.5"), `${name} names advance's Phase 0.5 as the exception`);
+}
+for (const marker of ['_(standard: ', '_(standard, unverified', '_(judgement, no standard)_']) {
+  ok(advance.includes(marker) && architecture.includes(marker.slice(0, 14)), `advance and architecture agree on marker "${marker}"`);
+}
+ok(/Stage.*[\s\S]{0,400}specloop:advance`? when it drafts|Phase 0\.5, when it drafts/.test(architecture), "architecture's Stage writers include advance's Phase 0.5");
+ok(/\| `—` \| `specloop:advance`/.test(status), "status suggests advance for a not-done spec at Stage —");
+
 console.log(`\n${failed === 0 ? 'All checks passed.' : `${failed} check(s) FAILED.`}`);
 process.exit(failed === 0 ? 0 : 1);

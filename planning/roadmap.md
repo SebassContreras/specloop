@@ -46,7 +46,8 @@ hand-edit it. `specloop:status` (`009`) gives back the standalone read-only chec
 spec needs next, so nobody has to open its files to find out. `—` once `done`, or for
 a spec never tracked through the pipeline (`001`–`005`, foundational, predate this
 column). Unlike `Status`, no single writer: each pipeline skill sets it at its own
-transition (`specloop:start` → `requirements`, `specloop:design-closing` →
+transition (`specloop:start` → `requirements`, or `specloop:advance` when it drafts
+the requirements instead, `specloop:design-closing` →
 `design_closed`, `specloop:task-breakdown` → `tasks_ready` — `specloop:advance` writes
 those two when it chains them, `specloop:amend` → `requirements` again when it reopens a
 `design.md` — `specloop:loop` → `looping`; `loop-setup` only writes

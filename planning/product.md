@@ -36,7 +36,9 @@ branches everything downstream (see `planning/architecture.md`'s fixed rules).
 5. Asks for styles and preferences (colors, typography, tone, code conventions) and
    records them where worker agents actually read them.
 6. Seeds the roadmap from all of the above, then fills each spec's requirements
-   feature by feature, in roadmap order.
+   feature by feature, in roadmap order — asked one by one, or, at the user's
+   choice, drafted from the interview (industry standards, checked by web search,
+   fill the gaps) and shown per spec for approval.
 
 **The interview is exhaustive by contract, not by script.** No Q&A phase terminates on
 a fixed question count. Each one draws from a per-project-type question bank, records
@@ -44,7 +46,8 @@ coverage in `.specloop/interview.md`, generates follow-ups on anything named but
 unspecified, and ends once a closing sweep comes back clean. An explicit
 skip is recorded as a skip — never silently dropped. See `planning/architecture.md`.
 
-**Auto-chained once every spec's requirements are filled** (step 6): a skill closes
+**Auto-chained once the interview ends** (step 6): a skill drafts any requirements
+the user chose not to answer, then closes
 each spec's `design.md`, then breaks it into a populated `tasks.md`, deriving its
 answers from the interview instead of re-asking and asking live only when something
 genuinely can't be inferred — the user reviews a real draft per spec (accept,
