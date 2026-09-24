@@ -29,11 +29,11 @@ comment/commit rules. Existing history predates this and isn't rewritten.
   layout when the Claude CLI is available.
 - `version` is set in both `.claude-plugin/plugin.json` (Claude Code reads this one) and
   the `.claude-plugin/marketplace.json` entry (Copilot CLI requires it). Don't bump it by
-  hand: every push to `main` touching `skills/` runs `.github/workflows/auto-release.yml`
-  (`038`), which bumps both from the Conventional Commit types since the last tag
-  (`feat` → minor, breaking → major — minor below 1.0 — else patch), tags and releases.
-  Run `git pull` after such a push to pick up its `chore(release)` commit. To force a
-  level, run the workflow by hand (`gh workflow run auto-release.yml -f bump=minor`).
+  hand. Releases are manual so several `skills/` changes ship together: run
+  `gh workflow run auto-release.yml` (`038`), which bumps both from the Conventional
+  Commit types of every `skills/` commit since the last tag (`feat` → minor, breaking
+  → major — minor below 1.0 — else patch), tags and releases. Run `git pull` after it
+  to pick up its `chore(release)` commit. To force a level, add `-f bump=minor`.
 - `claude --plugin-dir .` from a separate target-repo checkout — exercises the
   skills end-to-end against a real repo.
 - Any other harness: copy `skills/` to `.agents/skills/` in a scratch repo (see the

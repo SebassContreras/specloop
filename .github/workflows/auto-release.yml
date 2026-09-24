@@ -1,14 +1,13 @@
 name: auto-release
 
-# Every push to main that touches skills/ cuts a new version (038): bumps
-# .claude-plugin/{plugin,marketplace}.json, tags it, and publishes the release.
+# Cuts a new version on demand (038): bumps .claude-plugin/{plugin,marketplace}.json
+# from every skills/ commit since the last tag, tags it, and publishes the release.
+# Manual only since 2026-09-24, so several skills/ changes ship as one release:
+# gh workflow run auto-release.yml
 # A tag pushed with GITHUB_TOKEN never triggers another workflow, so the release
 # job calls release-skills.yml directly instead of waiting for its tag trigger.
 
 on:
-  push:
-    branches: [main]
-    paths: ["skills/**"]
   workflow_dispatch:
     inputs:
       bump:

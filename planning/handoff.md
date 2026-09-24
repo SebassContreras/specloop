@@ -19,10 +19,12 @@ load-bearing from them is carried below. Branch: `main`, clean, no other branche
   `planning/architecture.md` names it as the one exception (user's go-ahead).
   `check-skill-consistency` group `[16]` guards it. Verified with 6
   skill-architect evals in `test/advance-evals/` (local-only, gitignored).
-- **`038` — auto-release.** Every push to `main` touching `skills/` bumps both
-  manifests (Conventional Commits → semver, `scripts/next-version.mjs`), commits
+- **`038` — release workflow.** `auto-release.yml` bumps both manifests
+  (Conventional Commits → semver, `scripts/next-version.mjs`), commits
   `chore(release)`, tags and publishes the `036` archive via the now-reusable
-  `release-skills.yml`. First run: `v0.2.0`.
+  `release-skills.yml`. First run: `v0.2.0`. Manual since 2026-09-24 (push trigger
+  removed while testing is ongoing): `gh workflow run auto-release.yml`. `AGENTS.md`
+  tells agents to suggest a run at 3+ unreleased `skills/` commits.
 - **Actions on Node 24 majors** (`checkout@v7`, `setup-python@v7`,
   `upload-pages-artifact@v5`, `deploy-pages@v5`). The bot's `git push --atomic`
   with `checkout@v7` credentials was probed on a throwaway branch and worked;
@@ -47,8 +49,8 @@ the interactive skill, not a VHS tape; `009`'s `T012` `[human]` — open
 
 ## Traps
 
-- **Pull after a `skills/` push.** The auto-release bot adds a commit to `main`
-  right after; pushing without pulling gets rejected.
+- **Pull after a release run.** The workflow adds a `chore(release)` commit to
+  `main`; pushing without pulling gets rejected.
 - **Never bump `version` by hand** in `.claude-plugin/*.json` — `auto-release.yml`
   owns it and fails loud if the two manifests disagree.
 - **A tag or push made with `GITHUB_TOKEN` triggers no other workflow.** That's why

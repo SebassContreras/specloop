@@ -147,10 +147,12 @@ case worktree isolation would have served. Both recorded in
 `planning/architecture.md`'s Declined table; full reasoning there, not
 repeated here.
 
-**`038` (auto-release-on-skill-change) closed 2026-09-23** — every push to
-`main` touching `skills/` bumps both plugin manifests, tags and releases on its
-own (`.github/workflows/auto-release.yml`); never bump `version` by hand, and
-`git pull` after such a push to get its `chore(release)` commit. First release
+**`038` (auto-release-on-skill-change) closed 2026-09-23** —
+`.github/workflows/auto-release.yml` bumps both plugin manifests from every
+`skills/` commit since the last tag, then tags and releases. **Manual since
+2026-09-24** (push trigger removed, so several skill changes ship as one
+release): `gh workflow run auto-release.yml`. Never bump `version` by hand, and
+`git pull` after a run to get its `chore(release)` commit. First release
 `v0.2.0` shipped `planning/fix/018`: `specloop:advance` now drafts missing
 `requirements.md` from the interview (its Phase 0.5).
 
@@ -180,6 +182,11 @@ agent-judgement deviation.** Full detail: `planning/styles.md`.
   mechanism already covers the same need at a different granularity (e.g.
   per-task instead of per-spec) — avoid a second source of truth that can
   drift from the first.
+- Releases are manual (`038`). At session start and after pushing a
+  `skills/` change, count the unreleased skill commits:
+  `git log --oneline "$(git describe --tags --abbrev=0)"..origin/main -- skills/`.
+  At 3 or more, remind the user, list them, and suggest
+  `gh workflow run auto-release.yml`. Never run it without their go-ahead.
 - Never edit a Fixed rule or a `Declined`-table row in
   `planning/architecture.md` without the user's explicit go-ahead in the same
   conversation.
