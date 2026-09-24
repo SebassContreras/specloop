@@ -3,6 +3,8 @@
 Drawn from by `specloop:start` (and re-checked by `specloop:design-closing`). This file
 is the source of interview *coverage*, not a script to read aloud: ask one question at a
 time, in the user's own vocabulary, skipping what the conversation has already answered.
+The opening request that triggered the skill is context, not an answer: it seeds
+`idea-detail`, but never closes `project-type` or `goal` on its own.
 
 **A dimension is "covered" when the user has actually answered it, "skipped" when they
 declined it (record the reason), and "open" otherwise.** Every dimension below must end
@@ -18,9 +20,9 @@ yes/changes/defer.)
 
 | Dimension | Questions |
 |---|---|
-| `project-type` | "What kind of thing is this — software (app, service, site), a marketing or content project, an operations/process project, a research project, or something else?" |
-| `goal` | "What's the final goal — the overall purpose of this project?" |
-| `idea-detail` | "Cuéntame con tus palabras, con detalle, de qué trata esta idea — qué problema resuelve, cómo te la imaginas funcionando paso a paso, qué has probado o visto que te hace pensar que es posible. Tómate el tiempo que necesites." · Follow-up agent reasoning: estructura lo dicho en problema, usuarios, flujo principal, entidades/datos e integraciones, sin inventar elecciones; úsalo como punto de partida para el resto de la entrevista. |
+| `idea-detail` | "Tell me in your own words, in detail, what this idea is — what problem it solves, how you picture it working step by step, and anything you've tried or seen that makes you think it's possible. Take as long as you need." · Then structure what was said into problem, users, main flow, entities/data and integrations, without inventing choices; use it as the starting point for the rest of the interview. |
+| `project-type` | "What kind of thing is this — software, a marketing or content project, an operations/process project, a research project, or something else?" · For software, also the concrete form: mobile app (iOS/Android/both), web app, desktop app, backend service/API, CLI, library, or a combination. "An app" alone is not an answer — ask which. |
+| `goal` | Drafted by the agent from `idea-detail` and `project-type` as a short statement with context (what it is, for whom, what it achieves), then shown: "Is this the goal, or would you change it?" Covered only on the user's yes or edit. |
 | `audience` | "Who or what is this for?" |
 | `mvp` | "What's the MVP, or first phase, you want to reach?" · "What's explicitly *not* in the first phase?" |
 | `done-when` | "How will you know the whole thing is finished? What's observably true then?" |

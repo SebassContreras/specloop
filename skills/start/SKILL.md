@@ -104,8 +104,10 @@ are just where answers land.
 2. If `.specloop/interview.md` exists, read it — this is a resumed interview. If the
    ledger lacks a dimension that `question-bank.md` Phase A now defines (e.g.
    `idea-detail` added after an upgrade), insert that row as `open` in ledger order
-   (between `goal` and `audience` for `idea-detail`) and write the ledger back before
-   continuing. Report what's already covered and continue from the first `open`
+   (first, before `project-type`, for `idea-detail`) and write the ledger back before
+   continuing. If `idea-detail` is `open` while `project-type` or `goal` is `covered`,
+   those were recorded before the narrative existed: reset both to `open` and move
+   them after `idea-detail` (`planning/fix/021`). Report what's already covered and continue from the first `open`
    dimension rather than restarting. A ledger with no `planning/` structure beside it
    means Phase 2 was cut short: finish it, then run Phase 1's second half as usual. A
    `planning/handoff.md` alone doesn't count as the scaffold — the ledger decides.
@@ -176,6 +178,9 @@ Second half — create, only if missing:
   - **research** → `Sources`, `Method`, `Output`
   - **other** → `Tools`, `Inputs/Outputs` (mirrors Phase B's `B-other` generic dimensions)
 
+  Only the category picks the set; a software project's concrete form (mobile app,
+  web app, …) doesn't change it.
+
   `design-closing`/`task-breakdown` tolerate this file staying header-only (Phase 3
   skipped, or `project-type` left `skipped`) — never gate on it having content.
 - **`planning/roadmap.md`**:
@@ -224,17 +229,28 @@ Second half — create, only if missing:
 
 ## Phase 2 — Type & vision Q&A (first run only)
 
-Question-bank Phase A. Start with `project-type` — it branches everything downstream,
-so it must be answered first. Record each answer in the ledger as it lands; the
-scaffold doesn't exist yet (Phase 1's first half wrote only the ledger).
+Question-bank Phase A, in ledger order. Record each answer in the ledger as it lands;
+the scaffold doesn't exist yet (Phase 1's first half wrote only the ledger).
 
-Then ask `goal` (short statement). Immediately after, ask `idea-detail` — the open
-narrative: "Cuéntame con tus palabras, con detalle, de qué trata esta idea — qué
-problema resuelve, cómo te la imaginas funcionando paso a paso, qué has probado o visto
-que te hace pensar que es posible." Let the user answer at length, record verbatim in
-the ledger, then do a short reasoning/structuring pass: extract problema, usuarios,
-flujo principal, entidades/datos e integraciones mencionadas, sin inventar elecciones ni
-rellenar huecos. Keep this structure as the shared point de partida.
+The opening request that triggered this skill ("I want an app that…") is context,
+not an answer: never mark `project-type` or `goal` covered from it
+(`planning/fix/021`). Start with `idea-detail`, the open narrative, asked in the
+user's language. If the opening request already described the idea, quote it back and
+ask the user to expand on it. Let the user answer at length, record it verbatim in
+the ledger, then do a short structuring pass: extract the problem, users, main flow,
+entities/data and integrations mentioned, without inventing choices or filling gaps.
+Keep this structure as the shared starting point.
+
+Then settle `project-type`. It branches Phase 3 and `planning/architecture.md`'s header
+set, so it must be answered before this phase ends. For software, record the
+concrete form too (mobile app and which platforms, web app, desktop app, backend
+service/API, CLI, library, or a combination), e.g. `software — mobile app (iOS +
+Android)`. A generic "an app" is not an answer: if the narrative doesn't settle it,
+ask which form, as a closed choice.
+
+Then `goal`: draft one short statement from the narrative and `project-type` (what it
+is, for whom, what it achieves) and show it for yes/changes. Mark it covered only on
+the user's yes or edit, and record the confirmed wording, not the opening request.
 
 Only after that, work through `audience`, `mvp`, `done-when`, `constraints-hard`,
 `stakeholders`, `automatability`, grounding each in the `idea-detail` narrative — refer
