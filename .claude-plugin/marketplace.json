@@ -12,7 +12,7 @@
       "name": "specloop",
       "source": "./",
       "description": "Turns an interview into a roadmap you can build step by step, then runs it.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
