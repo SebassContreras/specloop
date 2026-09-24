@@ -20,6 +20,7 @@ yes/changes/defer.)
 |---|---|
 | `project-type` | "What kind of thing is this — software (app, service, site), a marketing or content project, an operations/process project, a research project, or something else?" |
 | `goal` | "What's the final goal — the overall purpose of this project?" |
+| `idea-detail` | "Cuéntame con tus palabras, con detalle, de qué trata esta idea — qué problema resuelve, cómo te la imaginas funcionando paso a paso, qué has probado o visto que te hace pensar que es posible. Tómate el tiempo que necesites." · Follow-up agent reasoning: estructura lo dicho en problema, usuarios, flujo principal, entidades/datos e integraciones, sin inventar elecciones; úsalo como punto de partida para el resto de la entrevista. |
 | `audience` | "Who or what is this for?" |
 | `mvp` | "What's the MVP, or first phase, you want to reach?" · "What's explicitly *not* in the first phase?" |
 | `done-when` | "How will you know the whole thing is finished? What's observably true then?" |

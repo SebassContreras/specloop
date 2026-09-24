@@ -38,6 +38,10 @@ we, what's next."
 | 039 | advance-cross-harness-verification | todo        | 022, 033           | requirements | 26       |
 | 040 | pin-actions-by-sha            | todo        | 038, 034           | requirements | 25       |
 | 041 | advance-skill-split           | todo        | 033                | requirements | 27       |
+| 042 | harness-adapter-registry      | todo        | 002, 022           | requirements | 28       |
+| 043 | ax-packaging-workspace        | todo        | 042, 036           | requirements | 29       |
+| 044 | declarative-export-manifests  | todo        | 042, 043, 030      | requirements | 30       |
+| 045 | ax-status-bridge              | todo        | 044, 009, 030      | requirements | 31       |
 
 `Status`: `todo` · `in_progress` · `blocked` · `done` (a stopped spec stays `in_progress`;
 `interrupted` is a task state only). Written only by

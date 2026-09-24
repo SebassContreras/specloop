@@ -6,14 +6,16 @@ description: >
   design,tasks}.md, .specloop/) in the current repo, then run the full guided
   interview: project type, goal, technologies/architecture/tools, recommended
   skills/plugins for your agent, styles/preferences — seeding the roadmap from the answers
-  and filling each spec's requirements one at a time.
+  and filling each spec's requirements one at a time. Use for any new app, project or feature request in English or Spanish, even with typos or informal phrasing.
 when_to_use: >
   Use when the user wants to bootstrap a new project's docs from scratch, or
   add a new feature spec to an already-scaffolded repo. Works for any project
   type — app, website, marketing/content, operations, research, or anything
   else that needs a roadmap. Trigger on phrasing like "I need to set up X",
   "let's build Y", "scaffold a new project for Z", "start a new spec for W",
-  "bootstrap the docs for this repo".
+  "bootstrap the docs for this repo", "quiero crear una app", "crear una app que se conecte a una api",
+  "hacer la compra según mi dieta", or any Spanish equivalent with typos like
+  "craear", "confiasa", "compre". Activate even if repo has no .git yet — specloop scaffolds it.
 ---
 
 # specloop: start
@@ -99,11 +101,14 @@ are just where answers land.
 ## Phase 0 — Detect state
 
 1. Check which of this skill's owned files already exist.
-2. If `.specloop/interview.md` exists, read it — this is a resumed interview. Report
-   what's already covered and continue from the first `open` dimension rather than
-   restarting. A ledger with no `planning/` structure beside it means Phase 2 was cut
-   short: finish it, then run Phase 1's second half as usual. A `planning/handoff.md`
-   alone doesn't count as the scaffold — the ledger decides.
+2. If `.specloop/interview.md` exists, read it — this is a resumed interview. If the
+   ledger lacks a dimension that `question-bank.md` Phase A now defines (e.g.
+   `idea-detail` added after an upgrade), insert that row as `open` in ledger order
+   (between `goal` and `audience` for `idea-detail`) and write the ledger back before
+   continuing. Report what's already covered and continue from the first `open`
+   dimension rather than restarting. A ledger with no `planning/` structure beside it
+   means Phase 2 was cut short: finish it, then run Phase 1's second half as usual. A
+   `planning/handoff.md` alone doesn't count as the scaffold — the ledger decides.
 3. Otherwise decide by content:
    - **No `planning/` structure** → Phase 1's first half (the ledger) → 2 → Phase 1's
      second half (the rest of the scaffold) → 3 → 4 → 5 → 6 → 7.
@@ -223,9 +228,18 @@ Question-bank Phase A. Start with `project-type` — it branches everything down
 so it must be answered first. Record each answer in the ledger as it lands; the
 scaffold doesn't exist yet (Phase 1's first half wrote only the ledger).
 
-Then work through `goal`, `audience`, `mvp`, `done-when`, `constraints-hard`,
-`stakeholders`, `automatability`, following up as the contract requires. Close with
-Phase F's sweep.
+Then ask `goal` (short statement). Immediately after, ask `idea-detail` — the open
+narrative: "Cuéntame con tus palabras, con detalle, de qué trata esta idea — qué
+problema resuelve, cómo te la imaginas funcionando paso a paso, qué has probado o visto
+que te hace pensar que es posible." Let the user answer at length, record verbatim in
+the ledger, then do a short reasoning/structuring pass: extract problema, usuarios,
+flujo principal, entidades/datos e integraciones mencionadas, sin inventar elecciones ni
+rellenar huecos. Keep this structure as the shared point de partida.
+
+Only after that, work through `audience`, `mvp`, `done-when`, `constraints-hard`,
+`stakeholders`, `automatability`, grounding each in the `idea-detail` narrative — refer
+back to it, don't re-ask what it already answered. Follow up as the contract requires.
+Close with Phase F's sweep.
 
 Then run Phase 1's second half, and write what this phase collected out of the ledger:
 `goal` into `planning/product.md`'s "What this is", `audience` into "Who uses it", what
