@@ -87,14 +87,11 @@ are just where answers land.
 - **Write to disk after every answer.** An interrupted session must lose nothing.
 - **The user can stop at any point** — "that's enough for now", "let's pause", "stop
   here", or similar. Before actually stopping, ask whether to write `planning/handoff.md`.
-  If yes, write a point-in-time note in the shape of this repo's own `planning/handoff.md`
-  template: what's covered per the ledger, what's still `open`/`skipped` and why, and how
-  to resume (start your harness in this repo and invoke `start` — under Claude Code,
-  `claude --plugin-dir <path-to-specloop>` then `/specloop:start`; the ledger picks up at the
-  first `open` dimension). If the project interview is finished and only per-spec
-  requirements remain, say so and name both resume paths — `specloop:advance` drafts
-  them (Phase 0.5 there), `specloop:start` asks them one by one — plus which one the
-  user chose, if they did. Never stop silently: a bare `open`
+  If yes, read `references/handoff.md` and write it as that file says — shape, resume
+  path (start your harness in this repo and invoke `start`; under Claude Code,
+  `claude --plugin-dir <path-to-specloop>` then `/specloop:start`; the ledger picks up at
+  the first `open` dimension) and the session-id line (Claude Code only, omitted when the
+  harness exposes none). Never stop silently: a bare `open`
   row in the ledger says *that* something is unanswered, not *why*, which is what a
   resuming session or person actually needs.
 
@@ -466,7 +463,8 @@ Phase 7's opening choice when the user picked drafting — seeded specs still at
 4. Chain directly into `specloop:advance`'s logic (Phase 0 onward) — no
    separate invocation needed.
 5. Once `specloop:advance` reports and stops, ask whether to write
-   `planning/handoff.md`, same as any other stopping point — this is the
+   `planning/handoff.md` (written per `references/handoff.md`), same as any other
+   stopping point — this is the
    actual stopping point now, since `specloop:advance` may leave specs at
    different stages (`tasks_ready`, deferred, blocked) that a handoff written
    before it ran wouldn't reflect.
