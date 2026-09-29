@@ -26,9 +26,10 @@ load-bearing from them is carried below. Branch: `main`, clean, no other branche
   removed while testing is ongoing): `gh workflow run auto-release.yml`. `AGENTS.md`
   tells agents to suggest a run at 3+ unreleased `skills/` commits.
 - **Actions on Node 24 majors** (`checkout@v7`, `setup-python@v7`,
-  `upload-pages-artifact@v5`, `deploy-pages@v5`). The bot's `git push --atomic`
-  with `checkout@v7` credentials was probed on a throwaway branch and worked;
-  probe branches, tag and run deleted.
+  `upload-pages-artifact@v5`, `deploy-pages@v5`). The bump commit is now made via the
+  API (`createCommitOnBranch`) so it's signed, and the tag is lightweight (2026-09-29);
+  **not yet run live** — first `gh workflow run auto-release.yml` is the test. Check
+  the commit/tag show Verified and that `main` accepts the bot's API commit.
 
 ## Next
 

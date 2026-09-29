@@ -36,8 +36,8 @@ that tag. No manual version bump or tag.
   https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow)_.
 - No loop: the bump commit touches only `.claude-plugin/*.json`, outside the
   `skills/**` path filter.
-- Runs serialized (one release at a time); the bump commit and tag are pushed
-  atomically, so a race fails loud rather than half-releasing.
+- Runs serialized (one release at a time); the bump commit is guarded by
+  `expectedHeadOid`, so a race fails loud before any tag exists.
 - Repo-only tooling, never scaffolded to a target repo (same boundary as `030`/`032`).
 
 ## Acceptance criteria

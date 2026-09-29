@@ -2,6 +2,7 @@ name: auto-release
 
 # Cuts a new version on demand (038): bumps .claude-plugin/{plugin,marketplace}.json
 # from every skills/ commit since the last tag, tags it, and publishes the release.
+# The bump commit goes through the API so GitHub signs it (Verified badge).
 # Manual only since 2026-09-24, so several skills/ changes ship as one release:
 # gh workflow run auto-release.yml
 # A tag pushed with GITHUB_TOKEN never triggers another workflow, so the release
@@ -39,6 +40,7 @@ jobs:
         id: bump
         env:
           BUMP: ${{ inputs.bump || 'auto' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           current=$(jq -r .version .claude-plugin/plugin.json)
@@ -65,11 +67,29 @@ jobs:
             .claude-plugin/marketplace.json > marketplace.json.tmp
           mv marketplace.json.tmp .claude-plugin/marketplace.json
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -q -am "chore(release): v$next"
-          git tag -a "v$next" -m "v$next"
-          git push --atomic origin HEAD:main "v$next"
+          # Commit through the API so GitHub signs it (a plain `git commit` in the
+          # runner is unsigned -> "Unverified"). The tag is lightweight on that
+          # commit: the API cannot sign tag objects, but GitHub shows a tag as
+          # verified when the commit it points to is.
+          head=$(git rev-parse HEAD)
+          jq -n \
+            --arg repo "$GITHUB_REPOSITORY" \
+            --arg head "$head" \
+            --arg msg "chore(release): v$next" \
+            --arg plugin "$(base64 -w0 .claude-plugin/plugin.json)" \
+            --arg market "$(base64 -w0 .claude-plugin/marketplace.json)" \
+            '{query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
+              variables: {input: {
+                branch: {repositoryNameWithOwner: $repo, branchName: "main"},
+                expectedHeadOid: $head,
+                message: {headline: $msg},
+                fileChanges: {additions: [
+                  {path: ".claude-plugin/plugin.json", contents: $plugin},
+                  {path: ".claude-plugin/marketplace.json", contents: $market}
+                ]}}}}' > commit-input.json
+          oid=$(gh api graphql --input commit-input.json --jq '.data.createCommitOnBranch.commit.oid')
+          rm commit-input.json
+          gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/v$next" -f sha="$oid" >/dev/null
           echo "tag=v$next" >> "$GITHUB_OUTPUT"
           echo "Released v$next (from $current, bump: $BUMP)."
 

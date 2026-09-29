@@ -11,9 +11,11 @@ versions differ. It collects every commit message since the last `v*` tag that
 touched `skills/` (NUL-separated) and pipes them to `scripts/next-version.mjs
 <current> <bump>`, which prints the next version. With `auto` and no such commit it
 exits without releasing. If the tag already exists it fails. Otherwise it writes the
-version into both manifests with `jq`, commits `chore(release): vX.Y.Z` as
-`github-actions[bot]`, tags `vX.Y.Z`, and runs `git push --atomic origin HEAD:main
-vX.Y.Z`.
+version into both manifests with `jq`, commits `chore(release): vX.Y.Z` to `main`
+through the GraphQL `createCommitOnBranch` mutation (GitHub signs it, so it shows
+Verified; `expectedHeadOid` fails the run if `main` moved), then creates a
+lightweight tag `vX.Y.Z` on that commit via `git/refs` (the API can't sign tag
+objects; a tag on a verified commit shows as verified).
 
 Job `release`: `uses: ./.github/workflows/release-skills.yml` with `tag`.
 `release-skills.yml` gains a `workflow_call` trigger with a `tag` input, checks out
